@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Formulir;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -30,5 +31,20 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => 'string'
         ];
+    }
+
+    public function formulir()
+    {
+        return $this->hasOne(Formulir::class);
+    }
+
+    public function buktiPembayaran()
+    {
+        return $this->hasMany(BuktiPembayaran::class, 'id_pendaftar');
+    }
+
+    public function seleksiTes()
+    {
+        return $this->hasOne(SeleksiTes::class, 'id_pendaftar');
     }
 }

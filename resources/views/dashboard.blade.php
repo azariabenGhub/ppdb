@@ -14,7 +14,7 @@
     <div>
         <button data-section="beranda">Beranda</button>
         <button data-section="formulir">Formulir Pendaftaran</button>
-        <button data-section="jadwal">Jadwal Tes</button>
+        <button data-section="seleksi">Jadwal Tes</button>
         <button data-section="pengumuman">Pengumuman</button>
         <button data-section="daftar-ulang">Daftar Ulang</button>
         <button data-section="pembayaran">Pembayaran</button>
@@ -38,8 +38,9 @@
     </div>
 
     <!-- HALAMAN LAINNYA -->
-    <div id="jadwal" class="section" style="display:none;">
-        <p>Ini Jadwal Tes</p>
+    <div id="seleksi" class="section" style="display:none;">
+        <h2>Jadwal & Hasil Tes</h2>
+        <div id="info-seleksi">Memuat...</div>
     </div>
     <div id="pengumuman" class="section" style="display:none;">
         <p>Ini Pengumuman</p>
@@ -48,7 +49,22 @@
         <p>Ini Daftar Ulang</p>
     </div>
     <div id="pembayaran" class="section" style="display:none;">
-        <p>Ini Pembayaran</p>
+        <h2>Pembayaran</h2>
+        <h3>Metode Pembayaran</h3>
+        <div id="metode-pembayaran-list">Memuat...</div>
+        <hr>
+        <h3>Upload Bukti Pembayaran</h3>
+        <form id="form-bukti" enctype="multipart/form-data">
+            <select name="jenis_pembayaran" id="jenis_pembayaran">
+                <option value="formulir">Pembayaran Formulir</option>
+                <option value="masuk" disabled>Pembayaran Masuk (menunggu formulir diterima)</option>
+            </select><br><br>
+            <input type="file" name="bukti_pembayaran" accept="image/*" required><br><br>
+            <button type="submit">Kirim</button>
+        </form>
+        <hr>
+        <h3>Riwayat Pembayaran & Status</h3>
+        <div id="riwayat-bukti"></div>
     </div>
     <div id="status" class="section" style="display:none;">
         <p>Ini Status Pendaftaran</p>
@@ -84,12 +100,79 @@
                     target.style.display = 'block';
                 }
 
-                // Tambahkan ini:
+                // Muat konten spesifik
                 if (targetId === 'formulir') {
                     loadFormulirSection();
+                } else if (targetId === 'pembayaran') {
+                    loadMetodeUntukPendaftar();
+                    loadRiwayatBukti();
+                    cekStatusPendaftaran();
                 }
             });
         });
+
+        // Load metode pembayaran
+        async function loadMetodeUntukPendaftar() {
+            const res = await fetch('/api/metode-pembayaran', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            let html = '';
+            data.forEach(m => {
+                html += `<div>
+            <strong>${m.nama_bank || 'QRIS'}</strong><br>
+            No Rek: ${m.nomor_rekening || '-'} (${m.atas_nama})<br>
+            ${m.gambar_qris ? `<img src="/storage/${m.gambar_qris}" width="80">` : ''}
+        </div><br>`;
+            });
+            document.getElementById('metode-pembayaran-list').innerHTML = html || 'Belum ada metode';
+        }
+
+        // Upload bukti
+        document.getElementById('form-bukti').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const res = await fetch('/api/bukti-pembayaran', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token },
+                body: formData
+            });
+            if (res.ok) {
+                alert('Bukti dikirim');
+                loadRiwayatBukti();
+            }
+        });
+
+        // Tampilkan riwayat bukti
+        async function loadRiwayatBukti() {
+            const res = await fetch('/api/bukti-pembayaran', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            let html = '<table border="1"><tr><th>Jenis</th><th>Status</th><th>Bukti</th><th>Kwitansi</th><th>Catatan</th></tr>';
+            data.forEach(b => {
+                html += `<tr>
+            <td>${b.jenis_pembayaran}</td>
+            <td>${b.status}</td>
+            <td><a href="/storage/${b.bukti_pembayaran}" target="_blank">Lihat</a></td>
+            <td>${b.verifikasi?.kwitansi?.kwitansi ? `<a href="/storage/${b.verifikasi.kwitansi.kwitansi}">Unduh</a>` : '-'}</td>
+            <td>${b.verifikasi?.catatan || ''}</td>
+        </tr>`;
+            });
+            html += '</table>';
+            document.getElementById('riwayat-bukti').innerHTML = html;
+        }
+
+        // Cek status pendaftaran untuk mengaktifkan jenis "masuk"
+        async function cekStatusPendaftaran() {
+            const res = await fetch('/api/pendaftaran-saya', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const result = await res.json();
+            if (result.data && result.data.status === 'diterima') {
+                document.querySelector('#jenis_pembayaran option[value="masuk"]').disabled = false;
+            }
+        }
 
         // ========== 3. Multistep dalam Formulir ==========
         function showStep(stepNumber) {
@@ -458,7 +541,15 @@
                             <h3>Data Ayah</h3>
                             <input type="text" id="nama_ayah" value="${data.nama_ayah || ''}" placeholder="Nama Lengkap Ayah"><br><br>
                             <input type="text" id="pekerjaan_ayah" value="${data.pekerjaan_ayah || ''}" placeholder="Pekerjaan Ayah"><br><br>
-                            <input type="text" id="agama_ayah" value="${data.agama_ayah || ''}" placeholder="Agama Ayah"><br><br>
+                            <select id="agama_ayah" value="${data.agama_ayah || ''}">
+                                <option value="">-- Pilih --</option>
+                                <option>Islam</option>
+                                <option>Kristen</option>
+                                <option>Katolik</option>
+                                <option>Hindu</option>
+                                <option>Buddha</option>
+                                <option>Konghucu</option>
+                            </select><br><br>
                             <input type="text" id="pendidikan_ayah" value="${data.pendidikan_ayah || ''}" placeholder="Pendidikan Terakhir Ayah"><br><br>
                             <input type="text" id="no_ktp_ayah" value="${data.no_ktp_ayah || ''}" placeholder="No KTP Ayah"><br><br>
                             <input type="text" id="penghasilan_ayah" value="${data.penghasilan_ayah || ''}" placeholder="Penghasilan per Bulan Ayah"><br><br>
@@ -468,7 +559,15 @@
                             <h3>Data Ibu</h3>
                             <input type="text" id="nama_ibu" value="${data.nama_ibu || ''}" placeholder="Nama Lengkap Ibu"><br><br>
                             <input type="text" id="pekerjaan_ibu" value="${data.pekerjaan_ibu || ''}" placeholder="Pekerjaan Ibu"><br><br>
-                            <input type="text" id="agama_ibu" value="${data.agama_ibu || ''}" placeholder="Agama Ibu"><br><br>
+                            <select id="agama_ibu" value="${data.agama_ibu || ''}">
+                                <option value="">-- Pilih --</option>
+                                <option>Islam</option>
+                                <option>Kristen</option>
+                                <option>Katolik</option>
+                                <option>Hindu</option>
+                                <option>Buddha</option>
+                                <option>Konghucu</option>
+                            </select><br><br>
                             <input type="text" id="pendidikan_ibu" value="${data.pendidikan_ibu || ''}" placeholder="Pendidikan Terakhir Ibu"><br><br>
                             <input type="text" id="no_ktp_ibu" value="${data.no_ktp_ibu || ''}" placeholder="No KTP Ibu"><br><br>
                             <input type="text" id="penghasilan_ibu" value="${data.penghasilan_ibu || ''}" placeholder="Penghasilan per Bulan Ibu"><br><br>
@@ -480,7 +579,15 @@
                             <h3>Data Wali</h3>
                             <input type="text" id="nama_wali" value="${data.nama_wali || ''}" placeholder="Nama Lengkap Wali"><br><br>
                             <input type="text" id="pekerjaan_wali" value="${data.pekerjaan_wali || ''}" placeholder="Pekerjaan Wali"><br><br>
-                            <input type="text" id="agama_wali" value="${data.agama_wali || ''}" placeholder="Agama Wali"><br><br>
+                            <select id="agama_wali" value="${data.agama_wali || ''}">
+                                <option value="">-- Pilih --</option>
+                                <option>Islam</option>
+                                <option>Kristen</option>
+                                <option>Katolik</option>
+                                <option>Hindu</option>
+                                <option>Buddha</option>
+                                <option>Konghucu</option>
+                            </select><br><br>
                             <input type="text" id="pendidikan_wali" value="${data.pendidikan_wali || ''}" placeholder="Pendidikan Terakhir Wali"><br><br>
                             <input type="text" id="no_ktp_wali" value="${data.no_ktp_wali || ''}" placeholder="No KTP Wali"><br><br>
                             <input type="text" id="penghasilan_wali" value="${data.penghasilan_wali || ''}" placeholder="Penghasilan per Bulan Wali"><br><br>
@@ -515,6 +622,28 @@
                     <button type="button" onclick="submitForm()">Kirim Formulir</button>
                 </div>
             `;
+        }
+
+        // jadwal tes
+        async function loadSeleksiSaya() {
+            const res = await fetch('/api/seleksi-saya', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            if (!data) {
+                document.getElementById('info-seleksi').innerHTML = 'Anda belum dijadwalkan tes.';
+                return;
+            }
+            let html = `<p>Jadwal Tes: ${data.jadwal_tes}</p>`;
+            if (data.penilaian) {
+                html += `<h3>Hasil Penilaian</h3>
+            <p>Membaca: ${data.penilaian.kemampuan_membaca}</p>
+            <p>Menulis: ${data.penilaian.kemampuan_menulis}</p>
+            <p>Berhitung: ${data.penilaian.kemampuan_berhitung}</p>
+            <p>Baca Alquran: ${data.penilaian.baca_alquran ?? '-'}</p>
+            <p>Kelulusan: ${data.kelulusan_tes}</p>`;
+            } else {
+                html += '<p>Belum ada penilaian.</p>';
+            }
+            document.getElementById('info-seleksi').innerHTML = html;
         }
 
         // ========== 4. Logout ==========
