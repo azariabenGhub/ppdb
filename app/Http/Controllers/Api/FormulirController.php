@@ -9,6 +9,33 @@ use Illuminate\Support\Facades\Validator;
 
 class FormulirController extends Controller
 {
+    public function index()
+    {
+        $form = Formulir::with('user:id,name,email')->get();
+
+        $data = $form->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'nama_pendaftar' => $item->user->name ?? 'Tanpa Nama',
+                'email_pendaftar' => $item->user->email ?? '',
+                'nama_lengkap' => $item->nama_lengkap,
+                'tanggal_daftar' => $item->created_at->format('d-m-Y H:i'),
+                'status' => $item->status ?? 'Baru',
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+    public function show($id)
+    {
+        $form = Formulir::with('user:id,name,email')->findOrFail($id);
+
+        return response()->json([
+            'data' => $form,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $rules = [
