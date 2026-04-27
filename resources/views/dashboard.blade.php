@@ -193,6 +193,11 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         document.getElementById('userName').innerText = user.name || 'Pengguna';
 
+        // Jika token tidak ada atau role bukan pendaftar, redirect
+        if (!token || user.role !== 'pendaftar') {
+            window.location.href = '/login';
+        }
+
         // ========== 2. Navigasi Halaman Utama ==========
         const navButtons = document.querySelectorAll('button[data-section]');
         const sections = document.querySelectorAll('.section');

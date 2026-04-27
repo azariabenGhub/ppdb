@@ -48,14 +48,16 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Simpan token ke localStorage
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
 
-                    // Redirect ke dashboard
-                    window.location.href = '/dashboard';
-                } else {
-                    document.getElementById('message').innerText = data.message || 'Login gagal.';
+                    // Redirect berdasarkan role
+                    const role = data.user.role;
+                    if (role === 'panitia' || role === 'kepala_sekolah') {
+                        window.location.href = '/staff-dashboard';
+                    } else {
+                        window.location.href = '/dashboard';
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
