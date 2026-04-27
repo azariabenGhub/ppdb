@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Formulir;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class FormulirController extends Controller
@@ -29,11 +30,8 @@ class FormulirController extends Controller
 
     public function show($id)
     {
-        $form = Formulir::with('user:id,name,email')->findOrFail($id);
-
-        return response()->json([
-            'data' => $form,
-        ]);
+        $formulir = Formulir::with('user:id,name,email', 'verifikasi')->findOrFail($id);
+        return response()->json(['data' => $formulir]);
     }
 
     public function store(Request $request)
@@ -102,15 +100,43 @@ class FormulirController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Simpan data
-        $data = $request->all();
-        $data['user_id'] = $request->user()->id;
+        $user = $request->user();
+        $existing = Formulir::where('user_id', $user->id)->first();
 
-        $pendaftaran = Formulir::create($data);
+        DB::beginTransaction();
+        try {
+            if ($existing) {
+                // Hanya boleh update jika status 'menunggu' atau 'ditolak'
+                if (!in_array($existing->status, ['menunggu', 'ditolak'])) {
+                    return response()->json(['message' => 'Formulir tidak dapat diubah.'], 403);
+                }
+                // Hapus verifikasi lama (jika ada) agar bisa diverifikasi ulang
+                $existing->verifikasi()->delete();
+                // Update data
+                $existing->update($request->all());
+                // Set status kembali menunggu
+                $existing->status = 'menunggu';
+                $existing->save();
+                $pendaftaran = $existing;
+            } else {
+                $data = $request->all();
+                $data['user_id'] = $user->id;
+                $pendaftaran = Formulir::create($data);
+            }
+            DB::commit();
+            return response()->json(['message' => 'Formulir berhasil disimpan.', 'data' => $pendaftaran], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Terjadi kesalahan.', 'error' => $e->getMessage()], 500);
+        }
+    }
 
-        return response()->json([
-            'message' => 'Pendaftaran berhasil',
-            'data' => $pendaftaran
-        ], 201);
+    public function myForm(Request $request)
+    {
+        $formulir = Formulir::with('verifikasi')->where('user_id', $request->user()->id)->first();
+        if (!$formulir) {
+            return response()->json(['data' => null, 'message' => 'Belum mengisi formulir.']);
+        }
+        return response()->json(['data' => $formulir]);
     }
 }

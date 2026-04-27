@@ -25,39 +25,33 @@
         <p>Ini Beranda Staff</p>
     </div>
     <div id="verifikasi" class="section" style="display:none;">
-        <h2>Daftar Pendaftar</h2>
-
-        <!-- Tabel Ringkasan -->
+        <h2>Verifikasi Pendaftar</h2>
+        <h3>Menunggu Verifikasi</h3>
         <table border="1" cellpadding="5" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Nama Pendaftar (User)</th>
-                    <th>Email</th>
-                    <th>Nama Lengkap Siswa</th>
-                    <th>Tanggal Daftar</th>
+                    <th>Nama</th>
+                    <th>Nama Siswa</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody id="tabel-pendaftar">
-                <!-- Data akan dimuat lewat JavaScript -->
-                <tr>
-                    <td colspan="6">Memuat data...</td>
-                </tr>
-            </tbody>
+            <tbody id="tabel-menunggu"></tbody>
         </table>
-
         <br>
-
-        <!-- Area Detail (akan muncul saat tombol Lihat diklik) -->
-        <div id="detail-pendaftar" style="display:none;">
-            <h3>Detail Formulir</h3>
-            <button onclick="tutupDetail()">Tutup Detail</button>
-            <hr>
-            <div id="isi-detail">
-                <!-- Konten akan diisi oleh JavaScript -->
-            </div>
-        </div>
+        <h3>Sudah Diverifikasi</h3>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Nama Siswa</th>
+                    <th>Hasil</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-sudah"></tbody>
+        </table>
     </div>
     <div id="kelola-jadwal" class="section" style="display:none;">
         <p>Kelola Jadwal</p>
@@ -96,120 +90,41 @@
 
                 // Tambahan: jika membuka Verifikasi Pendaftar, muat tabel
                 if (targetId === 'verifikasi') {
-                    loadDaftarPendaftar();
+                    loadVerifikasi();
                 }
             });
         });
 
-        async function loadDaftarPendaftar() {
+        async function loadVerifikasi() {
             const token = localStorage.getItem('access_token');
-            if (!token) return;
+            const res = await fetch('/api/pendaftaran', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
 
-            try {
-                const response = await fetch('/api/pendaftaran', {
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Accept': 'application/json'
-                    }
-                });
-                const data = await response.json();
-
-                const tbody = document.getElementById('tabel-pendaftar');
-                if (!Array.isArray(data)) {
-                    tbody.innerHTML = '<tr><td colspan="6">Gagal memuat data.</td></tr>';
-                    return;
-                }
-
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6">Belum ada pendaftar.</td></tr>';
-                    return;
-                }
-
-                let html = '';
-                data.forEach((item, index) => {
-                    html += `
-                <tr>
-                    <td>${index + 1}</td>
+            let menungguHtml = '';
+            let sudahHtml = '';
+            data.forEach((item, i) => {
+                const baris = `<tr>
+                    <td>${i+1}</td>
                     <td>${item.nama_pendaftar}</td>
-                    <td>${item.email_pendaftar}</td>
                     <td>${item.nama_lengkap}</td>
-                    <td>${item.tanggal_daftar}</td>
                     <td>
-                        <button onclick="lihatDetail(${item.id})">Lihat</button>
+                        <a href="/formulir/${item.id}" target="_blank">Lihat Detail</a>
                     </td>
-                </tr>
-            `;
-                });
-                tbody.innerHTML = html;
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('tabel-pendaftar').innerHTML = '<tr><td colspan="6">Terjadi kesalahan.</td></tr>';
-            }
-        }
-
-        // Fungsi untuk menampilkan detail
-        async function lihatDetail(id) {
-            const token = localStorage.getItem('access_token');
-            try {
-                const response = await fetch(`/api/pendaftaran/${id}`, {
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Accept': 'application/json'
-                    }
-                });
-                const result = await response.json();
-                const detail = result.data;
-
-                // Sembunyikan tabel ringkasan (opsional) atau tampilkan di bawah
-                document.getElementById('detail-pendaftar').style.display = 'block';
-
-                // Bangun tampilan detail
-                const container = document.getElementById('isi-detail');
-                container.innerHTML = `
-            <h4>Biodata Siswa</h4>
-            <p>Nama Lengkap: ${detail.nama_lengkap}</p>
-            <p>Tempat Lahir: ${detail.tempat_lahir}</p>
-            <p>Tanggal Lahir: ${detail.tanggal_lahir}</p>
-            <p>NIK: ${detail.nik}</p>
-            <p>Agama: ${detail.agama}</p>
-            <p>Warga Negara: ${detail.warga_negara}</p>
-            <p>Anak ke-: ${detail.anak_ke || '-'}</p>
-            <p>Jumlah Saudara: ${detail.jumlah_saudara || '-'}</p>
-            <p>Alamat: ${detail.alamat_lengkap}</p>
-
-            <h4>Data Orang Tua / Wali</h4>
-            <p>Tipe: ${detail.tipe_wali}</p>
-            ${detail.tipe_wali === 'orang_tua' ? `
-                <p><strong>Ayah:</strong> ${detail.nama_ayah} (${detail.pekerjaan_ayah})</p>
-                <p>Agama: ${detail.agama_ayah} | Pendidikan: ${detail.pendidikan_ayah}</p>
-                <p>No KTP: ${detail.no_ktp_ayah} | Penghasilan: ${detail.penghasilan_ayah}</p>
-                <p>Telp: ${detail.no_telp_ayah} | Alamat: ${detail.alamat_ayah}</p>
-                <hr>
-                <p><strong>Ibu:</strong> ${detail.nama_ibu} (${detail.pekerjaan_ibu})</p>
-                <p>Agama: ${detail.agama_ibu} | Pendidikan: ${detail.pendidikan_ibu}</p>
-                <p>No KTP: ${detail.no_ktp_ibu} | Penghasilan: ${detail.penghasilan_ibu}</p>
-                <p>Telp: ${detail.no_telp_ibu} | Alamat: ${detail.alamat_ibu}</p>
-            ` : `
-                <p><strong>Wali:</strong> ${detail.nama_wali} (${detail.pekerjaan_wali})</p>
-                <p>Agama: ${detail.agama_wali} | Pendidikan: ${detail.pendidikan_wali}</p>
-                <p>No KTP: ${detail.no_ktp_wali} | Penghasilan: ${detail.penghasilan_wali}</p>
-                <p>Telp: ${detail.no_telp_wali} | Alamat: ${detail.alamat_wali}</p>
-            `}
-
-            <h4>Data Akademik</h4>
-            ${detail.is_bukan_pindahan === 1 ? `
-                <p>Bukan murid pindahan</p>
-            ` : `
-                <p>Asal Sekolah: ${detail.asal_sekolah}</p>
-                <p>No Ijazah: ${detail.no_ijazah} | Tahun: ${detail.tahun_ijazah}</p>
-                <p>Diterima di Kelas: ${detail.diterima_kelas}</p>
-                <p>Pindah dari: ${detail.pindah_dari} | No Pindah: ${detail.no_pindah}</p>
-                <p>Tanggal Pindah: ${detail.tanggal_pindah}</p>
-            `}
-        `;
-            } catch (error) {
-                alert('Gagal memuat detail');
-            }
+                </tr>`;
+                if (item.status === 'menunggu') {
+                    menungguHtml += baris;
+                } else {
+                    sudahHtml += `<tr>
+                        <td>${i+1}</td>
+                        <td>${item.nama_pendaftar}</td>
+                        <td>${item.nama_lengkap}</td>
+                        <td>${item.status}</td>
+                        <td><a href="/formulir/${item.id}" target="_blank">Detail</a></td>
+                    </tr>`;
+                }
+            });
+            document.getElementById('tabel-menunggu').innerHTML = menungguHtml || '<tr><td colspan="4">Tidak ada</td></tr>';
+            document.getElementById('tabel-sudah').innerHTML = sudahHtml || '<tr><td colspan="5">Tidak ada</td></tr>';
         }
 
         function tutupDetail() {

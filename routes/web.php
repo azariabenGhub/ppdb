@@ -13,3 +13,5 @@ Route::view('/login', 'auth.login');
 
 Route::view('/dashboard', 'dashboard');
 Route::view('/staff-dashboard', 'staff-dashboard');
+Route::get('/formulir/{id}', function ($id) {
+    return view('detail-formulir', ['id' => $id]);});

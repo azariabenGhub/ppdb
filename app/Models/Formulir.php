@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\VerifikasiFormulir;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -54,7 +55,8 @@ class Formulir extends Model
         'diterima_kelas',
         'pindah_dari',
         'no_pindah',
-        'tanggal_pindah'
+        'tanggal_pindah',
+        'status'
     ];
 
     // Relasi ke user
@@ -62,4 +64,9 @@ class Formulir extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function verifikasi()
+{
+    return $this->hasOne(VerifikasiFormulir::class, 'id_formulir');
+}
 }
