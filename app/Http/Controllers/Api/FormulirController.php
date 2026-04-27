@@ -11,7 +11,6 @@ class FormulirController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi
         $rules = [
             'nama_lengkap' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:255',
@@ -25,7 +24,6 @@ class FormulirController extends Controller
             'tipe_wali' => 'required|in:orang_tua,wali',
         ];
 
-        // Validasi bersyarat untuk orang tua / wali
         if ($request->tipe_wali === 'orang_tua') {
             $rules = array_merge($rules, [
                 'nama_ayah' => 'required|string|max:255',
@@ -58,7 +56,6 @@ class FormulirController extends Controller
             ]);
         }
 
-        // Data akademik hanya wajib jika bukan pindahan = false
         $rules['is_bukan_pindahan'] = 'required|boolean';
         if (!$request->is_bukan_pindahan) {
             $rules = array_merge($rules, [
@@ -80,7 +77,7 @@ class FormulirController extends Controller
 
         // Simpan data
         $data = $request->all();
-        $data['user_id'] = $request->user()->id; // Ambil user yang sedang login
+        $data['user_id'] = $request->user()->id;
 
         $pendaftaran = Formulir::create($data);
 
