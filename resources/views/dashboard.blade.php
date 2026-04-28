@@ -43,7 +43,8 @@
         <div id="info-seleksi">Memuat...</div>
     </div>
     <div id="pengumuman" class="section" style="display:none;">
-        <p>Ini Pengumuman</p>
+        <h2>Pengumuman Hasil Seleksi</h2>
+        <div id="info-pengumuman">Memuat...</div>
     </div>
     <div id="daftar-ulang" class="section" style="display:none;">
         <p>Ini Daftar Ulang</p>
@@ -100,13 +101,16 @@
                     target.style.display = 'block';
                 }
 
-                // Muat konten spesifik
                 if (targetId === 'formulir') {
                     loadFormulirSection();
                 } else if (targetId === 'pembayaran') {
                     loadMetodeUntukPendaftar();
                     loadRiwayatBukti();
                     cekStatusPendaftaran();
+                } else if (targetId === 'seleksi') {
+                    loadSeleksiSaya();
+                } else if (targetId === 'pengumuman') {
+                    loadPengumuman();
                 }
             });
         });
@@ -628,22 +632,37 @@
         async function loadSeleksiSaya() {
             const res = await fetch('/api/seleksi-saya', { headers: { 'Authorization': 'Bearer ' + token } });
             const data = await res.json();
-            if (!data) {
+            if (!data || !data.jadwal_tes) {
                 document.getElementById('info-seleksi').innerHTML = 'Anda belum dijadwalkan tes.';
                 return;
             }
-            let html = `<p>Jadwal Tes: ${data.jadwal_tes}</p>`;
-            if (data.penilaian) {
-                html += `<h3>Hasil Penilaian</h3>
-            <p>Membaca: ${data.penilaian.kemampuan_membaca}</p>
-            <p>Menulis: ${data.penilaian.kemampuan_menulis}</p>
-            <p>Berhitung: ${data.penilaian.kemampuan_berhitung}</p>
-            <p>Baca Alquran: ${data.penilaian.baca_alquran ?? '-'}</p>
-            <p>Kelulusan: ${data.kelulusan_tes}</p>`;
-            } else {
-                html += '<p>Belum ada penilaian.</p>';
-            }
+            let html = `<p><strong>Jadwal Tes:</strong> ${data.jadwal_tes}</p>`;
             document.getElementById('info-seleksi').innerHTML = html;
+        }
+
+        // pengumuman
+        async function loadPengumuman() {
+            const res = await fetch('/api/seleksi-saya', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            const container = document.getElementById('info-pengumuman');
+            if (!data || !data.penilaian) {
+                container.innerHTML = '<p>Belum ada pengumuman kelulusan tes.</p>';
+                return;
+            }
+            const p = data.penilaian;
+            const kelulusan = data.kelulusan_tes || 'belum ditentukan';
+            let html = `
+                <h3>Hasil Tes Seleksi</h3>
+                <p><strong>Kelulusan:</strong> ${kelulusan === 'lulus' ? '✅ LULUS' : (kelulusan === 'tidak_lulus' ? '❌ TIDAK LULUS' : '-')}</p>
+                <h4>Nilai Tes:</h4>
+                <ul>
+                    <li>Kemampuan Membaca: ${p.kemampuan_membaca || '-'}</li>
+                    <li>Kemampuan Menulis: ${p.kemampuan_menulis || '-'}</li>
+                    <li>Kemampuan Berhitung: ${p.kemampuan_berhitung || '-'}</li>
+                    <li>Baca Alquran: ${p.baca_alquran || '-'}</li>
+                </ul>
+            `;
+            container.innerHTML = html;
         }
 
         // ========== 4. Logout ==========
