@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuktiPembayaranController;
 use App\Http\Controllers\Api\EncryptedFileController;
 use App\Http\Controllers\Api\FormulirController;
+use App\Http\Controllers\Api\GelombangController;
 use App\Http\Controllers\Api\KwitansiController;
 use App\Http\Controllers\Api\MetodePembayaranController;
 use App\Http\Controllers\Api\PenilaianController;
@@ -71,6 +72,6 @@ Route::middleware(['auth:sanctum', 'role:bendahara,kepala_sekolah'])->group(func
 
 
 Route::middleware(['auth:sanctum', 'role:panitia,bendahara,kepala_sekolah'])->group(function () {
-    // Tambahkan route laporan di sini jika sudah ada controllernya
-    // Contoh: Route::get('/laporan', [LaporanController::class, 'index']);
+    Route::apiResource('gelombang', GelombangController::class);
+    Route::patch('gelombang/{id}/toggle-status', [GelombangController::class, 'toggleStatus']);
 });

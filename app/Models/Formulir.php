@@ -66,7 +66,12 @@ class Formulir extends Model
     }
 
     public function verifikasi()
-{
-    return $this->hasOne(VerifikasiFormulir::class, 'id_formulir');
-}
+    {
+        return $this->hasOne(VerifikasiFormulir::class, 'id_formulir');
+    }
+
+    public function gelombang()
+    {
+        return $this->belongsTo(Gelombang::class, 'id_gelombang');
+    }
 }
