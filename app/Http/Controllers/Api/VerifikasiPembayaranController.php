@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileEncryptionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\BuktiPembayaran;
 use App\Models\Kwitansi;
@@ -17,7 +18,7 @@ class VerifikasiPembayaranController extends Controller
             'id_bukti_pembayaran' => 'required|exists:bukti_pembayarans,id_bukti_pembayaran',
             'hasil_verifikasi' => 'required|in:diterima,ditolak',
             'catatan' => 'nullable|string',
-            'kwitansi' => 'required_if:hasil_verifikasi,diterima|file|mimes:pdf,jpg,png|max:2048', // jika diterima wajib upload kwitansi
+            'kwitansi' => 'required_if:hasil_verifikasi,diterima|file|mimes:pdf,jpg,png|max:2048',
         ]);
         $bukti = BuktiPembayaran::findOrFail($request->id_bukti_pembayaran);
         if ($bukti->status !== 'menunggu') {
@@ -35,7 +36,7 @@ class VerifikasiPembayaranController extends Controller
             $bukti->save();
 
             if ($request->hasil_verifikasi === 'diterima' && $request->hasFile('kwitansi')) {
-                $path = $request->file('kwitansi')->store('kwitansi', 'public');
+                $path = FileEncryptionHelper::encryptAndStore($request->file('kwitansi'), 'kwitansi');
                 Kwitansi::create([
                     'id_verifikasi_pembayaran' => $verifikasi->id_verifikasi_pembayaran,
                     'id_pendaftar' => $bukti->id_pendaftar,
@@ -46,7 +47,7 @@ class VerifikasiPembayaranController extends Controller
             return response()->json(['message' => 'Verifikasi berhasil']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Gagal'], 500);
+            return response()->json(['message' => 'Gagal: ' . $e->getMessage()], 500);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuktiPembayaranController;
+use App\Http\Controllers\Api\EncryptedFileController;
 use App\Http\Controllers\Api\FormulirController;
 use App\Http\Controllers\Api\KwitansiController;
 use App\Http\Controllers\Api\MetodePembayaranController;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/file/bukti/{id}', [EncryptedFileController::class, 'showBukti']);
+Route::get('/file/kwitansi/{id}', [EncryptedFileController::class, 'showKwitansi']);
 
 // Protected routes (semua role yang sudah login)
 Route::middleware('auth:sanctum')->group(function () {

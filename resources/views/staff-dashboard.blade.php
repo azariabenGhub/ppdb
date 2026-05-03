@@ -88,39 +88,110 @@
 
     <div id="verifikasi-pembayaran" class="section" style="display:none;">
         <h2>Verifikasi Bukti Pembayaran</h2>
-        <table border="1" id="tabel-bukti" width="100%">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Pendaftar</th>
-                    <th>Jenis</th>
-                    <th>Bukti</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <div id="aksi-verifikasi" style="display:none;">
-            <h3>Verifikasi</h3>
-            <form id="formVerifikasi" enctype="multipart/form-data">
-                <input type="hidden" id="bukti_id">
-                <img id="preview-bukti" width="100"><br>
-                <label>Hasil:</label>
-                <select id="hasil_verifikasi" name="hasil_verifikasi">
+
+        <!-- Tombol switch / tab -->
+        <div>
+            <button id="tabFormulir" class="tab-active" onclick="switchJenisPembayaran('formulir')">Pembayaran
+                Formulir</button>
+            <button id="tabMasuk" onclick="switchJenisPembayaran('masuk')">Pembayaran Masuk (Daftar Ulang)</button>
+        </div>
+        <br>
+
+        <!-- Container untuk tabel formulir -->
+        <div id="container-formulir">
+            <h3>Menunggu Verifikasi</h3>
+            <table border="1" width="100%" id="tabel-formulir-menunggu">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Pendaftar</th>
+                        <th>Jenis</th>
+                        <th>Bukti</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <br>
+            <h3>Sudah Diverifikasi</h3>
+            <table border="1" width="100%" id="tabel-formulir-sudah">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Pendaftar</th>
+                        <th>Jenis</th>
+                        <th>Bukti</th>
+                        <th>Status</th>
+                        <th>Catatan / Kwitansi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Container untuk tabel masuk (daftar ulang) -->
+        <div id="container-masuk" style="display:none;">
+            <h3>Menunggu Verifikasi</h3>
+            <table border="1" width="100%" id="tabel-masuk-menunggu">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Pendaftar</th>
+                        <th>Jenis</th>
+                        <th>Bukti</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <br>
+            <h3>Sudah Diverifikasi</h3>
+            <table border="1" width="100%" id="tabel-masuk-sudah">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Pendaftar</th>
+                        <th>Jenis</th>
+                        <th>Bukti</th>
+                        <th>Status</th>
+                        <th>Catatan / Kwitansi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Modal untuk verifikasi -->
+        <div id="modalVerifikasi"
+            style="display:none; position:fixed; top:10%; left:10%; width:80%; background:white; border:2px solid #ccc; padding:20px; z-index:1000;">
+            <h3>Verifikasi Bukti Pembayaran</h3>
+            <div id="modalContent">
+                <img id="modalGambar" src="" style="max-width:100%; max-height:300px;"><br>
+                <button onclick="bukaGambarFull()">Lihat Gambar Full</button>
+                <br><br>
+                <label>Hasil Verifikasi:</label><br>
+                <select id="modalHasil">
                     <option value="diterima">Terima</option>
                     <option value="ditolak">Tolak</option>
-                </select><br>
-                <div id="div-catatan" style="display:none;">
-                    <label>Catatan Penolakan:</label>
-                    <textarea id="catatan" name="catatan"></textarea><br>
+                </select>
+                <br>
+                <div id="modalCatatanGroup" style="display:none;">
+                    <label>Catatan Penolakan:</label><br>
+                    <textarea id="modalCatatan" rows="2" cols="40"></textarea><br>
                 </div>
-                <div id="div-kwitansi">
-                    <label>Upload Kwitansi (hanya jika diterima):</label>
-                    <input type="file" id="kwitansi" name="kwitansi" accept=".pdf,.jpg,.png"><br>
+                <div id="modalKwitansiGroup">
+                    <label>Upload Kwitansi (wajib jika diterima):</label><br>
+                    <input type="file" id="modalKwitansi" accept=".pdf,.jpg,.png"><br>
                 </div>
-                <button type="submit">Kirim Verifikasi</button>
-            </form>
+                <br>
+                <button onclick="submitVerifikasi()">Kirim Verifikasi</button>
+                <button onclick="tutupModal()">Tutup</button>
+            </div>
+        </div>
+        <div id="overlay"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;">
         </div>
     </div>
 
@@ -259,7 +330,7 @@
                 } else if (targetId === 'metode-pembayaran' && (user.role === 'bendahara' || user.role === 'kepala_sekolah')) {
                     loadMetodePembayaran();
                 } else if (targetId === 'verifikasi-pembayaran' && (user.role === 'bendahara' || user.role === 'kepala_sekolah')) {
-                    loadBuktiPembayaran();
+                    switchJenisPembayaran('formulir');
                 } else if (targetId === 'kelola-jadwal' && (user.role === 'panitia' || user.role === 'kepala_sekolah')) {
                     loadBelumTerjadwal();
                     loadSudahTerjadwal();
@@ -386,67 +457,182 @@
         }
 
         // Load semua bukti pembayaran untuk staf
-        async function loadBuktiPembayaran() {
-            const res = await fetch('/api/bukti-pembayaran/semua', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const data = await res.json();
+
+        // Variabel global untuk menyimpan data bukti yang sedang diverifikasi
+        let currentBukti = null;
+        let currentJenis = 'formulir'; // formulir atau masuk
+
+        // Switch tab
+        function switchJenisPembayaran(jenis) {
+            currentJenis = jenis;
+            if (jenis === 'formulir') {
+                document.getElementById('container-formulir').style.display = 'block';
+                document.getElementById('container-masuk').style.display = 'none';
+                document.getElementById('tabFormulir').classList.add('tab-active');
+                document.getElementById('tabMasuk').classList.remove('tab-active');
+                loadDataVerifikasiPembayaran('formulir');
+            } else {
+                document.getElementById('container-formulir').style.display = 'none';
+                document.getElementById('container-masuk').style.display = 'block';
+                document.getElementById('tabMasuk').classList.add('tab-active');
+                document.getElementById('tabFormulir').classList.remove('tab-active');
+                loadDataVerifikasiPembayaran('masuk');
+            }
+        }
+
+        // Load data dari API dan render tabel
+        async function loadDataVerifikasiPembayaran(jenis) {
+            try {
+                const res = await fetch('/api/bukti-pembayaran/semua', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const allData = await res.json();
+                // Filter berdasarkan jenis_pembayaran
+                const filtered = allData.filter(b => b.jenis_pembayaran === jenis);
+
+                // Pisahkan menunggu dan sudah diverifikasi (diterima/ditolak)
+                const menunggu = filtered.filter(b => b.status === 'menunggu');
+                const sudah = filtered.filter(b => b.status !== 'menunggu');
+
+                if (jenis === 'formulir') {
+                    renderTabel(menunggu, 'tabel-formulir-menunggu', false);
+                    renderTabelSudah(sudah, 'tabel-formulir-sudah');
+                } else {
+                    renderTabel(menunggu, 'tabel-masuk-menunggu', false);
+                    renderTabelSudah(sudah, 'tabel-masuk-sudah');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Render tabel untuk status menunggu (tanpa kolom aksi, ganti dengan tombol Lihat Bukti)
+        function renderTabel(data, tableId, withAction = false) {
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            if (!tbody) return;
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Tidak ada data.</td></tr>';
+                return;
+            }
             let html = '';
             data.forEach((b, i) => {
                 html += `<tr>
             <td>${i + 1}</td>
             <td>${b.pendaftar?.name ?? '-'}</td>
-            <td>${b.jenis_pembayaran}</td>
-            <td><a href="/storage/${b.bukti_pembayaran}" target="_blank">Lihat</a></td>
+            <td>${b.jenis_pembayaran === 'formulir' ? 'Formulir' : 'Daftar Ulang'}</td>
+            <td><button onclick="bukaModalVerifikasi(${b.id_bukti_pembayaran})">Lihat Bukti</button></td>
             <td>${b.status}</td>
-            <td>
-                ${b.status === 'menunggu' ? `<button onclick="verifikasiBukti(${b.id_bukti_pembayaran}, '${b.bukti_pembayaran}')">Verifikasi</button>` : ''}
-            </td>
         </tr>`;
             });
-            document.querySelector('#tabel-bukti tbody').innerHTML = html || '<tr><td colspan="6">Tidak ada data.</td></tr>';
+            tbody.innerHTML = html;
         }
 
-        function verifikasiBukti(id, path) {
-            document.getElementById('aksi-verifikasi').style.display = 'block';
-            document.getElementById('bukti_id').value = id;
-            document.getElementById('preview-bukti').src = `/storage/${path}`;
-            document.getElementById('hasil_verifikasi').value = 'diterima';
-            document.getElementById('div-catatan').style.display = 'none';
-            document.getElementById('div-kwitansi').style.display = 'block';
-        }
-
-        document.getElementById('hasil_verifikasi').addEventListener('change', function () {
-            document.getElementById('div-catatan').style.display = this.value === 'ditolak' ? 'block' : 'none';
-            document.getElementById('div-kwitansi').style.display = this.value === 'diterima' ? 'block' : 'none';
-        });
-
-        document.getElementById('formVerifikasi').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('id_bukti_pembayaran', document.getElementById('bukti_id').value);
-            formData.append('hasil_verifikasi', document.getElementById('hasil_verifikasi').value);
-            formData.append('catatan', document.getElementById('catatan').value);
-            if (document.getElementById('hasil_verifikasi').value === 'diterima') {
-                const fileInput = document.getElementById('kwitansi');
-                if (fileInput.files.length > 0) {
-                    formData.append('kwitansi', fileInput.files[0]);
+        // Render tabel untuk status sudah diverifikasi (menampilkan catatan/kwitansi)
+        function renderTabelSudah(data, tableId) {
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            if (!tbody) return;
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">Tidak ada data.</td></tr>';
+                return;
+            }
+            let html = '';
+            data.forEach((b, i) => {
+                let info = '';
+                if (b.status === 'diterima') {
+                    const kwitansiId = b.verifikasi?.kwitansi?.id_kwitansi;
+                    if (kwitansiId) {
+                        const token = localStorage.getItem('access_token');
+                        info = `<a href="/api/file/kwitansi/${kwitansiId}?token=${token}" target="_blank">Lihat Kwitansi</a>`;
+                    } else {
+                        info = '-';
+                    }
                 }
-            }
-            const res = await fetch('/api/verifikasi-pembayaran', {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + token },
-                body: formData
+                html += `<tr>
+            <td>${i + 1}</td>
+            <td>${b.pendaftar?.name ?? '-'}</td>
+            <td>${b.jenis_pembayaran === 'formulir' ? 'Formulir' : 'Daftar Ulang'}</td>
+            <td><a href="/api/file/bukti/${b.id_bukti_pembayaran}?token=${token}" target="_blank">Lihat Bukti</a></td>
+            <td>${b.status}</td>
+            <td>${info}</td>
+        </tr>`;
             });
-            if (res.ok) {
-                alert('Verifikasi berhasil.');
-                loadBuktiPembayaran();
-                document.getElementById('aksi-verifikasi').style.display = 'none';
-            } else {
-                alert('Gagal melakukan verifikasi.');
-            }
+            tbody.innerHTML = html;
+        }
+
+        // Buka modal verifikasi untuk bukti tertentu
+        function bukaModalVerifikasi(idBukti, path) {
+            currentBukti = { id: idBukti };
+            const token = localStorage.getItem('access_token');
+            const imageUrl = `/api/file/bukti/${idBukti}?token=${encodeURIComponent(token)}`;
+            document.getElementById('modalGambar').src = imageUrl;
+            document.getElementById('modalHasil').value = 'diterima';
+            document.getElementById('modalCatatanGroup').style.display = 'none';
+            document.getElementById('modalKwitansiGroup').style.display = 'block';
+            document.getElementById('modalCatatan').value = '';
+            document.getElementById('modalKwitansi').value = '';
+            document.getElementById('modalVerifikasi').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Event listener untuk change select hasil
+        document.getElementById('modalHasil')?.addEventListener('change', function () {
+            const isTolak = this.value === 'ditolak';
+            document.getElementById('modalCatatanGroup').style.display = isTolak ? 'block' : 'none';
+            document.getElementById('modalKwitansiGroup').style.display = isTolak ? 'none' : 'block';
         });
 
+        // Submit verifikasi
+        async function submitVerifikasi() {
+            if (!currentBukti) return;
+            const hasil = document.getElementById('modalHasil').value;
+            const catatan = document.getElementById('modalCatatan').value;
+            const fileInput = document.getElementById('modalKwitansi');
+
+            const formData = new FormData();
+            formData.append('id_bukti_pembayaran', currentBukti.id);
+            formData.append('hasil_verifikasi', hasil);
+            if (catatan) formData.append('catatan', catatan);
+            if (hasil === 'diterima' && fileInput.files.length > 0) {
+                formData.append('kwitansi', fileInput.files[0]);
+            } else if (hasil === 'diterima' && fileInput.files.length === 0) {
+                alert('Kwitansi wajib diupload jika menerima pembayaran.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/verifikasi-pembayaran', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+                if (res.ok) {
+                    alert('Verifikasi berhasil.');
+                    tutupModal();
+                    // Refresh data sesuai jenis aktif
+                    loadDataVerifikasiPembayaran(currentJenis);
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + (err.message || JSON.stringify(err)));
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        function bukaGambarFull() {
+            if (currentBukti) {
+                const token = localStorage.getItem('access_token');
+                window.open(`/api/file/bukti/${currentBukti.id}?token=${token}`, '_blank');
+            }
+        }
+
+        function tutupModal() {
+            document.getElementById('modalVerifikasi').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            currentBukti = null;
+        }
+
+        // verifikasi pendaftar
         async function loadVerifikasi() {
             const res = await fetch('/api/pendaftaran', { headers: { 'Authorization': 'Bearer ' + token } });
             const data = await res.json();

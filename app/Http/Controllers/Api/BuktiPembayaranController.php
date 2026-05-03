@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileEncryptionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\BuktiPembayaran;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class BuktiPembayaranController extends Controller
             'jenis_pembayaran' => 'required|in:formulir,masuk',
         ]);
         
-        $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+        $path = FileEncryptionHelper::encryptAndStore($request->file('bukti_pembayaran'), 'bukti_pembayaran');
+        
         $bukti = BuktiPembayaran::create([
             'id_pendaftar' => $request->user()->id,
             'bukti_pembayaran' => $path,
@@ -34,7 +36,7 @@ class BuktiPembayaranController extends Controller
     }
 
     public function semua(Request $request) {
-        $query = BuktiPembayaran::with('pendaftar');
+        $query = BuktiPembayaran::with('pendaftar', 'verifikasi.kwitansi');
         if ($request->status) $query->where('status', $request->status);
         return response()->json($query->get());
     }
