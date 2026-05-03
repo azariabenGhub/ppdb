@@ -227,33 +227,67 @@
     </div>
 
     <div id="penilaian" class="section" style="display:none;">
-        <h2>Input Penilaian</h2>
-        <select id="pilih-pendaftar-nilai"></select><br><br>
-        <input type="text" id="membaca" placeholder="Kemampuan Membaca"><br>
-        <input type="text" id="menulis" placeholder="Kemampuan Menulis"><br>
-        <input type="text" id="berhitung" placeholder="Kemampuan Berhitung"><br>
-        <input type="text" id="baca_quran" placeholder="Baca Alquran"><br>
-        <textarea id="catatan_nilai" placeholder="Catatan"></textarea><br>
-        <select id="kelulusan_tes">
-            <option value="lulus">Lulus</option>
-            <option value="tidak_lulus">Tidak Lulus</option>
-        </select><br><br>
-        <button onclick="simpanPenilaian()">Simpan Penilaian</button>
-        <h3>Daftar Penilaian</h3>
-        <table border="1">
+        <h2>Penilaian Tes</h2>
+
+        <!-- Tabel 1: Pendaftar yang sudah dijadwalkan & belum dinilai -->
+        <h3>Pendaftar Menunggu Penilaian</h3>
+        <table border="1" width="100%" cellpadding="5">
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Nama</th>
+                    <th>Nama Pendaftar</th>
+                    <th>Jadwal Tes</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-belum-dinilai"></tbody>
+        </table>
+
+        <!-- Tabel 2: Riwayat Penilaian (sudah dinilai) -->
+        <h3>Riwayat Penilaian</h3>
+        <table border="1" width="100%" cellpadding="5">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Pendaftar</th>
                     <th>Membaca</th>
                     <th>Menulis</th>
                     <th>Berhitung</th>
-                    <th>Alquran</th>
+                    <th>Baca Alquran</th>
                     <th>Kelulusan</th>
+                    <th>Penilai</th>
                 </tr>
             </thead>
-            <tbody id="daftar-penilaian"></tbody>
+            <tbody id="tabel-riwayat-penilaian"></tbody>
         </table>
+
+        <!-- Modal Input Penilaian -->
+        <div id="modalPenilaian"
+            style="display:none; position:fixed; top:10%; left:10%; width:80%; background:white; border:2px solid #ccc; padding:20px; z-index:1000;">
+            <h3>Input Penilaian</h3>
+            <input type="hidden" id="modalIdPendaftar">
+            <p><strong>Pendaftar: <span id="modalNamaPendaftar"></span></strong></p>
+            <label>Kemampuan Membaca:</label><br>
+            <input type="text" id="modalMembaca" placeholder="Kemampuan Membaca"><br><br>
+            <label>Kemampuan Menulis:</label><br>
+            <input type="text" id="modalMenulis" placeholder="Kemampuan Menulis"><br><br>
+            <label>Kemampuan Berhitung:</label><br>
+            <input type="text" id="modalBerhitung" placeholder="Kemampuan Berhitung"><br><br>
+            <label>Baca Alquran:</label><br>
+            <input type="text" id="modalBacaQuran" placeholder="Baca Alquran"><br><br>
+            <label>Catatan:</label><br>
+            <textarea id="modalCatatan" rows="3" cols="40"></textarea><br><br>
+            <label>Kelulusan:</label><br>
+            <select id="modalKelulusan">
+                <option value="lulus">Lulus</option>
+                <option value="tidak_lulus">Tidak Lulus</option>
+            </select><br><br>
+            <button onclick="simpanPenilaianModal()">Simpan Penilaian</button>
+            <button onclick="tutupModalPenilaian()">Batal</button>
+        </div>
+        <div id="overlayPenilaian"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;">
+        </div>
     </div>
 
     <div id="laporan" class="section" style="display:none;">
@@ -335,8 +369,8 @@
                     loadBelumTerjadwal();
                     loadSudahTerjadwal();
                 } else if (targetId === 'penilaian' && (user.role === 'panitia' || user.role === 'kepala_sekolah')) {
-                    loadPendaftarDinilai();
-                    loadDaftarPenilaian();
+                    loadBelumDinilai();
+                    loadRiwayatPenilaian();
                 }
             });
         });
@@ -777,53 +811,116 @@
         }
 
         // penilaian
-        async function loadPendaftarDinilai() {
-            // Ambil pendaftar yang sudah dijadwalkan tapi belum dinilai
-            const res = await fetch('/api/seleksi', { headers: { 'Authorization': 'Bearer ' + token } });
-            const data = await res.json();
-            const belumDinilai = data.filter(d => d.id_penilaian == null);
-            let html = '<option value="">-- Pilih --</option>';
-            belumDinilai.forEach(d => {
-                html += `<option value="${d.id_pendaftar}">${d.pendaftar?.name}</option>`;
-            });
-            document.getElementById('pilih-pendaftar-nilai').innerHTML = html;
-        }
-
-        async function simpanPenilaian() {
-            const id_pendaftar = document.getElementById('pilih-pendaftar-nilai').value;
-            const payload = {
-                id_pendaftar,
-                kemampuan_membaca: document.getElementById('membaca').value,
-                kemampuan_menulis: document.getElementById('menulis').value,
-                kemampuan_berhitung: document.getElementById('berhitung').value,
-                baca_alquran: document.getElementById('baca_quran').value,
-                catatan: document.getElementById('catatan_nilai').value,
-                kelulusan_tes: document.getElementById('kelulusan_tes').value,
-            };
-            const res = await fetch('/api/penilaian', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify(payload)
-            });
-            if (res.ok) { alert('Berhasil'); loadPendaftarDinilai(); loadDaftarPenilaian(); }
-        }
-
-        async function loadDaftarPenilaian() {
-            const res = await fetch('/api/penilaian', { headers: { 'Authorization': 'Bearer ' + token } });
-            const data = await res.json();
-            let html = '';
-            data.forEach((n, i) => {
-                html += `<tr>
+        async function loadBelumDinilai() {
+            try {
+                const res = await fetch('/api/seleksi', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                // Filter yang belum memiliki id_penilaian
+                const belum = data.filter(item => !item.id_penilaian && item.pendaftar);
+                let html = '';
+                if (belum.length === 0) {
+                    html = '<tr><td colspan="4">Tidak ada pendaftar yang perlu dinilai.</td></tr>';
+                } else {
+                    belum.forEach((item, i) => {
+                        html += `<tr>
                     <td>${i + 1}</td>
-                    <td>${n.pendaftar?.name}</td>
-                    <td>${n.kemampuan_membaca}</td>
-                    <td>${n.kemampuan_menulis}</td>
-                    <td>${n.kemampuan_berhitung}</td>
-                    <td>${n.baca_alquran ?? '-'}</td>
-                    <td>${n.seleksi_tes?.kelulusan_tes}</td>
+                    <td>${item.pendaftar?.name ?? '-'}</td>
+                    <td>${item.jadwal_tes ? new Date(item.jadwal_tes).toLocaleString() : '-'}</td>
+                    <td><button onclick="bukaModalPenilaian('${item.id_pendaftar}', '${item.pendaftar?.name}')">Nilai</button></td>
                 </tr>`;
-            });
-            document.querySelector('#daftar-penilaian').innerHTML = html;
+                    });
+                }
+                document.getElementById('tabel-belum-dinilai').innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tabel-belum-dinilai').innerHTML = '<tr><td colspan="4">Gagal memuat data.</td></tr>';
+            }
+        }
+
+        // Muat riwayat penilaian (dari /api/penilaian)
+        async function loadRiwayatPenilaian() {
+            try {
+                const res = await fetch('/api/penilaian', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                let html = '';
+                if (data.length === 0) {
+                    html = '<tr><td colspan="8">Belum ada penilaian.</td></tr>';
+                } else {
+                    data.forEach((n, i) => {
+                        html += `<tr>
+                    <td>${i + 1}</td>
+                    <td>${n.pendaftar?.name ?? '-'}</td>
+                    <td>${n.kemampuan_membaca ?? '-'}</td>
+                    <td>${n.kemampuan_menulis ?? '-'}</td>
+                    <td>${n.kemampuan_berhitung ?? '-'}</td>
+                    <td>${n.baca_alquran ?? '-'}</td>
+                    <td>${n.seleksi_tes?.kelulusan_tes ?? '-'}</td>
+                    <td>${n.penilai?.name ?? '-'}</td>
+                </tr>`;
+                    });
+                }
+                document.getElementById('tabel-riwayat-penilaian').innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tabel-riwayat-penilaian').innerHTML = '<tr><td colspan="8">Gagal memuat data.</td></tr>';
+            }
+        }
+
+        // Buka modal input penilaian
+        function bukaModalPenilaian(idPendaftar, namaPendaftar) {
+            document.getElementById('modalIdPendaftar').value = idPendaftar;
+            document.getElementById('modalNamaPendaftar').innerText = namaPendaftar;
+            // Reset form
+            document.getElementById('modalMembaca').value = '';
+            document.getElementById('modalMenulis').value = '';
+            document.getElementById('modalBerhitung').value = '';
+            document.getElementById('modalBacaQuran').value = '';
+            document.getElementById('modalCatatan').value = '';
+            document.getElementById('modalKelulusan').value = 'lulus';
+            document.getElementById('modalPenilaian').style.display = 'block';
+            document.getElementById('overlayPenilaian').style.display = 'block';
+        }
+
+        function tutupModalPenilaian() {
+            document.getElementById('modalPenilaian').style.display = 'none';
+            document.getElementById('overlayPenilaian').style.display = 'none';
+        }
+
+        // Simpan penilaian dari modal
+        async function simpanPenilaianModal() {
+            const id_pendaftar = document.getElementById('modalIdPendaftar').value;
+            const payload = {
+                id_pendaftar: id_pendaftar,
+                kemampuan_membaca: document.getElementById('modalMembaca').value,
+                kemampuan_menulis: document.getElementById('modalMenulis').value,
+                kemampuan_berhitung: document.getElementById('modalBerhitung').value,
+                baca_alquran: document.getElementById('modalBacaQuran').value,
+                catatan: document.getElementById('modalCatatan').value,
+                kelulusan_tes: document.getElementById('modalKelulusan').value,
+            };
+            try {
+                const res = await fetch('/api/penilaian', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    alert('Penilaian berhasil disimpan');
+                    tutupModalPenilaian();
+                    // Refresh kedua tabel
+                    loadBelumDinilai();
+                    loadRiwayatPenilaian();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + (err.message || JSON.stringify(err)));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         }
         // ========== Semua fungsi yang sama seperti sebelumnya ==========
         // (loadMetodePembayaran, loadBuktiPembayaran, verifikasiBukti, dll tetap sama)
