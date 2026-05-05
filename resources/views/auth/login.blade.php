@@ -1,30 +1,51 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sanctum Demo</title>
+    <title>PPDB MI Ziyadatul Ihsan - Login</title>
+    <link rel="stylesheet" href="{{ asset('storage/css/style.css') }}">
+    <!-- <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'> -->
 </head>
-
 <body>
-    <h1>Login</h1>
+    <main class="auth-container">
+        <section class="auth-sidebar">
+            <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo MI Ziyadatul Ihsan" class="auth-logo">
+            <div class="auth-text">
+                <p class="welcome-text">Selamat Datang di</p>
+                <h1 class="main-title">Portal PPDB MI Ziyadatul Ihsan</h1>
+                <p class="description">Sepenuh hati berdedikasi untuk mewujudkan generasi yang cerdas secara akademik, mulia dalam akhlak, dan teguh dalam iman.</p>
+            </div>
+        </section>
+        <section class="auth-content">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2>Login</h2>
+                    <p>Silahkan isi form berikut untuk masuk ke akun anda.</p>
+                </div>
 
-    <form id="loginForm">
-        <div>
-            <label>Email:</label>
-            <input type="email" name="email" id="email" required>
-        </div>
-        <div>
-            <label>Password:</label>
-            <input type="password" name="password" id="password" required>
-        </div>
-        <button type="submit">Masuk</button>
-    </form>
+                <form id="loginForm" class="auth-form">
+                    <div class="input-wrapper">
+                        <i class="fi fi-rr-envelope"></i>
+                        <input type="email" name="email" id="email" placeholder="Masukkan Alamat Email" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <i class="fi fi-rr-lock"></i>
+                        <input type="password" name="password" id="password" placeholder="Masukkan Kata Sandi" required>
+                    </div>
 
-    <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
+                    <button type="submit" class="btn-primary">MASUK</button>
+                </form>
 
-    <div id="message"></div>
+                <div class="login-option">
+                    <a href="{{ url('/register') }}">Belum punya akun?</a>
+                    <a href="#">Lupa Kata Sandi?</a>
+                </div>
+
+                <div id="message"></div>
+            </div>
+        </section>
+    </main>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
@@ -51,9 +72,8 @@
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
 
-                    // Redirect berdasarkan role
                     const role = data.user.role;
-                    if (role === 'panitia' || role === 'kepala_sekolah') {
+                    if (role === 'panitia' || role === 'kepala_sekolah' || role === 'bendahara') {
                         window.location.href = '/staff-dashboard';
                     } else {
                         window.location.href = '/dashboard';
@@ -66,5 +86,4 @@
         });
     </script>
 </body>
-
 </html>

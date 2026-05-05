@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\KwitansiController;
 use App\Http\Controllers\Api\MetodePembayaranController;
 use App\Http\Controllers\Api\PenilaianController;
 use App\Http\Controllers\Api\PenjadwalanController;
+use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\VerifikasiController;
 use App\Http\Controllers\Api\VerifikasiPembayaranController;
 use App\Models\SeleksiTes;
@@ -20,6 +21,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/file/bukti/{id}', [EncryptedFileController::class, 'showBukti']);
 Route::get('/file/kwitansi/{id}', [EncryptedFileController::class, 'showKwitansi']);
+Route::get('/file/metode/{id}', [EncryptedFileController::class, 'showMetode']);
 
 // Protected routes (semua role yang sudah login)
 Route::middleware('auth:sanctum')->group(function () {
@@ -33,6 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/kwitansi', [KwitansiController::class, 'index']);
 
     Route::get('/metode-pembayaran', [MetodePembayaranController::class, 'index']);
+
+    Route::get('/gelombang/aktif', [GelombangController::class, 'getAktif']);
 
     Route::get('/seleksi-saya', function (Request $request) {
         $seleksi = SeleksiTes::with('penilaian')->where('id_pendaftar', $request->user()->id)->first();
@@ -59,7 +63,7 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
 });
 
 // Rute untuk BENDAHARA
-Route::middleware(['auth:sanctum', 'role:bendahara,kepala_sekolah'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:Bendahara,kepala_sekolah'])->group(function () {
     // Metode pembayaran
     Route::post('/metode-pembayaran', [MetodePembayaranController::class, 'store']);
     Route::put('/metode-pembayaran/{id}', [MetodePembayaranController::class, 'update']);
@@ -70,8 +74,11 @@ Route::middleware(['auth:sanctum', 'role:bendahara,kepala_sekolah'])->group(func
     Route::post('/verifikasi-pembayaran', [VerifikasiPembayaranController::class, 'verifikasi']);
 });
 
+Route::middleware(['auth:sanctum', 'role:kepala_sekolah'])->group(function () {
+    Route::apiResource('admin/users', UserManagementController::class);
+});
 
-Route::middleware(['auth:sanctum', 'role:panitia,bendahara,kepala_sekolah'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:panitia,Bendahara,kepala_sekolah'])->group(function () {
     Route::apiResource('gelombang', GelombangController::class);
     Route::patch('gelombang/{id}/toggle-status', [GelombangController::class, 'toggleStatus']);
 });

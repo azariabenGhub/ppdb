@@ -16,11 +16,15 @@ class RoleMiddleware
      * @param  string  ...$roles
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle($request, Closure $next, ...$roles)
     {
-        if (!in_array($request->user()->role, $roles)) {
-            return response()->json(['message' => 'Akses ditolak.'], 403);
+        if (!auth()->check()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
         }
-        return $next($request);
+        $userRole = auth()->user()->role;
+        if (in_array($userRole, $roles)) {
+            return $next($request);
+        }
+        abort(403, 'Unauthorized');
     }
 }

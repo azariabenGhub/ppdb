@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileEncryptionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MetodePembayaran;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class MetodePembayaranController extends Controller
     {
         return response()->json(MetodePembayaran::all());
     }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -22,9 +24,11 @@ class MetodePembayaranController extends Controller
             'gambar_qris' => 'nullable|image|mimes:jpg,png|max:2048',
             'keterangan' => 'nullable|string',
         ]);
+
         if ($request->hasFile('gambar_qris')) {
-            $data['gambar_qris'] = $request->file('gambar_qris')->store('metode_pembayaran', 'public');
+            $data['gambar_qris'] = FileEncryptionHelper::encryptAndStore($request->file('gambar_qris'), 'metode_pembayaran');
         }
+
         $metode = MetodePembayaran::create($data);
         return response()->json($metode, 201);
     }
@@ -41,30 +45,25 @@ class MetodePembayaranController extends Controller
             'keterangan' => 'nullable|string|max:500',
         ]);
 
-        // Jika ada unggahan gambar baru, hapus yang lama dan simpan yang baru
         if ($request->hasFile('gambar_qris')) {
-            if ($metode->gambar_qris && Storage::disk('public')->exists($metode->gambar_qris)) {
-                Storage::disk('public')->delete($metode->gambar_qris);
+            // Hapus file lama (terenkripsi)
+            if ($metode->gambar_qris && Storage::disk('private')->exists($metode->gambar_qris)) {
+                Storage::disk('private')->delete($metode->gambar_qris);
             }
-            $data['gambar_qris'] = $request->file('gambar_qris')->store('metode_pembayaran', 'public');
+            $data['gambar_qris'] = FileEncryptionHelper::encryptAndStore($request->file('gambar_qris'), 'metode_pembayaran');
         }
 
         $metode->update($data);
-
         return response()->json($metode, 200);
     }
 
     public function destroy($id)
     {
         $metode = MetodePembayaran::findOrFail($id);
-
-        // Hapus file gambar QRIS jika ada
-        if ($metode->gambar_qris && Storage::disk('public')->exists($metode->gambar_qris)) {
-            Storage::disk('public')->delete($metode->gambar_qris);
+        if ($metode->gambar_qris && Storage::disk('private')->exists($metode->gambar_qris)) {
+            Storage::disk('private')->delete($metode->gambar_qris);
         }
-
         $metode->delete();
-
         return response()->json(['message' => 'Metode pembayaran berhasil dihapus.'], 200);
     }
 }

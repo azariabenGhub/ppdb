@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Helpers\FileEncryptionHelper;
+use App\Http\Controllers\Controller;
 use App\Models\BuktiPembayaran;
 use App\Models\Kwitansi;
+use App\Models\MetodePembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -77,6 +78,32 @@ class EncryptedFileController extends Controller
         }
 
         $content = FileEncryptionHelper::getDecryptedContent($kwitansi->kwitansi);
+        if (!$content) {
+            return response()->json(['message' => 'File not found or corrupted'], 404);
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_buffer($finfo, $content);
+        finfo_close($finfo);
+
+        return response($content)
+            ->header('Content-Type', $mime)
+            ->header('Cache-Control', 'no-cache, private');
+    }
+
+    public function showMetode(Request $request, $id)
+    {
+        $user = $this->authenticate($request);
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $metode = MetodePembayaran::findOrFail($id);
+        if (!$metode->gambar_qris) {
+            return response()->json(['message' => 'Gambar tidak tersedia'], 404);
+        }
+
+        $content = FileEncryptionHelper::getDecryptedContent($metode->gambar_qris);
         if (!$content) {
             return response()->json(['message' => 'File not found or corrupted'], 404);
         }

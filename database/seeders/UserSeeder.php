@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Kepala Sekolah',
             'email' => 'kepsek@example.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('12345678'),
             'role' => 'kepala_sekolah',
         ]);
 
@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Panitia PPDB',
             'email' => 'panitia@example.com',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('12345678'),
             'role' => 'panitia',
         ]);
     }

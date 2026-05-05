@@ -87,4 +87,16 @@ class GelombangController extends Controller
         $gelombang->save();
         return response()->json(['message' => 'Status berubah.', 'data' => $gelombang]);
     }
+
+    public function getAktif()
+    {
+        $now = now();
+        $gelombang = Gelombang::where('status', 'aktif')
+            ->where('periode_mulai', '<=', $now)
+            ->where('periode_selesai', '>=', $now)
+            ->first();
+
+        // Kembalikan null dengan status 200 jika tidak ada
+        return response()->json($gelombang ?: null, 200);
+    }
 }
