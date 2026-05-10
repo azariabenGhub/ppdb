@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\FileEncryptionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\BuktiPembayaran;
+use App\Models\DaftarUlang;
 use App\Models\Kwitansi;
 use App\Models\MetodePembayaran;
 use Illuminate\Http\Request;
@@ -115,5 +116,33 @@ class EncryptedFileController extends Controller
         return response($content)
             ->header('Content-Type', $mime)
             ->header('Cache-Control', 'no-cache, private');
+    }
+
+    public function showDaftarUlangFile(Request $request, $id, $jenis)
+    {
+        $user = $this->authenticate($request);
+        if (!$user)
+            abort(401);
+        $du = DaftarUlang::findOrFail($id);
+        // Otorisasi: hanya staff atau pemilik
+        if (!in_array($user->role, ['panitia', 'bendahara', 'kepala_sekolah']) && $user->id != $du->user_id)
+            abort(403);
+        $field = match ($jenis) {
+            'akte' => 'akte_kelahiran',
+            'ijazah' => 'ijazah_tk',
+            'ktp' => 'ktp_orang_tua',
+            'kk' => 'kartu_keluarga',
+            'nisn' => 'nisn_file',
+            'pernyataan' => 'surat_pernyataan',
+            'pakta' => 'surat_pakta_integritas',
+            default => abort(404)
+        };
+        $content = FileEncryptionHelper::getDecryptedContent($du->$field);
+        if (!$content)
+            abort(404);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_buffer($finfo, $content);
+        finfo_close($finfo);
+        return response($content)->header('Content-Type', $mime);
     }
 }

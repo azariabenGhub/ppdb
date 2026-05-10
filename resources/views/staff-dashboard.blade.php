@@ -290,6 +290,81 @@
         </div>
     </div>
 
+    <!-- Verifikasi Daftar Ulang -->
+    <div id="verifikasi-daftar-ulang" class="section" style="display:none;">
+        <h2>Verifikasi Daftar Ulang</h2>
+        <table border="1" width="100%" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Pendaftar</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-daftar-ulang"></tbody>
+        </table>
+
+        <!-- Modal Verifikasi & Lihat Berkas -->
+        <div id="modalDaftarUlang"
+            style="display:none; position:fixed; top:10%; left:10%; width:80%; background:white; border:2px solid #ccc; padding:20px; z-index:1000; overflow-y:auto; max-height:80%;">
+            <h3>Verifikasi Daftar Ulang</h3>
+            <input type="hidden" id="du-id">
+            <p><strong>Pendaftar: <span id="du-nama"></span></strong></p>
+            <hr>
+            <h4>Berkas Persyaratan:</h4>
+            <div id="du-files">
+                <!-- file links akan diisi JS -->
+            </div>
+            <hr>
+            <label>Hasil Verifikasi:</label><br>
+            <select id="du-status">
+                <option value="diterima">Terima</option>
+                <option value="ditolak">Tolak</option>
+            </select><br><br>
+            <div id="du-catatan-group" style="display:none;">
+                <label>Catatan Penolakan:</label><br>
+                <textarea id="du-catatan" rows="3" cols="40"></textarea><br><br>
+            </div>
+            <button onclick="submitVerifikasiDaftarUlang()" style="padding:6px 12px;">Simpan</button>
+            <button onclick="tutupModalDaftarUlang()" style="padding:6px 12px;">Tutup</button>
+        </div>
+        <div id="overlayDaftarUlang"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;">
+        </div>
+    </div>
+
+    <!-- Template Surat -->
+    <div id="template-surat" class="section" style="display:none;">
+        <h2>Manajemen Template Surat</h2>
+        <button onclick="tampilkanFormTemplate()">Tambah Template</button>
+        <br><br>
+        <div id="form-template" style="display:none;">
+            <h3 id="form-template-title">Tambah Template</h3>
+            <input type="hidden" id="template-id">
+            <label>Nama Template:</label><br>
+            <select id="template-nama">
+                <option value="Surat Pernyataan">Surat Pernyataan Orang Tua/Wali</option>
+                <option value="Pakta Integritas">Pakta Integritas Orang Tua/Wali</option>
+            </select><br><br>
+            <label>File (PDF/DOC/DOCX):</label><br>
+            <input type="file" id="template-file" accept=".pdf,.doc,.docx"><br><br>
+            <button onclick="simpanTemplate()">Simpan</button>
+            <button onclick="batalFormTemplate()">Batal</button>
+        </div>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Template</th>
+                    <th>Download</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-template"></tbody>
+        </table>
+    </div>
+
     <div id="gelombang" class="section" style="display:none;">
         <h2>Manajemen Gelombang Pendaftaran</h2>
         <button onclick="tampilkanFormGelombang()">Tambah Gelombang</button>
@@ -413,6 +488,8 @@
                 { id: 'verifikasi', label: 'Verifikasi Pendaftar' },
                 { id: 'kelola-jadwal', label: 'Kelola Jadwal' },
                 { id: 'penilaian', label: 'Penilaian' },
+                { id: 'verifikasi-daftar-ulang', label: 'Verifikasi Daftar Ulang' },
+                { id: 'template-surat', label: 'Template Surat' },
                 { id: 'gelombang', label: 'Gelombang' },
                 { id: 'laporan', label: 'Laporan' }
             ],
@@ -430,6 +507,8 @@
                 { id: 'verifikasi-pembayaran', label: 'Verifikasi Pembayaran' },
                 { id: 'kelola-jadwal', label: 'Kelola Jadwal' },
                 { id: 'penilaian', label: 'Penilaian' },
+                { id: 'verifikasi-daftar-ulang', label: 'Verifikasi Daftar Ulang' },
+                { id: 'template-surat', label: 'Template Surat' },
                 { id: 'gelombang', label: 'Gelombang' },
                 { id: 'manajemen-staff', label: 'Manajemen Staff' },
                 { id: 'laporan', label: 'Laporan' }
@@ -466,6 +545,10 @@
                 } else if (targetId === 'penilaian' && (user.role === 'panitia' || user.role === 'kepala_sekolah')) {
                     loadBelumDinilai();
                     loadRiwayatPenilaian();
+                } else if (targetId === 'verifikasi-daftar-ulang') {
+                    loadDaftarUlangStaff();
+                } else if (targetId === 'template-surat') {
+                    loadTemplateSurat();
                 } else if (targetId === 'gelombang') {
                     loadGelombang();
                 } else if (targetId === 'manajemen-staff') {
@@ -1024,6 +1107,161 @@
             } catch (err) {
                 alert('Error: ' + err.message);
             }
+        }
+
+        // ========================
+        // VERIFIKASI DAFTAR ULANG (STAFF)
+        // ========================
+        async function loadDaftarUlangStaff() {
+            try {
+                const res = await fetch('/api/staff/daftar-ulang', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                let html = '';
+                data.forEach((du, i) => {
+                    let aksi = '';
+                    if (du.status === 'menunggu') {
+                        aksi = `<button onclick="bukaModalDaftarUlang(${du.id}, '${du.user?.name}')">Verifikasi & Lihat Berkas</button>`;
+                    } else {
+                        aksi = `<span style="color:gray;">Sudah diverifikasi (${du.status})</span>`;
+                    }
+                    html += `<tr>
+                        <td>${i + 1}</td>
+                        <td>${du.user?.name || '-'}</td>
+                        <td>${du.status}</td>
+                        <td>${aksi}</td>
+                    </tr>`;
+                });
+                document.getElementById('tabel-daftar-ulang').innerHTML = html || '<tr><td colspan="4">Tidak ada data daftar ulang.</td></tr>';
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function bukaModalDaftarUlang(id, nama) {
+            document.getElementById('du-id').value = id;
+            document.getElementById('du-nama').innerText = nama;
+            document.getElementById('du-status').value = 'diterima';
+            document.getElementById('du-catatan').value = '';
+            document.getElementById('du-catatan-group').style.display = 'none';
+
+            // Tampilkan semua berkas
+            const token = localStorage.getItem('access_token');
+            const fileTypes = [
+                { label: 'Akte Kelahiran', field: 'akte' },
+                { label: 'Ijazah TK', field: 'ijazah' },
+                { label: 'KTP Orang Tua/Wali', field: 'ktp' },
+                { label: 'Kartu Keluarga', field: 'kk' },
+                { label: 'NISN (scan)', field: 'nisn' },
+                { label: 'Surat Pernyataan', field: 'pernyataan' },
+                { label: 'Pakta Integritas', field: 'pakta' }
+            ];
+            let filesHtml = '<ul>';
+            for (let ft of fileTypes) {
+                const url = `/api/file/daftar-ulang/${id}/${ft.field}?token=${token}`;
+                filesHtml += `<li><strong>${ft.label}:</strong> <a href="${url}" target="_blank">Lihat File</a></li>`;
+            }
+            filesHtml += '</ul>';
+            document.getElementById('du-files').innerHTML = filesHtml;
+
+            document.getElementById('modalDaftarUlang').style.display = 'block';
+            document.getElementById('overlayDaftarUlang').style.display = 'block';
+        }
+
+        function tutupModalDaftarUlang() {
+            document.getElementById('modalDaftarUlang').style.display = 'none';
+            document.getElementById('overlayDaftarUlang').style.display = 'none';
+        }
+
+        // Event listener untuk menampilkan catatan jika ditolak
+        document.getElementById('du-status')?.addEventListener('change', function () {
+            const isTolak = this.value === 'ditolak';
+            document.getElementById('du-catatan-group').style.display = isTolak ? 'block' : 'none';
+        });
+
+        async function submitVerifikasiDaftarUlang() {
+            const id = document.getElementById('du-id').value;
+            const status = document.getElementById('du-status').value;
+            const catatan = document.getElementById('du-catatan').value;
+            try {
+                const res = await fetch(`/api/staff/daftar-ulang/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ status, catatan })
+                });
+                if (res.ok) {
+                    alert('Verifikasi berhasil.');
+                    tutupModalDaftarUlang();
+                    loadDaftarUlangStaff();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + (err.message || JSON.stringify(err)));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        // Template Surat
+        async function loadTemplateSurat() {
+            const res = await fetch('/api/template-surat', { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            let html = '';
+            data.forEach((t, i) => {
+                html += `<tr>
+            <td>${i + 1}</td>
+            <td>${t.nama}</td>
+            <td><a href="/api/template-surat/download/${t.id}?token=${token}" target="_blank">Download</a></td>
+            <td><button onclick="editTemplate(${t.id}, '${t.nama}')">Edit</button>
+                   <button onclick="hapusTemplate(${t.id})">Hapus</button></td>
+        </tr>`;
+            });
+            document.getElementById('tabel-template').innerHTML = html;
+        }
+
+        function tampilkanFormTemplate() {
+            document.getElementById('form-template').style.display = 'block';
+            document.getElementById('form-template-title').innerText = 'Tambah Template';
+            document.getElementById('template-id').value = '';
+            document.getElementById('template-nama').value = 'Surat Pernyataan';
+            document.getElementById('template-file').value = '';
+        }
+        function batalFormTemplate() { document.getElementById('form-template').style.display = 'none'; }
+        async function simpanTemplate() {
+            const id = document.getElementById('template-id').value;
+            const formData = new FormData();
+            formData.append('nama', document.getElementById('template-nama').value);
+            const fileInput = document.getElementById('template-file');
+            if (fileInput.files.length > 0) formData.append('file', fileInput.files[0]);
+            const url = id ? `/api/template-surat/${id}` : '/api/template-surat';
+            const method = id ? 'POST' : 'POST'; // karena PUT tidak support multipart langsung, kita bisa gunakan POST dengan _method PUT
+            if (id) formData.append('_method', 'PUT');
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token },
+                body: formData
+            });
+            if (res.ok) {
+                alert('Template tersimpan');
+                batalFormTemplate();
+                loadTemplateSurat();
+            } else alert('Gagal');
+        }
+        async function editTemplate(id, nama) {
+            document.getElementById('template-id').value = id;
+            document.getElementById('template-nama').value = nama;
+            document.getElementById('template-file').value = '';
+            document.getElementById('form-template').style.display = 'block';
+            document.getElementById('form-template-title').innerText = 'Edit Template';
+        }
+        async function hapusTemplate(id) {
+            if (!confirm('Yakin hapus template?')) return;
+            const res = await fetch(`/api/template-surat/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+            if (res.ok) {
+                alert('Dihapus');
+                loadTemplateSurat();
+            } else alert('Gagal');
         }
 
         // gelombang

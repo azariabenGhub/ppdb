@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuktiPembayaranController;
+use App\Http\Controllers\Api\DaftarUlangController;
 use App\Http\Controllers\Api\EncryptedFileController;
 use App\Http\Controllers\Api\FormulirController;
 use App\Http\Controllers\Api\GelombangController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Api\KwitansiController;
 use App\Http\Controllers\Api\MetodePembayaranController;
 use App\Http\Controllers\Api\PenilaianController;
 use App\Http\Controllers\Api\PenjadwalanController;
+use App\Http\Controllers\Api\TemplateSuratController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\VerifikasiController;
 use App\Http\Controllers\Api\VerifikasiPembayaranController;
@@ -22,6 +24,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/file/bukti/{id}', [EncryptedFileController::class, 'showBukti']);
 Route::get('/file/kwitansi/{id}', [EncryptedFileController::class, 'showKwitansi']);
 Route::get('/file/metode/{id}', [EncryptedFileController::class, 'showMetode']);
+Route::get('/file/daftar-ulang/{id}/{jenis}', [EncryptedFileController::class, 'showDaftarUlangFile']);
+Route::get('/template-surat/download/{id}', [TemplateSuratController::class, 'download']);
+Route::apiResource('template-surat', TemplateSuratController::class);
 
 // Protected routes (semua role yang sudah login)
 Route::middleware('auth:sanctum')->group(function () {
@@ -42,6 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
         $seleksi = SeleksiTes::with('penilaian')->where('id_pendaftar', $request->user()->id)->first();
         return response()->json($seleksi);
     });
+
+    Route::get('/daftar-ulang/cek', [DaftarUlangController::class, 'cekStatus']);
+    Route::post('/daftar-ulang', [DaftarUlangController::class, 'store']);
+    Route::get('/daftar-ulang', [DaftarUlangController::class, 'index']);
+    
 });
 
 // Rute untuk PANITIA PPDB
@@ -60,6 +70,10 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
     // Penilaian
     Route::get('/penilaian', [PenilaianController::class, 'index']);
     Route::post('/penilaian', [PenilaianController::class, 'store']);
+
+    Route::get('/staff/daftar-ulang', [DaftarUlangController::class, 'semua']);
+    Route::put('/staff/daftar-ulang/{id}', [DaftarUlangController::class, 'verifikasi']);
+    
 });
 
 // Rute untuk BENDAHARA
