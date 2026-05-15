@@ -27,6 +27,12 @@
                     <p>Silahkan isi form berikut untuk masuk ke akun anda.</p>
                 </div>
 
+                @if(session('errors'))
+                    <div class="alert alert-danger">
+                        {{ session('errors')->first('email') ?? session('errors')->first('google') }}
+                    </div>
+                @endif
+
                 <form id="loginForm" class="auth-form">
                     <div class="input-group">
                         <i class="fi fi-rr-envelope"></i>
@@ -51,7 +57,7 @@
                     <span class="line"></span>
                 </div>
 
-                <button type="button" class="btn-google">
+                <button type="button" class="btn-google" onclick="window.location.href='{{ route('google.login') }}'">
                     <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google">
                     Masuk dengan Google
                 </button>
@@ -64,34 +70,28 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-
             const formData = {
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value
             };
-
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify(formData)
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-
                     const role = data.user.role;
                     if (role === 'panitia' || role === 'kepala_sekolah' || role === 'bendahara') {
                         window.location.href = '/staff-dashboard';
                     } else {
                         window.location.href = '/dashboard';
                     }
+                } else {
+                    document.getElementById('message').innerText = data.message || 'Login gagal';
                 }
             } catch (error) {
                 console.error('Error:', error);

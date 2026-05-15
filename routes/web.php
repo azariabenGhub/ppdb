@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GoogleAuthController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -32,6 +33,10 @@ Route::get('/register', function (Request $request) {
         'email' => $request->query('email', ''),
     ]);
 })->name('register.full');
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+Route::get('/auth/google/success', [GoogleAuthController::class, 'success'])->name('google.auth.success');
 
 Route::view('/forgot-password', 'auth.forgot-password');
 Route::get('/reset-password/{token}', function ($token) {

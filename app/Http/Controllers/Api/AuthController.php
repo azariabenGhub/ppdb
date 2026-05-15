@@ -47,11 +47,21 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Email atau password salah'], 401);
+        }
+
+        // Cek jika user terdaftar via Google
+        if ($user->google_id !== null) {
+            return response()->json(['message' => 'Akun ini terdaftar dengan Google. Silakan login menggunakan Google.'], 401);
+        }
+
         if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'Email atau password salah'], 401);
         }
 
-        $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -61,7 +71,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role, // ← pastikan ini ada
+                'role' => $user->role,
             ]
         ]);
     }

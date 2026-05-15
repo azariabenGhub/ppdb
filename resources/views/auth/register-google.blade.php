@@ -55,7 +55,8 @@
                         <span class="line"></span>
                     </div>
 
-                    <button type="button" class="btn-google">
+                    <button type="button" class="btn-google"
+                        onclick="window.location.href='{{ route('google.login') }}'">
                         <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google">
                         Daftar dengan Google
                     </button>
