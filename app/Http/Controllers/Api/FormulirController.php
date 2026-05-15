@@ -122,6 +122,20 @@ class FormulirController extends Controller
                 $data = $request->all();
                 $data['user_id'] = $user->id;
                 $pendaftaran = Formulir::create($data);
+                if (!$existing) { // hanya untuk pendaftaran baru
+                    $tahun = date('Y');
+                    // Ambil gelombang aktif (bisa dari request atau dari model)
+                    $gelombang = \App\Models\Gelombang::where('status', 'aktif')
+                        ->where('periode_mulai', '<=', now())
+                        ->where('periode_selesai', '>=', now())
+                        ->first();
+                    $gelombangId = $gelombang ? $gelombang->nomor_gelombang : 1;
+
+                    $count = \App\Models\Formulir::whereYear('created_at', $tahun)->count();
+                    $noUrut = str_pad($count + 1, 4, '0', STR_PAD_LEFT);
+                    $pendaftaran->no_pendaftaran = "PPDB/{$tahun}/{$gelombangId}/{$noUrut}";
+                    $pendaftaran->save();
+                }
             }
             DB::commit();
             return response()->json(['message' => 'Formulir berhasil disimpan.', 'data' => $pendaftaran], 200);

@@ -14,6 +14,7 @@ class Formulir extends Model
 
     protected $fillable = [
         'user_id',
+        'no_pendaftaran',
         'nama_lengkap',
         'tempat_lahir',
         'tanggal_lahir',

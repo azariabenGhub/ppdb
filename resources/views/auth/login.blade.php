@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('storage/css/style.css') }}">
     <!-- <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'> -->
 </head>
+
 <body>
     <main class="auth-container">
         <section class="auth-sidebar">
@@ -14,7 +16,8 @@
             <div class="auth-text">
                 <p class="welcome-text">Selamat Datang di</p>
                 <h1 class="main-title">Portal PPDB MI Ziyadatul Ihsan</h1>
-                <p class="description">Sepenuh hati berdedikasi untuk mewujudkan generasi yang cerdas secara akademik, mulia dalam akhlak, dan teguh dalam iman.</p>
+                <p class="description">Sepenuh hati berdedikasi untuk mewujudkan generasi yang cerdas secara akademik,
+                    mulia dalam akhlak, dan teguh dalam iman.</p>
             </div>
         </section>
         <section class="auth-content">
@@ -25,11 +28,11 @@
                 </div>
 
                 <form id="loginForm" class="auth-form">
-                    <div class="input-wrapper">
+                    <div class="input-group">
                         <i class="fi fi-rr-envelope"></i>
                         <input type="email" name="email" id="email" placeholder="Masukkan Alamat Email" required>
                     </div>
-                    <div class="input-wrapper">
+                    <div class="input-group">
                         <i class="fi fi-rr-lock"></i>
                         <input type="password" name="password" id="password" placeholder="Masukkan Kata Sandi" required>
                     </div>
@@ -38,9 +41,20 @@
                 </form>
 
                 <div class="login-option">
-                    <a href="{{ url('/register') }}">Belum punya akun?</a>
-                    <a href="#">Lupa Kata Sandi?</a>
+                    <a href="{{ route('register.google') }}">Belum punya akun?</a>
+                    <a href="/forgot-password">Lupa Kata Sandi?</a>
                 </div>
+
+                <div class="auth-divider">
+                    <span class="line"></span>
+                    <span class="text">atau</span>
+                    <span class="line"></span>
+                </div>
+
+                <button type="button" class="btn-google">
+                    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google">
+                    Masuk dengan Google
+                </button>
 
                 <div id="message"></div>
             </div>
@@ -86,4 +100,5 @@
         });
     </script>
 </body>
+
 </html>

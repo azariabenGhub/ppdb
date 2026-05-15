@@ -33,11 +33,11 @@
                 <form id="registerForm" action="" class="auth-form">
                     <div class="input-group">
                         <label for="nama">Nama</label>
-                        <input type="text" name="nama" id="name" placeholder="Nama Lengkap">
+                        <input type="text" name="nama" id="name" placeholder="Nama Lengkap" value="{{ old('name', $name ?? '') }}">
                     </div>
                     <div class="input-group">
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" placeholder="Email Aktif">
+                        <input type="email" name="email" id="email" placeholder="Email Aktif" value="{{ old('email', $email ?? '') }}">
                     </div>
                     <div class="input-group">
                         <label for="password">Kata Sandi</label>
@@ -64,7 +64,7 @@
                 </form>
 
                 <div class="login-option">
-                    <p>Sudah punya akun? <a href="/login">Login di sini</a></p>
+                    <a href="/login">Sudah punya akun?</a>
                 </div>
 
                 <div class="captcha-terms">

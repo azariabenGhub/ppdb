@@ -67,12 +67,12 @@
         // ========== GENERATE HTML ==========
         function infoBiayaGelombang(gel) {
             return `<div style="background:#f0f7f2; border-radius:8px; padding:15px; margin-bottom:20px;">
-                <p style="margin:0;"><strong>Gelombang ${gel.nomor_gelombang} (${gel.tahun})</strong></p>
-                <p style="margin:4px 0;">Biaya Formulir: Rp ${parseInt(gel.biaya_formulir).toLocaleString()}</p>
-                <p style="margin:4px 0;">Biaya Daftar Ulang (jika lulus): Rp ${parseInt(gel.biaya_daftar_ulang).toLocaleString()}</p>
-                <p style="margin:4px 0;">Kuota tersisa: ${gel.sisa_kuota} dari ${gel.kuota}</p>
-                <p style="margin:4px 0;">Periode: ${new Date(gel.periode_mulai).toLocaleString()} s/d ${new Date(gel.periode_selesai).toLocaleString()}</p>
-            </div>`;
+                            <p style="margin:0;"><strong>Gelombang ${gel.nomor_gelombang} (${gel.tahun})</strong></p>
+                            <p style="margin:4px 0;">Biaya Formulir: Rp ${parseInt(gel.biaya_formulir).toLocaleString()}</p>
+                            <p style="margin:4px 0;">Biaya Daftar Ulang (jika lulus): Rp ${parseInt(gel.biaya_daftar_ulang).toLocaleString()}</p>
+                            <p style="margin:4px 0;">Kuota tersisa: ${gel.sisa_kuota} dari ${gel.kuota}</p>
+                            <p style="margin:4px 0;">Periode: ${new Date(gel.periode_mulai).toLocaleString()} s/d ${new Date(gel.periode_selesai).toLocaleString()}</p>
+                        </div>`;
         }
 
         function stepperHtml(currentStep = 1) {
@@ -84,9 +84,9 @@
             let html = '';
             steps.forEach((s, i) => {
                 html += `<div class="step ${(i + 1) <= currentStep ? 'active' : ''}">
-                    <div class="step-number">${(i + 1) < currentStep ? '<i class="fa-solid fa-check"></i>' : s.num}</div>
-                    <span class="step-label">${s.label}</span>
-                </div>`;
+                                <div class="step-number">${(i + 1) < currentStep ? '<i class="fa-solid fa-check"></i>' : s.num}</div>
+                                <span class="step-label">${s.label}</span>
+                            </div>`;
                 if (i < steps.length - 1) {
                     html += `<div class="step-line ${i < currentStep - 1 ? 'active' : ''}"></div>`;
                 }
@@ -95,9 +95,25 @@
         }
 
         function step1Fields(data = {}) {
-            const v = (key) => escapeHtml(data[key] || '');
+            const v = (key) => {
+                const val = (data && data[key] !== undefined && data[key] !== null) ? data[key] : '';
+                return escapeHtml(String(val));
+            };
+            
+            // Ambil nilai no_pendaftaran dari data
+            const noPendaftaran = data.no_pendaftaran ? data.no_pendaftaran : '';
+            // Selalu readonly
+            const readonly = 'readonly';
+            const placeholder = noPendaftaran ? '' : 'Akan terisi otomatis setelah pengiriman';
+            
             return `
-                <div class="input-group"><label>No. Pendaftaran/Induk:</label><input type="text" id="no_pendaftaran" value="${v('no_pendaftaran')}" placeholder="Nomor Pendaftaran/Induk"></div>
+                <div class="input-group">
+                    <label>No. Pendaftaran/Induk:</label>
+                    <input type="text" id="no_pendaftaran" 
+                        value="${escapeHtml(noPendaftaran)}" 
+                        ${readonly} 
+                        placeholder="${placeholder}">
+                </div>
                 <div class="input-group"><label>Nama Lengkap</label><input type="text" id="nama_lengkap" value="${v('nama_lengkap')}" placeholder="Penulisan nama harus sesuai dengan kartu keluarga"></div>
                 <div class="input-row">
                     <div class="input-group"><label>Tempat Lahir</label><input type="text" id="tempat_lahir" value="${v('tempat_lahir')}" placeholder="Contoh: Jakarta"></div>
@@ -132,65 +148,65 @@
             const ortuDisplay = tipe === 'orang_tua' ? '' : 'style="display:none"';
             const waliDisplay = tipe === 'wali' ? '' : 'style="display:none"';
             const ortuForm = `
-                <h4 class="section-badge">AYAH</h4>
-                <div class="input-group"><label>Nama Lengkap Ayah</label><input type="text" id="nama_ayah" value="${v('nama_ayah')}" placeholder="Nama sesuai kartu keluarga"></div>
-                <div class="input-row">
-                    <div class="input-group"><label>Pekerjaan</label><input type="text" id="pekerjaan_ayah" value="${v('pekerjaan_ayah')}" placeholder="Pekerjaan Ayah"></div>
-                    <div class="input-group"><label>Agama</label><select id="agama_ayah">${agamaOptions(data.agama_ayah)}</select></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_ayah" value="${v('pendidikan_ayah')}" placeholder="Pendidikan Terakhir Ayah"></div>
-                    <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_ayah" value="${v('no_ktp_ayah')}" placeholder="Nomor KTP Ayah"></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group"><label>Penghasilan Per Bulan</label><input type="text" id="penghasilan_ayah" value="${v('penghasilan_ayah')}" placeholder="Penghasilan Ayah"></div>
-                    <div class="input-group"><label>No. Telp/HP</label><input type="text" id="no_telp_ayah" value="${v('no_telp_ayah')}" placeholder="0812-3456-7890"></div>
-                </div>
-                <div class="input-group"><label>Alamat</label><textarea id="alamat_ayah" rows="3" placeholder="Alamat Lengkap Ayah">${v('alamat_ayah')}</textarea></div>
-                <hr class="form-divider">
-                <h4 class="section-badge">IBU</h4>
-                <div class="input-group"><label>Nama Lengkap Ibu</label><input type="text" id="nama_ibu" value="${v('nama_ibu')}" placeholder="Nama sesuai kartu keluarga"></div>
-                <div class="input-row">
-                    <div class="input-group"><label>Pekerjaan</label><input type="text" id="pekerjaan_ibu" value="${v('pekerjaan_ibu')}" placeholder="Pekerjaan Ibu"></div>
-                    <div class="input-group"><label>Agama</label><select id="agama_ibu">${agamaOptions(data.agama_ibu)}</select></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_ibu" value="${v('pendidikan_ibu')}" placeholder="Pendidikan Terakhir Ibu"></div>
-                    <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_ibu" value="${v('no_ktp_ibu')}" placeholder="Nomor KTP Ibu"></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group"><label>Penghasilan Per Bulan</label><input type="text" id="penghasilan_ibu" value="${v('penghasilan_ibu')}" placeholder="Penghasilan Ibu"></div>
-                    <div class="input-group"><label>No. Telp/HP</label><input type="text" id="no_telp_ibu" value="${v('no_telp_ibu')}" placeholder="0812-3456-7890"></div>
-                </div>
-                <div class="input-group"><label>Alamat</label><textarea id="alamat_ibu" rows="3" placeholder="Alamat Lengkap Ibu">${v('alamat_ibu')}</textarea></div>
-            `;
+                            <h4 class="section-badge">AYAH</h4>
+                            <div class="input-group"><label>Nama Lengkap Ayah</label><input type="text" id="nama_ayah" value="${v('nama_ayah')}" placeholder="Nama sesuai kartu keluarga"></div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Pekerjaan</label><input type="text" id="pekerjaan_ayah" value="${v('pekerjaan_ayah')}" placeholder="Pekerjaan Ayah"></div>
+                                <div class="input-group"><label>Agama</label><select id="agama_ayah">${agamaOptions(data.agama_ayah)}</select></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_ayah" value="${v('pendidikan_ayah')}" placeholder="Pendidikan Terakhir Ayah"></div>
+                                <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_ayah" value="${v('no_ktp_ayah')}" placeholder="Nomor KTP Ayah"></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Penghasilan Per Bulan</label><input type="text" id="penghasilan_ayah" value="${v('penghasilan_ayah')}" placeholder="Penghasilan Ayah"></div>
+                                <div class="input-group"><label>No. Telp/HP</label><input type="text" id="no_telp_ayah" value="${v('no_telp_ayah')}" placeholder="0812-3456-7890"></div>
+                            </div>
+                            <div class="input-group"><label>Alamat</label><textarea id="alamat_ayah" rows="3" placeholder="Alamat Lengkap Ayah">${v('alamat_ayah')}</textarea></div>
+                            <hr class="form-divider">
+                            <h4 class="section-badge">IBU</h4>
+                            <div class="input-group"><label>Nama Lengkap Ibu</label><input type="text" id="nama_ibu" value="${v('nama_ibu')}" placeholder="Nama sesuai kartu keluarga"></div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Pekerjaan</label><input type="text" id="pekerjaan_ibu" value="${v('pekerjaan_ibu')}" placeholder="Pekerjaan Ibu"></div>
+                                <div class="input-group"><label>Agama</label><select id="agama_ibu">${agamaOptions(data.agama_ibu)}</select></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_ibu" value="${v('pendidikan_ibu')}" placeholder="Pendidikan Terakhir Ibu"></div>
+                                <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_ibu" value="${v('no_ktp_ibu')}" placeholder="Nomor KTP Ibu"></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Penghasilan Per Bulan</label><input type="text" id="penghasilan_ibu" value="${v('penghasilan_ibu')}" placeholder="Penghasilan Ibu"></div>
+                                <div class="input-group"><label>No. Telp/HP</label><input type="text" id="no_telp_ibu" value="${v('no_telp_ibu')}" placeholder="0812-3456-7890"></div>
+                            </div>
+                            <div class="input-group"><label>Alamat</label><textarea id="alamat_ibu" rows="3" placeholder="Alamat Lengkap Ibu">${v('alamat_ibu')}</textarea></div>
+                        `;
             const waliForm = `
-                <h4 class="section-badge">WALI</h4>
-                <div class="input-group"><label>Nama Lengkap Wali</label><input type="text" id="nama_wali" value="${v('nama_wali')}" placeholder="Nama sesuai kartu keluarga wali"></div>
-                <div class="input-row">
-                    <div class="input-group"><label>Pekerjaan</label><input type="text" id="pekerjaan_wali" value="${v('pekerjaan_wali')}" placeholder="Pekerjaan Wali"></div>
-                    <div class="input-group"><label>Agama</label><select id="agama_wali">${agamaOptions(data.agama_wali)}</select></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_wali" value="${v('pendidikan_wali')}" placeholder="Pendidikan Terakhir Wali"></div>
-                    <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_wali" value="${v('no_ktp_wali')}" placeholder="Nomor KTP Wali"></div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group"><label>Penghasilan Per Bulan</label><input type="text" id="penghasilan_wali" value="${v('penghasilan_wali')}" placeholder="Penghasilan Wali"></div>
-                    <div class="input-group"><label>No. Telp/HP</label><input type="text" id="no_telp_wali" value="${v('no_telp_wali')}" placeholder="0812-3456-7890"></div>
-                </div>
-                <div class="input-group"><label>Alamat</label><textarea id="alamat_wali" rows="3" placeholder="Alamat Lengkap Wali">${v('alamat_wali')}</textarea></div>
-            `;
+                            <h4 class="section-badge">WALI</h4>
+                            <div class="input-group"><label>Nama Lengkap Wali</label><input type="text" id="nama_wali" value="${v('nama_wali')}" placeholder="Nama sesuai kartu keluarga wali"></div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Pekerjaan</label><input type="text" id="pekerjaan_wali" value="${v('pekerjaan_wali')}" placeholder="Pekerjaan Wali"></div>
+                                <div class="input-group"><label>Agama</label><select id="agama_wali">${agamaOptions(data.agama_wali)}</select></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_wali" value="${v('pendidikan_wali')}" placeholder="Pendidikan Terakhir Wali"></div>
+                                <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_wali" value="${v('no_ktp_wali')}" placeholder="Nomor KTP Wali"></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group"><label>Penghasilan Per Bulan</label><input type="text" id="penghasilan_wali" value="${v('penghasilan_wali')}" placeholder="Penghasilan Wali"></div>
+                                <div class="input-group"><label>No. Telp/HP</label><input type="text" id="no_telp_wali" value="${v('no_telp_wali')}" placeholder="0812-3456-7890"></div>
+                            </div>
+                            <div class="input-group"><label>Alamat</label><textarea id="alamat_wali" rows="3" placeholder="Alamat Lengkap Wali">${v('alamat_wali')}</textarea></div>
+                        `;
             return `
-                <div class="form-title"><h3>Formulir Pendaftaran</h3><p>Siapa yang bertanggung jawab atas siswa ini?</p></div>
-                <div class="toggle-container">
-                    <button type="button" class="toggle-btn ${ortuActive}" onclick="setTipeWali('orang_tua')">Orang Tua</button>
-                    <button type="button" class="toggle-btn ${waliActive}" onclick="setTipeWali('wali')">Wali</button>
-                </div>
-                <input type="hidden" id="tipe_wali_input" value="${tipe}">
-                <div id="form-orang-tua" ${ortuDisplay}>${ortuForm}</div>
-                <div id="form-wali" ${waliDisplay}>${waliForm}</div>
-            `;
+                            <div class="form-title"><h3>Formulir Pendaftaran</h3><p>Siapa yang bertanggung jawab atas siswa ini?</p></div>
+                            <div class="toggle-container">
+                                <button type="button" class="toggle-btn ${ortuActive}" onclick="setTipeWali('orang_tua')">Orang Tua</button>
+                                <button type="button" class="toggle-btn ${waliActive}" onclick="setTipeWali('wali')">Wali</button>
+                            </div>
+                            <input type="hidden" id="tipe_wali_input" value="${tipe}">
+                            <div id="form-orang-tua" ${ortuDisplay}>${ortuForm}</div>
+                            <div id="form-wali" ${waliDisplay}>${waliForm}</div>
+                        `;
         }
 
         function step3Fields(data = {}) {
@@ -198,126 +214,126 @@
             const checked = data.is_bukan_pindahan ? 'checked' : '';
             const display = data.is_bukan_pindahan ? 'style="display:none"' : '';
             return `
-                <div class="form-title"><h3>Formulir Pendaftaran</h3><p>Isi data akademik calon siswa</p></div>
-                <div id="form-akademik" ${display}>
-                    <div class="input-group"><label>Asal Sekolah/Madrasah</label><input type="text" id="asal_sekolah" value="${v('asal_sekolah')}" placeholder="Nama Sekolah/Madrasah Asal"></div>
-                    <div class="input-row">
-                        <div class="input-group"><label>No. Ijazah/STTB</label><input type="text" id="no_ijazah" value="${v('no_ijazah')}" placeholder="Nomor Ijazah/Surat Tanda Tamat Belajar"></div>
-                        <div class="input-group"><label>Tahun</label><input type="text" id="tahun_ijazah" value="${v('tahun_ijazah')}" placeholder="Tahun Ijazah"></div>
-                    </div>
-                    <div class="input-group"><label>Diterima di Kelas</label><input type="text" id="diterima_kelas" value="${v('diterima_kelas')}" placeholder="Diterima di Kelas"></div>
-                    <div class="input-group"><label>Pindah dari</label><input type="text" id="pindah_dari" value="${v('pindah_dari')}" placeholder="Pindah dari (jika pindahan)"></div>
-                    <div class="input-row">
-                        <div class="input-group"><label>No. Pindah</label><input type="text" id="no_pindah" value="${v('no_pindah')}"></div>
-                        <div class="input-group"><label>Tanggal Pindah</label><input type="date" id="tanggal_pindah" value="${v('tanggal_pindah')}"></div>
-                    </div>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="bukan-pindahan" ${checked} onchange="toggleInputAkademik(this)">
-                    <label for="bukan-pindahan">Bukan Murid Pindahan</label>
-                </div>
-                <div class="alert-info"><p>Pastikan semua data sudah sesuai.</p></div>
-            `;
+                            <div class="form-title"><h3>Formulir Pendaftaran</h3><p>Isi data akademik calon siswa</p></div>
+                            <div id="form-akademik" ${display}>
+                                <div class="input-group"><label>Asal Sekolah/Madrasah</label><input type="text" id="asal_sekolah" value="${v('asal_sekolah')}" placeholder="Nama Sekolah/Madrasah Asal"></div>
+                                <div class="input-row">
+                                    <div class="input-group"><label>No. Ijazah/STTB</label><input type="text" id="no_ijazah" value="${v('no_ijazah')}" placeholder="Nomor Ijazah/Surat Tanda Tamat Belajar"></div>
+                                    <div class="input-group"><label>Tahun</label><input type="text" id="tahun_ijazah" value="${v('tahun_ijazah')}" placeholder="Tahun Ijazah"></div>
+                                </div>
+                                <div class="input-group"><label>Diterima di Kelas</label><input type="text" id="diterima_kelas" value="${v('diterima_kelas')}" placeholder="Diterima di Kelas"></div>
+                                <div class="input-group"><label>Pindah dari</label><input type="text" id="pindah_dari" value="${v('pindah_dari')}" placeholder="Pindah dari (jika pindahan)"></div>
+                                <div class="input-row">
+                                    <div class="input-group"><label>No. Pindah</label><input type="text" id="no_pindah" value="${v('no_pindah')}"></div>
+                                    <div class="input-group"><label>Tanggal Pindah</label><input type="date" id="tanggal_pindah" value="${v('tanggal_pindah')}"></div>
+                                </div>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="bukan-pindahan" ${checked} onchange="toggleInputAkademik(this)">
+                                <label for="bukan-pindahan">Bukan Murid Pindahan</label>
+                            </div>
+                            <div class="alert-info"><p>Pastikan semua data sudah sesuai.</p></div>
+                        `;
         }
 
         function formHtmlKosong(gel) {
             return `
-                ${infoBiayaGelombang(gel)}
-                <div class="form-header-card">
-                    <div class="school-brand">
-                        <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
-                        <div class="brand-text">
-                            <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
-                            <h2>MADRASAH IBTIDAIYAH</h2>
-                        </div>
-                    </div>
-                    ${stepperHtml(1)}
-                </div>
-                <div class="form-card-new">
-                    <div id="step-1">
-                        ${step1Fields()}
-                        <div class="form-actions" style="justify-content:flex-end;"><button class="btn-primary" onclick="nextStep(2)">LANJUT</button></div>
-                    </div>
-                    <div id="step-2" style="display:none;">
-                        ${step2Fields()}
-                        <div class="form-actions space-between">
-                            <button class="btn-secondary" onclick="prevStep(1)">KEMBALI</button>
-                            <button class="btn-primary" onclick="nextStep(3)">LANJUT</button>
-                        </div>
-                    </div>
-                    <div id="step-3" style="display:none;">
-                        ${step3Fields()}
-                        <div class="form-actions space-between">
-                            <button class="btn-secondary" onclick="prevStep(2)">KEMBALI</button>
-                            <button class="btn-primary" onclick="submitForm()">KIRIM</button>
-                        </div>
-                    </div>
-                </div>
-            `;
+                            ${infoBiayaGelombang(gel)}
+                            <div class="form-header-card">
+                                <div class="school-brand">
+                                    <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
+                                    <div class="brand-text">
+                                        <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
+                                        <h2>MADRASAH IBTIDAIYAH</h2>
+                                    </div>
+                                </div>
+                                ${stepperHtml(1)}
+                            </div>
+                            <div class="form-card-new">
+                                <div id="step-1">
+                                    ${step1Fields()}
+                                    <div class="form-actions" style="justify-content:flex-end;"><button class="btn-primary" onclick="nextStep(2)">LANJUT</button></div>
+                                </div>
+                                <div id="step-2" style="display:none;">
+                                    ${step2Fields()}
+                                    <div class="form-actions space-between">
+                                        <button class="btn-secondary" onclick="prevStep(1)">KEMBALI</button>
+                                        <button class="btn-primary" onclick="nextStep(3)">LANJUT</button>
+                                    </div>
+                                </div>
+                                <div id="step-3" style="display:none;">
+                                    ${step3Fields()}
+                                    <div class="form-actions space-between">
+                                        <button class="btn-secondary" onclick="prevStep(2)">KEMBALI</button>
+                                        <button class="btn-primary" onclick="submitForm()">KIRIM</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
         }
 
         function formHtmlEdit(data, gel) {
             return `
-                ${infoBiayaGelombang(gel)}
-                <div class="form-header-card">
-                    <div class="school-brand">
-                        <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
-                        <div class="brand-text">
-                            <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
-                            <h2>MADRASAH IBTIDAIYAH</h2>
-                        </div>
-                    </div>
-                    ${stepperHtml(1)}
-                </div>
-                <div class="form-card-new">
-                    <div id="step-1">
-                        ${step1Fields(data)}
-                        <div class="form-actions" style="justify-content:flex-end;"><button class="btn-primary" onclick="nextStep(2)">LANJUT</button></div>
-                    </div>
-                    <div id="step-2" style="display:none;">
-                        ${step2Fields(data)}
-                        <div class="form-actions space-between">
-                            <button class="btn-secondary" onclick="prevStep(1)">KEMBALI</button>
-                            <button class="btn-primary" onclick="nextStep(3)">LANJUT</button>
-                        </div>
-                    </div>
-                    <div id="step-3" style="display:none;">
-                        ${step3Fields(data)}
-                        <div class="form-actions space-between">
-                            <button class="btn-secondary" onclick="prevStep(2)">KEMBALI</button>
-                            <button class="btn-primary" onclick="submitForm()">KIRIM</button>
-                        </div>
-                    </div>
-                </div>
-            `;
+                            ${infoBiayaGelombang(gel)}
+                            <div class="form-header-card">
+                                <div class="school-brand">
+                                    <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
+                                    <div class="brand-text">
+                                        <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
+                                        <h2>MADRASAH IBTIDAIYAH</h2>
+                                    </div>
+                                </div>
+                                ${stepperHtml(1)}
+                            </div>
+                            <div class="form-card-new">
+                                <div id="step-1">
+                                    ${step1Fields(data)}
+                                    <div class="form-actions" style="justify-content:flex-end;"><button class="btn-primary" onclick="nextStep(2)">LANJUT</button></div>
+                                </div>
+                                <div id="step-2" style="display:none;">
+                                    ${step2Fields(data)}
+                                    <div class="form-actions space-between">
+                                        <button class="btn-secondary" onclick="prevStep(1)">KEMBALI</button>
+                                        <button class="btn-primary" onclick="nextStep(3)">LANJUT</button>
+                                    </div>
+                                </div>
+                                <div id="step-3" style="display:none;">
+                                    ${step3Fields(data)}
+                                    <div class="form-actions space-between">
+                                        <button class="btn-secondary" onclick="prevStep(2)">KEMBALI</button>
+                                        <button class="btn-primary" onclick="submitForm()">KIRIM</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
         }
 
         // TAMPILAN SUKSES setelah formulir terkirim (status menunggu)
         function formHtmlSukses(gel) {
             return `
-                ${infoBiayaGelombang(gel)}
-                <div class="form-header-card">
-                    <div class="school-brand">
-                        <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
-                        <div class="brand-text">
-                            <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
-                            <h2>MADRASAH IBTIDAIYAH</h2>
-                        </div>
-                    </div>
-                    ${stepperHtml(3)}  <!-- semua langkah aktif -->
-                </div>
-                <div class="success-card">
-                    <div class="success-icon-wrapper">
-                        <i class="fa-regular fa-clock"></i>
-                    </div>
-                    <h2 class="success-title">Formulir Berhasil Dikirim!</h2>
-                    <div class="success-text">
-                        <p>Terima kasih telah mendaftarkan putra/putri Anda.</p>
-                        <p>Panitia sedang memeriksa kelengkapan dan keabsahan data anda.</p>
-                        <p>Proses ini memakan waktu 1-3 hari kerja.</p>
-                    </div>
-                </div>
-            `;
+                            ${infoBiayaGelombang(gel)}
+                            <div class="form-header-card">
+                                <div class="school-brand">
+                                    <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
+                                    <div class="brand-text">
+                                        <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
+                                        <h2>MADRASAH IBTIDAIYAH</h2>
+                                    </div>
+                                </div>
+                                ${stepperHtml(3)}  <!-- semua langkah aktif -->
+                            </div>
+                            <div class="success-card">
+                                <div class="success-icon-wrapper">
+                                    <i class="fa-regular fa-clock"></i>
+                                </div>
+                                <h2 class="success-title">Formulir Berhasil Dikirim!</h2>
+                                <div class="success-text">
+                                    <p>Terima kasih telah mendaftarkan putra/putri Anda.</p>
+                                    <p>Panitia sedang memeriksa kelengkapan dan keabsahan data anda.</p>
+                                    <p>Proses ini memakan waktu 1-3 hari kerja.</p>
+                                </div>
+                            </div>
+                        `;
         }
 
         async function getGelombangAktif() {

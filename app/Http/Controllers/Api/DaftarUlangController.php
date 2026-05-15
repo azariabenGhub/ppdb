@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FileEncryptionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\DaftarUlang;
+use App\Models\Formulir;
 use App\Models\SeleksiTes;
-use App\Helpers\FileEncryptionHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,11 +32,12 @@ class DaftarUlangController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        // Validasi kelulusan
+        
         $seleksi = SeleksiTes::where('id_pendaftar', $user->id)->first();
         if (!$seleksi || $seleksi->kelulusan_tes !== 'lulus') {
             return response()->json(['message' => 'Anda tidak berhak daftar ulang.'], 403);
         }
+        
         $existing = DaftarUlang::where('user_id', $user->id)->first();
         if ($existing && $existing->status !== 'ditolak') {
             return response()->json(['message' => 'Anda sudah mengirim daftar ulang.'], 422);
@@ -51,13 +53,26 @@ class DaftarUlangController extends Controller
             'surat_pakta_integritas' => 'required|file|mimes:pdf,jpg,png|max:2048',
         ]);
 
-        $pathAkte = FileEncryptionHelper::encryptAndStore($request->file('akte_kelahiran'), 'daftar_ulang');
-        $pathIjazah = $request->hasFile('ijazah_tk') ? FileEncryptionHelper::encryptAndStore($request->file('ijazah_tk'), 'daftar_ulang') : null;
-        $pathKtp = FileEncryptionHelper::encryptAndStore($request->file('ktp_orang_tua'), 'daftar_ulang');
-        $pathKk = FileEncryptionHelper::encryptAndStore($request->file('kartu_keluarga'), 'daftar_ulang');
-        $pathNisn = FileEncryptionHelper::encryptAndStore($request->file('nisn_file'), 'daftar_ulang');
-        $pathSuratPernyataan = FileEncryptionHelper::encryptAndStore($request->file('surat_pernyataan'), 'daftar_ulang');
-        $pathPakta = FileEncryptionHelper::encryptAndStore($request->file('surat_pakta_integritas'), 'daftar_ulang');
+        // Ambil nomor pendaftaran dari formulir
+        $formulir = Formulir::where('user_id', $user->id)->first();
+        if (!$formulir || !$formulir->no_pendaftaran) {
+            return response()->json(['message' => 'Nomor pendaftaran tidak ditemukan.'], 422);
+        }
+        
+        $noPendaftaran = $formulir->no_pendaftaran;
+        // Bersihkan karakter yang tidak valid untuk nama folder (ganti slash dengan dash)
+        $safeNo = str_replace('/', '-', $noPendaftaran);
+        $tahun = date('Y');
+        $baseDir = "daftar_ulang/{$tahun}/{$safeNo}";
+
+        // Simpan file menggunakan path kustom
+        $pathAkte = FileEncryptionHelper::encryptAndStoreToPath($request->file('akte_kelahiran'), $baseDir . '/akte_kelahiran');
+        $pathIjazah = $request->hasFile('ijazah_tk') ? FileEncryptionHelper::encryptAndStoreToPath($request->file('ijazah_tk'), $baseDir . '/ijazah_tk') : null;
+        $pathKtp = FileEncryptionHelper::encryptAndStoreToPath($request->file('ktp_orang_tua'), $baseDir . '/ktp_orang_tua');
+        $pathKk = FileEncryptionHelper::encryptAndStoreToPath($request->file('kartu_keluarga'), $baseDir . '/kartu_keluarga');
+        $pathNisn = $request->hasFile('nisn_file') ? FileEncryptionHelper::encryptAndStoreToPath($request->file('nisn_file'), $baseDir . '/nisn') : null;
+        $pathSuratPernyataan = FileEncryptionHelper::encryptAndStoreToPath($request->file('surat_pernyataan'), $baseDir . '/surat_pernyataan');
+        $pathPakta = FileEncryptionHelper::encryptAndStoreToPath($request->file('surat_pakta_integritas'), $baseDir . '/pakta_integritas');
 
         $data = [
             'user_id' => $user->id,
@@ -65,13 +80,15 @@ class DaftarUlangController extends Controller
             'ijazah_tk' => $pathIjazah,
             'ktp_orang_tua' => $pathKtp,
             'kartu_keluarga' => $pathKk,
-            'nisn_file' =>$pathNisn,
+            'nisn_file' => $pathNisn,
             'surat_pernyataan' => $pathSuratPernyataan,
             'surat_pakta_integritas' => $pathPakta,
             'status' => 'menunggu',
         ];
 
         if ($existing) {
+            // Hapus file lama sebelum update
+            $this->deleteOldFiles($existing);
             $existing->update($data);
             $daftar = $existing;
         } else {
@@ -79,6 +96,16 @@ class DaftarUlangController extends Controller
         }
 
         return response()->json(['message' => 'Berkas daftar ulang terkirim.', 'data' => $daftar], 201);
+    }
+
+    private function deleteOldFiles($daftarUlang)
+    {
+        $fields = ['akte_kelahiran', 'ijazah_tk', 'ktp_orang_tua', 'kartu_keluarga', 'nisn_file', 'surat_pernyataan', 'surat_pakta_integritas'];
+        foreach ($fields as $field) {
+            if ($daftarUlang->$field && Storage::disk('private')->exists($daftarUlang->$field)) {
+                Storage::disk('private')->delete($daftarUlang->$field);
+            }
+        }
     }
 
     // Pendaftar: lihat status daftar ulang

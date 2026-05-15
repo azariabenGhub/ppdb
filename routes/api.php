@@ -17,10 +17,44 @@ use App\Http\Controllers\Api\VerifikasiPembayaranController;
 use App\Models\SeleksiTes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Password;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return $status === Password::RESET_LINK_SENT
+        ? response()->json(['message' => __($status)], 200)
+        : response()->json(['message' => __($status)], 400);
+})->middleware('guest')->name('password.email');
+
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill([
+                'password' => Hash::make($password)
+            ])->save();
+        }
+    );
+
+    return $status === Password::PASSWORD_RESET
+        ? response()->json(['message' => __($status)], 200)
+        : response()->json(['message' => __($status)], 400);
+})->middleware('guest')->name('password.update');
+
 Route::get('/file/bukti/{id}', [EncryptedFileController::class, 'showBukti']);
 Route::get('/file/kwitansi/{id}', [EncryptedFileController::class, 'showKwitansi']);
 Route::get('/file/metode/{id}', [EncryptedFileController::class, 'showMetode']);
@@ -51,7 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/daftar-ulang/cek', [DaftarUlangController::class, 'cekStatus']);
     Route::post('/daftar-ulang', [DaftarUlangController::class, 'store']);
     Route::get('/daftar-ulang', [DaftarUlangController::class, 'index']);
-    
+
 });
 
 // Rute untuk PANITIA PPDB
@@ -73,7 +107,7 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
 
     Route::get('/staff/daftar-ulang', [DaftarUlangController::class, 'semua']);
     Route::put('/staff/daftar-ulang/{id}', [DaftarUlangController::class, 'verifikasi']);
-    
+
 });
 
 // Rute untuk BENDAHARA
