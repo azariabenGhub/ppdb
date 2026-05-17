@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'role','google_id'])]
+#[Fillable(['name', 'email', 'password', 'role', 'google_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -46,5 +46,10 @@ class User extends Authenticatable
     public function seleksiTes()
     {
         return $this->hasOne(SeleksiTes::class, 'id_pendaftar');
+    }
+
+    public function daftarUlang()
+    {
+        return $this->hasOne(DaftarUlang::class, 'user_id');
     }
 }

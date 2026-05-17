@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FormulirController;
 use App\Http\Controllers\Api\GelombangController;
 use App\Http\Controllers\Api\KwitansiController;
 use App\Http\Controllers\Api\MetodePembayaranController;
+use App\Http\Controllers\Api\PendaftarController;
 use App\Http\Controllers\Api\PenilaianController;
 use App\Http\Controllers\Api\PenjadwalanController;
 use App\Http\Controllers\Api\TemplateSuratController;
@@ -16,8 +17,8 @@ use App\Http\Controllers\Api\VerifikasiController;
 use App\Http\Controllers\Api\VerifikasiPembayaranController;
 use App\Models\SeleksiTes;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -107,6 +108,12 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
 
     Route::get('/staff/daftar-ulang', [DaftarUlangController::class, 'semua']);
     Route::put('/staff/daftar-ulang/{id}', [DaftarUlangController::class, 'verifikasi']);
+
+    Route::get('/pendaftar', [PendaftarController::class, 'index']);
+    Route::get('/pendaftar/tahun-options', [PendaftarController::class, 'tahunOptions']);
+    Route::get('/pendaftar/{id}', [PendaftarController::class, 'show']);
+    Route::get('/pendaftar/{id}/formulir', [PendaftarController::class, 'formulir']);
+    Route::get('/pendaftar/{id}/daftar-ulang', [PendaftarController::class, 'dokumenDaftarUlang']);
 
 });
 

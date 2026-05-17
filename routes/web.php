@@ -54,3 +54,6 @@ Route::view('/staff-dashboard', 'staff-dashboard');
 Route::get('/formulir/{id}', function ($id) {
     return view('detail-formulir', ['id' => $id]);
 });
+Route::get('/staff/pendaftar/{id}', function ($id) {
+        return view('staff-pendaftar-detail', ['id' => $id]);
+    })->name('staff.pendaftar.detail');
