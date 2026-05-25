@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\EncryptedFileController;
 use App\Http\Controllers\Api\FormulirController;
 use App\Http\Controllers\Api\GelombangController;
 use App\Http\Controllers\Api\KwitansiController;
+use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\MetodePembayaranController;
 use App\Http\Controllers\Api\PendaftarController;
 use App\Http\Controllers\Api\PenilaianController;
@@ -115,6 +116,8 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
     Route::get('/pendaftar/{id}/formulir', [PendaftarController::class, 'formulir']);
     Route::get('/pendaftar/{id}/daftar-ulang', [PendaftarController::class, 'dokumenDaftarUlang']);
 
+    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel']);
+    Route::get('/laporan/download-zip-du', [LaporanController::class, 'downloadArsipDaftarUlang']);
 });
 
 // Rute untuk BENDAHARA

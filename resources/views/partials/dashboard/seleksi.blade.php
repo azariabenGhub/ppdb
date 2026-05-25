@@ -66,7 +66,7 @@
                 <div class="jadwal-tes-grid">
                     <div class="jadwal-tes-card">
                         <div class="jadwal-tes-card-header">
-                            <div class="tes-icon"><i class="fa-solid fa-book"></i></div>
+                            <div class="tes-icon"><i class="fa-solid fa-layer-group"></i></div>
                             <div class="tes-title">
                                 <h4>Tes Akademik</h4>
                                 <p>Pengetahuan umum & kemampuan dasar</p>
@@ -98,7 +98,7 @@
                     </div>
                     <div class="jadwal-tes-card">
                         <div class="jadwal-tes-card-header">
-                            <div class="tes-icon"><i class="fa-solid fa-star"></i></div>
+                            <div class="tes-icon"><i class="fa-solid fa-square-poll-horizontal"></i></div>
                             <div class="tes-title">
                                 <h4>Tes Baca Al-Qur'an</h4>
                                 <p>Tajwid, kelancaran, dan hafalan</p>

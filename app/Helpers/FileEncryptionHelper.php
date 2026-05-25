@@ -18,7 +18,7 @@ class FileEncryptionHelper
      * @param int $jpegQuality Kualitas JPEG (1-100)
      * @return string Konten yang sudah diproses
      */
-    protected static function processFile(UploadedFile $file, int $jpegQuality = 80): string
+    protected static function processFile(UploadedFile $file, int $jpegQuality = 50): string
     {
         $mime = $file->getMimeType();
         $originalContent = file_get_contents($file->getRealPath());

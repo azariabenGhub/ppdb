@@ -197,8 +197,10 @@
 
     <div id="kelola-jadwal" class="section" style="display:none;">
         <h2>Kelola Jadwal Tes</h2>
+
+        <!-- Tabel 1: Belum Terjadwal -->
         <h3>Pendaftar Belum Terjadwal</h3>
-        <table border="1" width="100%">
+        <table border="1" width="100%" cellpadding="5">
             <thead>
                 <tr>
                     <th>No</th>
@@ -209,8 +211,10 @@
             </thead>
             <tbody id="tabel-belum-terjadwal"></tbody>
         </table>
+
+        <!-- Tabel 2: Sudah Terjadwal -->
         <h3>Pendaftar Sudah Terjadwal</h3>
-        <table border="1" width="100%">
+        <table border="1" width="100%" cellpadding="5">
             <thead>
                 <tr>
                     <th>No</th>
@@ -223,7 +227,20 @@
             </thead>
             <tbody id="tabel-sudah-terjadwal"></tbody>
         </table>
-        <div id="form-jadwal-container" style="display:none;"> ... </div>
+
+        <!-- Form Jadwal -->
+        <div id="form-jadwal-container"
+            style="display:none; border:1px solid #ccc; padding:10px; margin-top:10px; background:#f9f9f9;">
+            <h3 id="form-jadwal-title">Atur Jadwal Tes</h3>
+            <input type="hidden" id="jadwal-action" value="new">
+            <input type="hidden" id="jadwal-id" value="">
+            <input type="hidden" id="jadwal-nama" value="">
+            <label>Pendaftar: <span id="jadwal-nama-tampil"></span></label><br><br>
+            <label>Jadwal Tes:</label>
+            <input type="datetime-local" id="jadwal-datetime" style="width:200px;"><br><br>
+            <button onclick="submitJadwal()">Simpan</button>
+            <button onclick="tutupFormJadwal()">Batal</button>
+        </div>
     </div>
 
     <div id="penilaian" class="section" style="display:none;">
@@ -595,7 +612,18 @@
     </div>
 
     <div id="laporan" class="section" style="display:none;">
-        <p>Laporan (akan diimplementasikan)</p>
+        <h2>Laporan</h2>
+        <div style="display: flex; gap: 20px; margin-top: 20px;">
+            <button onclick="exportExcelLulus()"
+                style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                📊 Export Excel Pendaftar Lulus
+            </button>
+            <button onclick="downloadZipDaftarUlang()"
+                style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                📦 Download Arsip Daftar Ulang (ZIP)
+            </button>
+        </div>
+        <div id="laporan-message" style="margin-top: 20px; color: #555;"></div>
     </div>
 
     <hr>
@@ -1910,6 +1938,60 @@
                 }
             } catch (err) {
                 alert('Error: ' + err.message);
+            }
+        }
+
+        // laporan
+        async function exportExcelLulus() {
+            const msg = document.getElementById('laporan-message');
+            msg.innerHTML = '⏳ Sedang memproses export Excel...';
+            try {
+                const res = await fetch('/api/laporan/export-excel', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'pendaftar_lulus.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    msg.innerHTML = '✅ Download Excel berhasil.';
+                } else {
+                    msg.innerHTML = '❌ Gagal export Excel.';
+                }
+            } catch (err) {
+                msg.innerHTML = '❌ Error: ' + err.message;
+            }
+        }
+
+        async function downloadZipDaftarUlang() {
+            const msg = document.getElementById('laporan-message');
+            msg.innerHTML = '⏳ Sedang mengompres dokumen daftar ulang... Proses ini mungkin memakan waktu.';
+            try {
+                const res = await fetch('/api/laporan/download-zip-du', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'arsip_daftar_ulang.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    msg.innerHTML = '✅ Download ZIP berhasil.';
+                } else {
+                    const errText = await res.text();
+                    msg.innerHTML = '❌ Gagal download ZIP: ' + errText;
+                }
+            } catch (err) {
+                msg.innerHTML = '❌ Error: ' + err.message;
             }
         }
         // ========== Semua fungsi yang sama seperti sebelumnya ==========

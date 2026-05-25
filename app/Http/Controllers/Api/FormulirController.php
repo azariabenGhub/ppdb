@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Formulir;
+use App\Models\Gelombang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -95,7 +96,6 @@ class FormulirController extends Controller
         }
 
         $validator = Validator::make($request->all(), $rules);
-
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
@@ -103,45 +103,62 @@ class FormulirController extends Controller
         $user = $request->user();
         $existing = Formulir::where('user_id', $user->id)->first();
 
+        // 1. Cek gelombang aktif
+        $gelombang = Gelombang::where('status', 'aktif')
+            ->where('periode_mulai', '<=', now())
+            ->where('periode_selesai', '>=', now())
+            ->first();
+
+        if (!$gelombang) {
+            return response()->json(['message' => 'Tidak ada gelombang pendaftaran aktif.'], 422);
+        }
+
+        // 2. Cek kuota (hitung formulir dengan status menunggu/diterima)
+        $jumlahTerdaftar = Formulir::where('id_gelombang', $gelombang->id)
+            ->whereIn('status', ['menunggu', 'diterima'])
+            ->count();
+
+        if ($jumlahTerdaftar >= $gelombang->kuota) {
+            return response()->json(['message' => 'Kuota pendaftaran gelombang ini sudah penuh.'], 422);
+        }
+
         DB::beginTransaction();
         try {
             if ($existing) {
-                // Hanya boleh update jika status 'menunggu' atau 'ditolak'
                 if (!in_array($existing->status, ['menunggu', 'ditolak'])) {
                     return response()->json(['message' => 'Formulir tidak dapat diubah.'], 403);
                 }
-                // Hapus verifikasi lama (jika ada) agar bisa diverifikasi ulang
                 $existing->verifikasi()->delete();
-                // Update data
+                // Update data, jangan ubah id_gelombang dan no_pendaftaran
                 $existing->update($request->all());
-                // Set status kembali menunggu
                 $existing->status = 'menunggu';
                 $existing->save();
                 $pendaftaran = $existing;
             } else {
                 $data = $request->all();
                 $data['user_id'] = $user->id;
-                $pendaftaran = Formulir::create($data);
-                if (!$existing) { // hanya untuk pendaftaran baru
-                    $tahun = date('Y');
-                    // Ambil gelombang aktif (bisa dari request atau dari model)
-                    $gelombang = \App\Models\Gelombang::where('status', 'aktif')
-                        ->where('periode_mulai', '<=', now())
-                        ->where('periode_selesai', '>=', now())
-                        ->first();
-                    $gelombangId = $gelombang ? $gelombang->nomor_gelombang : 1;
+                $data['id_gelombang'] = $gelombang->id;
+                $data['status'] = 'menunggu';
 
-                    $count = \App\Models\Formulir::whereYear('created_at', $tahun)->count();
-                    $noUrut = str_pad($count + 1, 4, '0', STR_PAD_LEFT);
-                    $pendaftaran->no_pendaftaran = "PPDB/{$tahun}/{$gelombangId}/{$noUrut}";
-                    $pendaftaran->save();
-                }
+                // Generate no_pendaftaran
+                $tahun = date('Y');
+                // Hitung jumlah formulir di gelombang ini (termasuk semua status, untuk nomor urut)
+                $count = Formulir::where('id_gelombang', $gelombang->id)->count();
+                $noUrut = $count + 1;
+                $noUrutPadded = str_pad($noUrut, 4, '0', STR_PAD_LEFT);
+                $data['no_pendaftaran'] = "PPDB/{$tahun}/{$gelombang->nomor_gelombang}/{$noUrutPadded}";
+
+                $pendaftaran = Formulir::create($data);
             }
+
             DB::commit();
             return response()->json(['message' => 'Formulir berhasil disimpan.', 'data' => $pendaftaran], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Terjadi kesalahan.', 'error' => $e->getMessage()], 500);
+            \Log::error('Formulir store error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
     }
 
