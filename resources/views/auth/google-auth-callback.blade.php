@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memproses Login Google - PPDB MI Ziyadatul Ihsan</title>
-    <link rel="stylesheet" href="{{ asset('storage/css/style.css') }}">
+    @vite('resources/css/style.css')
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'>
     <style>
-        /* tambahan kecil untuk loading spinner dan layout */
-        .loading-container {
+        /* untuk loading spinner dan layout */
+        /* .loading-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -50,7 +50,7 @@
             color: #555;
             font-size: 0.9rem;
             margin-bottom: 25px;
-        }
+        } */
     </style>
 </head>
 <body>

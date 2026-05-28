@@ -73,7 +73,7 @@ body {
     background: white;
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     min-width: 500px;
 }
 
@@ -1072,6 +1072,7 @@ a {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
+
 @media (max-width: 1110px) {
     #seleksi .jadwal-tes-grid {
         grid-template-columns: 1fr;
@@ -1168,6 +1169,7 @@ a {
     margin: 0 auto;
     max-width: 650px;
 }
+
 #seleksi .form-card {
     width: 100%;
     max-width: none;
@@ -1179,32 +1181,38 @@ a {
     max-width: none;
     width: 100%;
 }
+
 .message-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
+
 .icon-text-row {
     display: flex;
     align-items: center;
     gap: 15px;
     margin-bottom: 15px;
 }
+
 .icon-text-row i {
     font-size: 32px;
     color: #000;
 }
+
 .icon-text-row strong {
     font-size: 16px;
     color: #000;
 }
+
 .message-divider {
     width: 60%;
     border: 0;
     border-top: 2px solid #000;
     margin: 15px 0;
 }
+
 .sub-message {
     font-size: 15px;
     color: #000;
@@ -1212,19 +1220,31 @@ a {
     line-height: 1.5;
     max-width: 450px;
 }
+
 .form-title-centered {
     text-align: center;
     margin-bottom: 30px;
 }
+
 .form-title-centered h3 {
     color: var(--mid-green);
     font-size: 18px;
     font-weight: 700;
 }
+
 @media (max-width: 768px) {
-    .empty-state-box { padding: 30px 15px; }
-    .icon-text-row { flex-direction: column; gap: 10px; }
-    .sub-message { font-size: 13px; }
+    .empty-state-box {
+        padding: 30px 15px;
+    }
+
+    .icon-text-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sub-message {
+        font-size: 13px;
+    }
 }
 
 
@@ -1455,17 +1475,20 @@ a {
     --white: #ffffff;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 #formulir .content-wrapper {
     padding: 0;
 }
+
 .form-header-card {
     background: white;
     border-radius: 15px;
     padding: 25px;
     margin-bottom: 25px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     border: 1px solid #eee;
 }
+
 .school-brand {
     display: flex;
     justify-content: center;
@@ -1484,15 +1507,27 @@ a {
     padding: 10px 0;
 }
 
-.school-brand-centered img { width: 75px; }
+.school-brand-centered img {
+    width: 75px;
+}
 
-.school-brand img { width: 70px; }
+.school-brand img {
+    width: 70px;
+}
+
 .brand-text p {
-    font-size: 13px; color: #666; font-weight: 600;
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
 }
+
 .brand-text h2 {
-    font-size: 24px; color: #333; font-weight: 700; letter-spacing: 1px;
+    font-size: 24px;
+    color: #333;
+    font-weight: 700;
+    letter-spacing: 1px;
 }
+
 /* Stepper */
 #formulir .stepper-container {
     display: flex;
@@ -1501,6 +1536,7 @@ a {
     max-width: 800px;
     margin: 0 auto;
 }
+
 #formulir .step {
     display: flex;
     flex-direction: column;
@@ -1509,8 +1545,10 @@ a {
     text-align: center;
     width: 120px;
 }
+
 #formulir .step-number {
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: #f0f0f0;
     color: #999;
@@ -1521,20 +1559,35 @@ a {
     border: 2px solid #eee;
     transition: var(--transition);
 }
+
 #formulir .step.active .step-number {
     background: var(--primary-green);
     color: white;
     border-color: var(--primary-green);
     box-shadow: 0 0 0 4px rgba(26, 77, 46, 0.1);
 }
+
 #formulir .step-label {
-    font-size: 12px; font-weight: 600; color: #999;
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
 }
-#formulir .step.active .step-label { color: var(--primary-green); }
+
+#formulir .step.active .step-label {
+    color: var(--primary-green);
+}
+
 #formulir .step-line {
-    flex: 1; height: 2px; background: #eee; margin-bottom: 25px;
+    flex: 1;
+    height: 2px;
+    background: #eee;
+    margin-bottom: 25px;
 }
-#formulir .step-line.active { background: var(--primary-green); }
+
+#formulir .step-line.active {
+    background: var(--primary-green);
+}
+
 /* Toggle Orang Tua/Wali */
 #formulir .toggle-container {
     display: flex;
@@ -1544,6 +1597,7 @@ a {
     margin-bottom: 30px;
     border: 1px solid #ddd;
 }
+
 #formulir .toggle-btn {
     flex: 1;
     padding: 12px;
@@ -1555,32 +1609,59 @@ a {
     color: #666;
     transition: var(--transition);
 }
+
 #formulir .toggle-btn.active {
     background: var(--light-green);
     color: white;
     box-shadow: 0 4px 10px rgba(45, 106, 79, 0.2);
 }
+
 /* Form Card */
 #formulir .form-card-new {
     background: white;
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
 }
-#formulir .form-title { margin-bottom: 30px; }
+
+#formulir .form-title {
+    margin-bottom: 30px;
+}
+
 #formulir .form-title h3 {
-    font-size: 18px; color: var(--primary-green); font-weight: 700;
+    font-size: 18px;
+    color: var(--primary-green);
+    font-weight: 700;
 }
-#formulir .form-title p { font-size: 14px; color: #777; }
+
+#formulir .form-title p {
+    font-size: 14px;
+    color: #777;
+}
+
 #formulir .input-group {
-    display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
 }
+
 #formulir .input-row {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
-#formulir label { font-size: 14px; font-weight: 600; color: #444; }
-#formulir input, #formulir select, #formulir textarea {
+
+#formulir label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+}
+
+#formulir input,
+#formulir select,
+#formulir textarea {
     padding: 12px 15px;
     background: #f1f1f1;
     border: 1px solid #e0e0e0;
@@ -1590,22 +1671,41 @@ a {
     color: #333;
     transition: var(--transition);
 }
-#formulir input:focus, #formulir select:focus, #formulir textarea:focus {
-    outline: none; background: white; border-color: var(--primary-green);
+
+#formulir input:focus,
+#formulir select:focus,
+#formulir textarea:focus {
+    outline: none;
+    background: white;
+    border-color: var(--primary-green);
     box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.05);
 }
+
 #formulir .section-badge {
-    color: var(--primary-green); font-size: 12px; font-weight: 800;
-    margin-bottom: 15px; letter-spacing: 0.5px;
+    color: var(--primary-green);
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
 }
-#formulir .form-divider { border: 0; border-top: 1px solid #eee; margin: 40px 0; }
+
+#formulir .form-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 40px 0;
+}
+
 /* #formulir .form-actions { display: flex; margin-top: 30px; } */
 #formulir .form-actions {
     display: flex;
     margin-top: 30px;
     gap: 20px;
 }
-#formulir .form-actions.space-between { justify-content: space-between; }
+
+#formulir .form-actions.space-between {
+    justify-content: space-between;
+}
+
 /* #formulir .btn-primary {
     background-color: var(--light-green);
     color: white; border: none;
@@ -1619,6 +1719,7 @@ a {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(26, 77, 46, 0.2);
 }
+
 #formulir .btn-primary,
 #formulir .btn-secondary {
     width: auto;
@@ -1643,11 +1744,17 @@ a {
 }
 
 #formulir .btn-secondary:hover {
-    background: rgba(45, 106, 79, 0.05); transform: translateY(-2px);
+    background: rgba(45, 106, 79, 0.05);
+    transform: translateY(-2px);
 }
+
 #formulir .checkbox-group {
-    display: flex; align-items: center; gap: 10px; margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
 }
+
 #formulir .alert-info {
     background: #eef6f0;
     border: 1px solid #c8e6c9;
@@ -1657,11 +1764,21 @@ a {
     font-size: 0.9rem;
     color: #2e7d32;
 }
+
 /* Responsive */
 @media (max-width: 768px) {
-    #formulir .input-row { grid-template-columns: 1fr; }
-    #formulir .school-brand { flex-direction: column; text-align: center; }
-    #formulir .stepper-container { flex-wrap: wrap; }
+    #formulir .input-row {
+        grid-template-columns: 1fr;
+    }
+
+    #formulir .school-brand {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #formulir .stepper-container {
+        flex-wrap: wrap;
+    }
 }
 
 /* Success Card (untuk formulir sukses) */
@@ -1670,18 +1787,20 @@ a {
     border-radius: 20px;
     padding: 60px 40px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 400px;
 }
+
 #formulir .success-icon-wrapper {
     width: 100px;
     height: 100px;
     background-color: #e8f5e9;
-    border: 3px solid #2d6a4f; /* var(--light-green) tidak selalu didukung di media query, gunakan nilai langsung */
+    border: 3px solid #2d6a4f;
+    /* var(--light-green) tidak selalu didukung di media query, gunakan nilai langsung */
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1690,39 +1809,48 @@ a {
 }
 
 #formulir .success-icon-wrapper i {
-    font-size: 50px;          /* ukuran ikon */
-    color: #1a4d2e;           /* warna hijau tua */
-    display: flex;            /* memastikan ikon rata tengah */
+    font-size: 50px;
+    /* ukuran ikon */
+    color: #1a4d2e;
+    /* warna hijau tua */
+    display: flex;
+    /* memastikan ikon rata tengah */
     align-items: center;
     justify-content: center;
 }
+
 #formulir .success-title {
     color: var(--primary-green);
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 20px;
 }
+
 #formulir .success-text {
     max-width: 500px;
 }
+
 #formulir .success-text p {
     font-size: 14px;
     color: #555;
     line-height: 1.6;
     margin-bottom: 5px;
 }
+
 @media (max-width: 768px) {
     #formulir .success-card {
         padding: 40px 20px;
         min-height: 300px;
     }
+
     #formulir .success-title {
         font-size: 20px;
     }
 }
 
 .status-banner-success {
-    background-color: #d1e7dd; /* Light green background */
+    background-color: #d1e7dd;
+    /* Light green background */
     border: 1.5px solid #a3cfbb;
     border-radius: 12px;
     padding: 30px;
@@ -1746,7 +1874,8 @@ a {
 }
 
 .table-header {
-    background-color: #a3cfbb; /* Sage green like in SS */
+    background-color: #a3cfbb;
+    /* Sage green like in SS */
     padding: 15px;
     text-align: center;
     border-bottom: 1px solid #ddd;
@@ -1803,17 +1932,19 @@ a {
 
 .blue-alert p {
     color: #000;
-}   
+}
 
 /* ANNOUNCEMENT FAILURE STYLES */
 
 .status-banner-failure {
-    background-color: #fce4e4; /* Light pink background */
+    background-color: #fce4e4;
+    /* Light pink background */
     border: 1px solid #f9d2d2;
     border-radius: 12px;
-    padding: 50px 40px; /* Padding lebih luas sesuai SS */
+    padding: 50px 40px;
+    /* Padding lebih luas sesuai SS */
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     max-width: 800px;
     margin: 0 auto;
 }
@@ -1865,7 +1996,8 @@ a {
 }
 
 .empty-state-box {
-    background-color: #f1f1f1; /* Abu-abu seperti di SS */
+    background-color: #f1f1f1;
+    /* Abu-abu seperti di SS */
     border: 1px solid #ddd;
     border-radius: 12px;
     padding: 50px 30px;
@@ -1901,14 +2033,381 @@ a {
 .message-divider {
     width: 70%;
     border: 0;
-    border-top: 2px solid #000; /* Garis hitam tegas sesuai SS */
+    border-top: 2px solid #000;
+    /* Garis hitam tegas sesuai SS */
     margin: 15px 0;
 }
 
 .sub-message {
     font-size: 16px;
     color: #000;
-    font-weight: 800; /* Bold sesuai di gambar */
+    font-weight: 800;
+    /* Bold sesuai di gambar */
     line-height: 1.5;
     max-width: 500px;
+}
+
+/* untuk loading spinner dan layout */
+.loading-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f7f6;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #1a4d2e;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.callback-card {
+    text-align: center;
+    padding: 40px;
+    max-width: 450px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.callback-icon {
+    font-size: 48px;
+    color: #1a4d2e;
+    margin-bottom: 20px;
+}
+
+.callback-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a4d2e;
+    margin-bottom: 12px;
+}
+
+.callback-message {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+
+/* ===== TAMBAHAN UNTUK DAFTAR ULANG (TAB & LAYOUT) ===== */
+
+#daftar-ulang .form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+#daftar-ulang .form-title h3 {
+    font-size: 18px;
+    color: #1a4d2e;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+#daftar-ulang .form-title p {
+    font-size: 14px;
+    color: #777;
+}
+
+#daftar-ulang .toggle-container {
+    display: flex;
+    background: #f1f1f1;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid #ddd;
+}
+
+#daftar-ulang .toggle-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    background: transparent;
+    color: #666;
+    transition: all 0.3s;
+}
+
+#daftar-ulang .toggle-btn.active {
+    background: #2d6a4f;
+    color: white;
+    box-shadow: 0 4px 10px rgba(45, 106, 79, 0.2);
+}
+
+#daftar-ulang .badge-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #2d6a4f;
+    display: block;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+#daftar-ulang .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+#daftar-ulang .input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+}
+
+#daftar-ulang .input-group input,
+#daftar-ulang .input-group textarea,
+#daftar-ulang .input-group select {
+    padding: 12px 15px;
+    background: #f1f1f1;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.3s;
+}
+
+#daftar-ulang .input-group input:focus,
+#daftar-ulang .input-group textarea:focus {
+    outline: none;
+    background: white;
+    border-color: #1a4d2e;
+    box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.05);
+}
+
+#daftar-ulang .input-readonly {
+    background-color: #e9ecef !important;
+    cursor: not-allowed;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#daftar-ulang .input-row-three {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+#daftar-ulang .form-actions-end {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+#daftar-ulang .btn-solid {
+    background-color: #2d6a4f;
+    border: none;
+    color: #fff;
+    padding: 12px 45px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#daftar-ulang .btn-solid:hover {
+    background-color: #1a4d2e;
+}
+
+#daftar-ulang .btn-outline {
+    background: transparent;
+    border: 2px solid #2d6a4f;
+    color: #2d6a4f;
+    padding: 12px 40px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#daftar-ulang .btn-outline:hover {
+    background: rgba(45, 106, 79, 0.05);
+    transform: translateY(-2px);
+}
+
+#daftar-ulang .sub-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2d6a4f;
+    margin-bottom: 15px;
+}
+
+#daftar-ulang .download-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+#daftar-ulang .btn-download {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    background-color: #2d6a4f;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+#daftar-ulang .btn-download:hover {
+    background-color: #1a4d2e;
+}
+
+#daftar-ulang .upload-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#daftar-ulang .upload-item {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#daftar-ulang .upload-info {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 15px;
+    background: #fff;
+}
+
+#daftar-ulang .doc-icon {
+    font-size: 20px;
+    color: #2d6a4f;
+}
+
+#daftar-ulang .text-content strong {
+    font-size: 13px;
+    color: #333;
+    display: block;
+}
+
+#daftar-ulang .text-content p {
+    font-size: 11px;
+    color: #888;
+}
+
+#daftar-ulang .badge {
+    margin-left: auto;
+    padding: 4px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+#daftar-ulang .badge-required {
+    background-color: #fce4e4;
+    color: #d32f2f;
+}
+
+#daftar-ulang .badge-optional {
+    background-color: #f1f1f1;
+    color: #666;
+}
+
+#daftar-ulang .upload-box {
+    background-color: #f5f5f5;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    border-top: 1px solid #eee;
+    transition: 0.3s;
+}
+
+#daftar-ulang .upload-box:hover {
+    background-color: #ededed;
+}
+
+#daftar-ulang .success-inner-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    background-color: #fff;
+}
+
+#daftar-ulang .success-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    background-color: #f8f9fa;
+    border: 3px solid #2d6a4f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+#daftar-ulang .success-icon-wrapper i {
+    font-size: 50px;
+    color: #2d6a4f;
+}
+
+#daftar-ulang .success-heading {
+    color: #2d6a4f;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+#daftar-ulang .success-description p {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.6;
+}
+
+#daftar-ulang .mt-30 {
+    margin-top: 30px;
+}
+
+#daftar-ulang .space-between {
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    #daftar-ulang .input-row-three {
+        grid-template-columns: 1fr;
+    }
+
+    #daftar-ulang .download-grid {
+        grid-template-columns: 1fr;
+    }
 }

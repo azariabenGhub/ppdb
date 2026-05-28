@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPDB MI Ziyadatul Ihsan - Buat Akun</title>
-    <link rel="stylesheet" href="{{ asset('storage/css/style.css') }}">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'>
+    @vite('resources/css/style.css')
 </head>
 
 <body>

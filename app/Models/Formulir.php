@@ -36,6 +36,17 @@ class Formulir extends Model
         'status'
     ];
 
+    protected $appends = [
+        'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'agama', 'warga_negara',
+        'anak_ke', 'jumlah_saudara', 'alamat_lengkap',
+        'nama_ayah', 'pekerjaan_ayah', 'agama_ayah', 'pendidikan_ayah', 'no_ktp_ayah',
+        'penghasilan_ayah', 'no_telp_ayah', 'alamat_ayah',
+        'nama_ibu', 'pekerjaan_ibu', 'agama_ibu', 'pendidikan_ibu', 'no_ktp_ibu',
+        'penghasilan_ibu', 'no_telp_ibu', 'alamat_ibu',
+        'nama_wali', 'pekerjaan_wali', 'agama_wali', 'pendidikan_wali', 'no_ktp_wali',
+        'penghasilan_wali', 'no_telp_wali', 'alamat_wali'
+    ];
+
     // Relasi
     public function calonSiswa()
     {
@@ -113,7 +124,7 @@ class Formulir extends Model
         return $this->calonSiswa ? $this->calonSiswa->alamat_lengkap : null;
     }
 
-    // Data orang tua / wali
+    // Data ayah
     public function getNamaAyahAttribute()
     {
         return $this->ayah ? $this->ayah->nama : null;
@@ -154,6 +165,7 @@ class Formulir extends Model
         return $this->ayah ? $this->ayah->alamat : null;
     }
 
+    // Data ibu
     public function getNamaIbuAttribute()
     {
         return $this->ibu ? $this->ibu->nama : null;
@@ -194,6 +206,7 @@ class Formulir extends Model
         return $this->ibu ? $this->ibu->alamat : null;
     }
 
+    // Data wali
     public function getNamaWaliAttribute()
     {
         return $this->wali ? $this->wali->nama : null;

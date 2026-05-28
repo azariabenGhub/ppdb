@@ -3,7 +3,7 @@
     <div class="section-wrapper">
         {{-- Header card (logo & nama sekolah) --}}
         <div class="form-header-card">
-            <div class="school-brand">
+            <div class="school-brand-centered">
                 <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
                 <div class="brand-text">
                     <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>

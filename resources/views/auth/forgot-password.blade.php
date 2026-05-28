@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPDB MI Ziyadatul Ihsan - Lupa Password</title>
-    <link rel="stylesheet" href="{{ asset('storage/css/style.css') }}">
+    @vite('resources/css/style.css')
 </head>
 <body>
     <main class="auth-container">

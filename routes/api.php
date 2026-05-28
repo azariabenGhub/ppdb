@@ -84,9 +84,10 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($seleksi);
     });
 
+    Route::get('/daftar-ulang/form-data', [DaftarUlangController::class, 'getFormData']);
+    // Route::post('/daftar-ulang/form', [DaftarUlangController::class, 'storeForm']);
     Route::get('/daftar-ulang/cek', [DaftarUlangController::class, 'cekStatus']);
     Route::post('/daftar-ulang', [DaftarUlangController::class, 'store']);
-    Route::get('/daftar-ulang', [DaftarUlangController::class, 'index']);
 
 });
 
