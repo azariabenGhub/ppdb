@@ -322,6 +322,19 @@
             <tbody id="tabel-daftar-ulang"></tbody>
         </table>
 
+        <!-- Modal Formulir daftar ulang -->
+        <div id="modalFormulirDaftarUlang"
+            style="display:none; position:fixed; top:10%; left:15%; width:70%; background:white; border:2px solid #1a4d2e; padding:20px; z-index:1002; max-height:80%; overflow:auto; border-radius:8px;">
+            <h3>Formulir Daftar Ulang</h3>
+            <div id="formulirDaftarUlangContent"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button onclick="tutupModalFormulirDaftarUlang()">Tutup</button>
+            </div>
+        </div>
+        <div id="overlayFormulirDU"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001;">
+        </div>
+
         <!-- Modal Verifikasi & Lihat Berkas -->
         <div id="modalDaftarUlang"
             style="display:none; position:fixed; top:10%; left:10%; width:80%; background:white; border:2px solid #ccc; padding:20px; z-index:1000; overflow-y:auto; max-height:80%;">
@@ -1307,17 +1320,101 @@
                     } else {
                         aksi = `<span style="color:gray;">Sudah diverifikasi (${du.status})</span>`;
                     }
-                    html += `<tr>
+                    html += `<table>
                         <td>${i + 1}</td>
                         <td>${du.user?.name || '-'}</td>
                         <td>${du.status}</td>
-                        <td>${aksi}</td>
+                        <td>
+                            ${du.status === 'menunggu' ? `<button onclick="bukaModalDaftarUlang(${du.id}, '${du.user?.name}')">Verifikasi & Lihat Berkas</button>` : ''}
+                            <button onclick="lihatFormulirDaftarUlang(${du.id})">Lihat Formulir</button>
+                        </td>
                     </tr>`;
                 });
                 document.getElementById('tabel-daftar-ulang').innerHTML = html || '<tr><td colspan="4">Tidak ada data daftar ulang.</td></tr>';
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        // Fungsi untuk menampilkan modal formulir daftar ulang
+        async function lihatFormulirDaftarUlang(idDaftarUlang) {
+            try {
+                const res = await fetch(`/api/staff/daftar-ulang-form/${idDaftarUlang}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert('Gagal mengambil data: ' + (err.message || 'Unknown error'));
+                    return;
+                }
+                const data = await res.json();
+                // data = { tipe_wali, siswa, wali } atau sesuai struktur
+                renderFormulirDaftarUlang(data);
+                document.getElementById('modalFormulirDaftarUlang').style.display = 'block';
+                document.getElementById('overlayFormulirDU').style.display = 'block';
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat mengambil data.');
+            }
+        }
+
+        function renderFormulirDaftarUlang(data) {
+            const container = document.getElementById('formulirDaftarUlangContent');
+            let html = '';
+            if (data.tipe_wali === 'orang_tua') {
+                html = `
+                    <h4>Data Siswa</h4>
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr><td style="padding:6px;"><strong>Nama Lengkap</strong></td><td>${escapeHtml(data.siswa.nama_lengkap || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Tempat Lahir</strong></td><td>${escapeHtml(data.siswa.tempat_lahir || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Tanggal Lahir</strong></td><td>${escapeHtml(data.siswa.tanggal_lahir || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Jenis Kelamin</strong></td><td>${escapeHtml(data.siswa.jenis_kelamin || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Asal RA/TK/PAUD</strong></td><td>${escapeHtml(data.siswa.asal_sekolah || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Alamat Domisili</strong></td><td>${escapeHtml(data.siswa.alamat_domisili || '-')}</td></tr>
+                    </table>
+                    <h4>Data Orang Tua</h4>
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr><td style="padding:6px;"><strong>Nama Ayah</strong></td><td>${escapeHtml(data.orang_tua.nama_ayah || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Pendidikan Ayah</strong></td><td>${escapeHtml(data.orang_tua.pendidikan_ayah || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Pekerjaan Ayah</strong></td><td>${escapeHtml(data.orang_tua.pekerjaan_ayah || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Alamat KTP (Ayah)</strong></td><td>${escapeHtml(data.orang_tua.alamat_ktp || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>No HP Ayah</strong></td><td>${escapeHtml(data.orang_tua.no_hp || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Nama Ibu</strong></td><td>${escapeHtml(data.orang_tua.nama_ibu || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Pendidikan Ibu</strong></td><td>${escapeHtml(data.orang_tua.pendidikan_ibu || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Pekerjaan Ibu</strong></td><td>${escapeHtml(data.orang_tua.pekerjaan_ibu || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Narahubung</strong></td><td>${escapeHtml(data.orang_tua.narahubung || '-')}</td></tr>
+                    </table>
+                `;
+            } else if (data.tipe_wali === 'wali') {
+                html = `
+                    <h4>Data Siswa</h4>
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr><td style="padding:6px;"><strong>Nama Lengkap</strong></td><td>${escapeHtml(data.siswa.nama_lengkap || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Tempat Lahir</strong></td><td>${escapeHtml(data.siswa.tempat_lahir || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Tanggal Lahir</strong></td><td>${escapeHtml(data.siswa.tanggal_lahir || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Jenis Kelamin</strong></td><td>${escapeHtml(data.siswa.jenis_kelamin || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Asal RA/TK/PAUD</strong></td><td>${escapeHtml(data.siswa.asal_sekolah || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Alamat Domisili</strong></td><td>${escapeHtml(data.siswa.alamat_domisili || '-')}</td></tr>
+                    </table>
+                    <h4>Data Wali</h4>
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr><td style="padding:6px;"><strong>Nama Wali</strong></td><td>${escapeHtml(data.wali.nama_wali || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Pendidikan Wali</strong></td><td>${escapeHtml(data.wali.pendidikan_wali || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Pekerjaan Wali</strong></td><td>${escapeHtml(data.wali.pekerjaan_wali || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Alamat KTP (Wali)</strong></td><td>${escapeHtml(data.wali.alamat_ktp || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>No HP Wali</strong></td><td>${escapeHtml(data.wali.no_hp || '-')}</td></tr>
+                        <tr><td style="padding:6px;"><strong>Narahubung</strong></td><td>${escapeHtml(data.wali.narahubung || '-')}</td></tr>
+                    </table>
+                `;
+            } else {
+                html = '<p>Data tidak lengkap.</p>';
+            }
+            container.innerHTML = html;
+        }
+
+        function tutupModalFormulirDaftarUlang() {
+            document.getElementById('modalFormulirDaftarUlang').style.display = 'none';
+            document.getElementById('overlayFormulirDU').style.display = 'none';
         }
 
         async function bukaModalDaftarUlang(id, nama) {

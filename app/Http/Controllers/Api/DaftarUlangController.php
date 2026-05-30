@@ -57,7 +57,7 @@ class DaftarUlangController extends Controller
                     'tempat_lahir' => $detail->tempat_lahir,
                     'tanggal_lahir' => $detail->tanggal_lahir,
                     'jenis_kelamin' => $detail->jenis_kelamin,
-                    'asal_sekolah' => $detail->asal_sekolah,
+                    'asal_tk' => $detail->asal_tk,
                     'alamat_domisili' => $detail->alamat_domisili,
                     'is_bukan_pindahan' => $detail->is_bukan_pindahan,
                     'tipe_wali' => $tipe,
@@ -72,7 +72,7 @@ class DaftarUlangController extends Controller
                     'tempat_lahir' => $detail->tempat_lahir,
                     'tanggal_lahir' => $detail->tanggal_lahir,
                     'jenis_kelamin' => $detail->jenis_kelamin,
-                    'asal_sekolah' => $detail->asal_sekolah,
+                    'asal_tk' => $detail->asal_tk,
                     'alamat_domisili' => $detail->alamat_domisili,
                     'is_bukan_pindahan' => $detail->is_bukan_pindahan,
                     'tipe_wali' => $tipe,
@@ -95,9 +95,9 @@ class DaftarUlangController extends Controller
             'nama_lengkap' => $formulir->calonSiswa->nama_lengkap,
             'tempat_lahir' => $formulir->calonSiswa->tempat_lahir,
             'tanggal_lahir' => $formulir->calonSiswa->tanggal_lahir,
-            'jenis_kelamin' => '', // tidak ada di formulir awal, biarkan kosong
-            'asal_sekolah' => $formulir->asal_sekolah,
-            'alamat_domisili' => $formulir->calonSiswa->alamat_lengkap, // default dari alamat KTP
+            'jenis_kelamin' => $formulir->calonSiswa->jenis_kelamin, // tidak ada di formulir awal, biarkan kosong
+            'asal_tk' => $formulir->calonSiswa->asal_tk,
+            'alamat_domisili' => $formulir->calonSiswa->alamat_lengkap, // default dari alamat 
             'is_bukan_pindahan' => $formulir->is_bukan_pindahan,
             'tipe_wali' => $formulir->tipe_wali,
         ];
@@ -172,7 +172,7 @@ class DaftarUlangController extends Controller
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'nullable|string',
-            'asal_sekolah' => 'nullable|string',
+            'asal_tk' => 'nullable|string',
             'alamat_domisili' => 'required|string', // alamat lengkap domisili
             'is_bukan_pindahan' => 'nullable|boolean',
         ];
@@ -297,6 +297,57 @@ class DaftarUlangController extends Controller
             DB::rollBack();
             \Log::error('Daftar ulang error: ' . $e->getMessage());
             return response()->json(['message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function getFormulirDaftarUlang($id)
+    {
+        $daftarUlang = DaftarUlang::with(['orangTua', 'wali'])->findOrFail($id);
+        if ($daftarUlang->id_orang_tua) {
+            $orangTua = $daftarUlang->orangTua;
+            return response()->json([
+                'tipe_wali' => 'orang_tua',
+                'siswa' => [
+                    'nama_lengkap' => $orangTua->nama_lengkap,
+                    'tempat_lahir' => $orangTua->tempat_lahir,
+                    'tanggal_lahir' => $orangTua->tanggal_lahir,
+                    'jenis_kelamin' => $orangTua->jenis_kelamin,
+                    'asal_sekolah' => $orangTua->asal_sekolah,
+                    'alamat_domisili' => $orangTua->alamat_domisili,
+                ],
+                'orang_tua' => [
+                    'nama_ayah' => $orangTua->nama_ayah,
+                    'pendidikan_ayah' => $orangTua->pendidikan_ayah,
+                    'pekerjaan_ayah' => $orangTua->pekerjaan_ayah,
+                    'alamat_ktp' => $orangTua->alamat_ktp,
+                    'no_hp' => $orangTua->no_hp,
+                    'nama_ibu' => $orangTua->nama_ibu,
+                    'pendidikan_ibu' => $orangTua->pendidikan_ibu,
+                    'pekerjaan_ibu' => $orangTua->pekerjaan_ibu,
+                    'narahubung' => $orangTua->narahubung,
+                ]
+            ]);
+        } else {
+            $wali = $daftarUlang->wali;
+            return response()->json([
+                'tipe_wali' => 'wali',
+                'siswa' => [
+                    'nama_lengkap' => $wali->nama_lengkap,
+                    'tempat_lahir' => $wali->tempat_lahir,
+                    'tanggal_lahir' => $wali->tanggal_lahir,
+                    'jenis_kelamin' => $wali->jenis_kelamin,
+                    'asal_sekolah' => $wali->asal_sekolah,
+                    'alamat_domisili' => $wali->alamat_domisili,
+                ],
+                'wali' => [
+                    'nama_wali' => $wali->nama_wali,
+                    'pendidikan_wali' => $wali->pendidikan_wali,
+                    'pekerjaan_wali' => $wali->pekerjaan_wali,
+                    'alamat_ktp' => $wali->alamat_ktp,
+                    'no_hp' => $wali->no_hp,
+                    'narahubung' => $wali->narahubung,
+                ]
+            ]);
         }
     }
 

@@ -12,8 +12,21 @@ class CalonSiswa extends Model
     protected $table = 'calon_siswa';
 
     protected $fillable = [
-        'user_id', 'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik',
-        'agama', 'warga_negara', 'anak_ke', 'jumlah_saudara', 'alamat_lengkap'
+        'user_id',
+        'nama_lengkap',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'pernah_tk',
+        'asal_tk',
+        'nik',
+        'agama',
+        'warga_negara',
+        'anak_ke',
+        'jumlah_saudara',
+        'alamat_lengkap',
+        'punya_nisn',
+        'nisn',
     ];
 
     public function user()

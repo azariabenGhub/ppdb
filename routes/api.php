@@ -110,6 +110,7 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
 
     Route::get('/staff/daftar-ulang', [DaftarUlangController::class, 'semua']);
     Route::put('/staff/daftar-ulang/{id}', [DaftarUlangController::class, 'verifikasi']);
+    Route::get('/staff/daftar-ulang-form/{id}', [DaftarUlangController::class, 'getFormulirDaftarUlang']);
 
     Route::get('/pendaftar', [PendaftarController::class, 'index']);
     Route::get('/pendaftar/tahun-options', [PendaftarController::class, 'tahunOptions']);

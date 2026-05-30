@@ -42,7 +42,7 @@ return new class extends Migration
                 $table->string('jenis_kelamin', 10)->nullable();
             }
             if (!Schema::hasColumn('daftar_ulang_wali', 'asal_sekolah')) {
-                $table->string('asal_sekolah')->nullable();
+                $table->string('asal_tk')->nullable();
             }
         });
 

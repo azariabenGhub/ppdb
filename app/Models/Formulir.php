@@ -37,14 +37,44 @@ class Formulir extends Model
     ];
 
     protected $appends = [
-        'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'agama', 'warga_negara',
-        'anak_ke', 'jumlah_saudara', 'alamat_lengkap',
-        'nama_ayah', 'pekerjaan_ayah', 'agama_ayah', 'pendidikan_ayah', 'no_ktp_ayah',
-        'penghasilan_ayah', 'no_telp_ayah', 'alamat_ayah',
-        'nama_ibu', 'pekerjaan_ibu', 'agama_ibu', 'pendidikan_ibu', 'no_ktp_ibu',
-        'penghasilan_ibu', 'no_telp_ibu', 'alamat_ibu',
-        'nama_wali', 'pekerjaan_wali', 'agama_wali', 'pendidikan_wali', 'no_ktp_wali',
-        'penghasilan_wali', 'no_telp_wali', 'alamat_wali'
+        'nama_lengkap',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'pernah_tk',
+        'asal_tk',
+        'nik',
+        'agama',
+        'warga_negara',
+        'anak_ke',
+        'jumlah_saudara',
+        'alamat_lengkap',
+        'nama_ayah',
+        'pekerjaan_ayah',
+        'agama_ayah',
+        'pendidikan_ayah',
+        'no_ktp_ayah',
+        'penghasilan_ayah',
+        'no_telp_ayah',
+        'alamat_ayah',
+        'nama_ibu',
+        'pekerjaan_ibu',
+        'agama_ibu',
+        'pendidikan_ibu',
+        'no_ktp_ibu',
+        'penghasilan_ibu',
+        'no_telp_ibu',
+        'alamat_ibu',
+        'nama_wali',
+        'pekerjaan_wali',
+        'agama_wali',
+        'pendidikan_wali',
+        'no_ktp_wali',
+        'penghasilan_wali',
+        'no_telp_wali',
+        'alamat_wali',
+        'punya_nisn',
+        'nisn',
     ];
 
     // Relasi
@@ -245,5 +275,30 @@ class Formulir extends Model
     public function getAlamatWaliAttribute()
     {
         return $this->wali ? $this->wali->alamat : null;
+    }
+
+    public function getPunyaNisnAttribute()
+    {
+        return $this->calonSiswa ? $this->calonSiswa->punya_nisn : false;
+    }
+
+    public function getNisnAttribute()
+    {
+        return $this->calonSiswa ? $this->calonSiswa->nisn : null;
+    }
+
+    public function getPernahTkAttribute()
+    {
+        return $this->calonSiswa ? $this->calonSiswa->pernah_tk : false;
+    }
+
+    public function getAsalTkAttribute()
+    {
+        return $this->calonSiswa ? $this->calonSiswa->asal_tk : null;
+    }
+
+    public function getJenisKelaminAttribute()
+    {
+        return $this->calonSiswa ? $this->calonSiswa->jenis_kelamin : null;
     }
 }

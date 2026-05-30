@@ -59,7 +59,7 @@
                         </div>
                         <div class="input-group">
                             <label>Asal RA/TK/PAUD</label>
-                            <input type="text" id="asal_sekolah" name="asal_sekolah" placeholder="Asal RA/TK/PAUD">
+                            <input type="text" id="asal_tk" name="asal_tk" placeholder="Asal RA/TK/PAUD">
                         </div>
                     </div>
 
@@ -294,8 +294,8 @@
             document.getElementById('nama_lengkap').value = header.nama_lengkap || '';
             document.getElementById('tempat_lahir').value = header.tempat_lahir || '';
             document.getElementById('tanggal_lahir').value = header.tanggal_lahir || '';
-            document.getElementById('jenis_kelamin').value = '';
-            document.getElementById('asal_sekolah').value = header.asal_sekolah || '';
+            document.getElementById('jenis_kelamin').value = header.jenis_kelamin || '';
+            document.getElementById('asal_tk').value = header.asal_tk || '';
 
             // Hidden data siswa
             document.getElementById('nik_siswa').value = header.nik || '';
@@ -525,7 +525,7 @@
                 formData.append('tanggal_lahir', document.getElementById('tanggal_lahir').value);
                 formData.append('jenis_kelamin', document.getElementById('jenis_kelamin').value);
                 formData.append('tipe_wali', document.getElementById('tipe_wali').value);
-                formData.append('asal_sekolah', document.getElementById('asal_sekolah').value);
+                formData.append('asal_tk', document.getElementById('asal_tk').value);
 
                 // Data orang tua / wali (sesuai tipe)
                 const tipe = document.getElementById('tipe_wali').value;

@@ -42,7 +42,10 @@ class FormulirController extends Controller
         $rules = [
             'nama_lengkap' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'tanggal_lahir' => 'required|date',
+            'pernah_tk' => 'required|boolean',
+            'asal_tk' => 'nullable|string|max:255|required_if:pernah_tk,true',
             'nik' => 'required|string|max:20',
             'agama' => 'required|string',
             'warga_negara' => 'required|string',
@@ -50,6 +53,8 @@ class FormulirController extends Controller
             'jumlah_saudara' => 'nullable|integer|min:0',
             'alamat_lengkap' => 'required|string',
             'tipe_wali' => 'required|in:orang_tua,wali',
+            'punya_nisn' => 'required|boolean',
+            'nisn' => 'nullable|string|max:20|required_if:punya_nisn,true',
         ];
 
         if ($request->tipe_wali === 'orang_tua') {
@@ -137,12 +142,17 @@ class FormulirController extends Controller
                     'nama_lengkap' => $request->nama_lengkap,
                     'tempat_lahir' => $request->tempat_lahir,
                     'tanggal_lahir' => $request->tanggal_lahir,
+                    'jenis_kelamin' => $request->jenis_kelamin,
+                    'pernah_tk' => $request->pernah_tk,
+                    'asal_tk' => $request->pernah_tk ? $request->asal_tk : null,
                     'nik' => $request->nik,
                     'agama' => $request->agama,
                     'warga_negara' => $request->warga_negara,
                     'anak_ke' => $request->anak_ke,
                     'jumlah_saudara' => $request->jumlah_saudara,
                     'alamat_lengkap' => $request->alamat_lengkap,
+                    'punya_nisn' => $request->punya_nisn,
+                    'nisn' => $request->punya_nisn ? $request->nisn : null,
                 ]);
                 // Update ayah/ibu atau wali
                 if ($request->tipe_wali === 'orang_tua') {
@@ -206,12 +216,17 @@ class FormulirController extends Controller
                     'nama_lengkap' => $request->nama_lengkap,
                     'tempat_lahir' => $request->tempat_lahir,
                     'tanggal_lahir' => $request->tanggal_lahir,
+                    'jenis_kelamin' => $request->jenis_kelamin,
+                    'pernah_tk' => $request->pernah_tk,
+                    'asal_tk' => $request->pernah_tk ? $request->asal_tk : null,
                     'nik' => $request->nik,
                     'agama' => $request->agama,
                     'warga_negara' => $request->warga_negara,
                     'anak_ke' => $request->anak_ke,
                     'jumlah_saudara' => $request->jumlah_saudara,
                     'alamat_lengkap' => $request->alamat_lengkap,
+                    'punya_nisn' => $request->punya_nisn,
+                    'nisn' => $request->punya_nisn ? $request->nisn : null,
                 ]);
                 $ayahId = null;
                 $ibuId = null;
