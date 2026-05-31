@@ -3,9 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\DaftarUlang;
-
+use App\Models\VerifikasiFormulir;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Models\CalonSiswa;
+use App\Models\Formulir;
+use App\Models\BuktiPembayaran;
+use App\Models\SeleksiTes;
+use App\Models\Penilaian;
+use App\Models\DaftarUlang;
+use App\Models\Kwitansi;
+use App\Models\VerifikasiPembayaran;
 use Illuminate\Http\Request;
 
 class PendaftarController extends Controller
@@ -29,6 +37,17 @@ class PendaftarController extends Controller
         // Filter tahun (berdasarkan created_at user atau tahun pendaftaran? Biarkan berdasarkan user)
         if ($request->filled('tahun')) {
             $query->whereYear('created_at', $request->tahun);
+        }
+
+        if ($request->filled('filter_nisn')) {
+            if ($request->filter_nisn === 'ya') {
+                $query->whereHas('formulir.calonSiswa', fn($q) => $q->where('punya_nisn', true));
+            } elseif ($request->filter_nisn === 'tidak') {
+                $query->where(function($q) {
+                    $q->whereDoesntHave('formulir.calonSiswa')
+                    ->orWhereHas('formulir.calonSiswa', fn($sq) => $sq->where('punya_nisn', false));
+                });
+            }
         }
 
         // Filter gelombang
@@ -99,6 +118,103 @@ class PendaftarController extends Controller
         return response()->json($pendaftar);
     }
 
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Pendaftar tidak ditemukan.'], 404);
+        }
+
+        // Pastikan yang dihapus adalah role 'calon_siswa' (bukan staff)
+        if (in_array($user->role, ['panitia', 'bendahara', 'kepala_sekolah'])) {
+            return response()->json(['message' => 'Tidak dapat menghapus akun staff.'], 403);
+        }
+
+        DB::beginTransaction();
+        try {
+            // 1. Hapus data daftar ulang (dan file-file terkait di storage)
+            $daftarUlang = DaftarUlang::where('user_id', $user->id)->first();
+            if ($daftarUlang) {
+                // Hapus file-file di storage (private disk)
+                $fileFields = ['akte_kelahiran', 'ijazah_tk', 'ktp_orang_tua', 'kartu_keluarga', 'nisn_file', 'surat_pernyataan', 'surat_pakta_integritas'];
+                foreach ($fileFields as $field) {
+                    if ($daftarUlang->$field) {
+                        \Storage::disk('private')->delete($daftarUlang->$field);
+                    }
+                }
+                $daftarUlang->delete();
+            }
+
+            // 2. Hapus seleksi tes dan penilaian
+            $seleksi = SeleksiTes::where('id_pendaftar', $user->id)->first();
+            if ($seleksi) {
+                $penilaian = Penilaian::where('id_seleksi_tes', $seleksi->id_seleksi_tes)->first();
+                if ($penilaian) {
+                    $penilaian->delete();
+                }
+                $seleksi->delete();
+            }
+
+            // 3. Hapus bukti pembayaran, verifikasi pembayaran, dan kwitansi
+            $buktiList = BuktiPembayaran::where('id_pendaftar', $user->id)->get();
+            foreach ($buktiList as $bukti) {
+                // Hapus file bukti dari storage
+                if ($bukti->file_path) {
+                    \Storage::disk('private')->delete($bukti->file_path);
+                }
+                // Hapus verifikasi pembayaran & kwitansi
+                $verifikasiPembayaran = VerifikasiPembayaran::where('id_bukti_pembayaran', $bukti->id_bukti_pembayaran)->first();
+                if ($verifikasiPembayaran) {
+                    if ($verifikasiPembayaran->kwitansi && $verifikasiPembayaran->kwitansi->file_path) {
+                        \Storage::disk('private')->delete($verifikasiPembayaran->kwitansi->file_path);
+                    }
+                    Kwitansi::where('id_verifikasi', $verifikasiPembayaran->id_verifikasi)->delete();
+                    $verifikasiPembayaran->delete();
+                }
+                $bukti->delete();
+            }
+
+            // 4. Hapus verifikasi formulir (jika ada)
+            $calonSiswa = CalonSiswa::where('user_id', $user->id)->first();
+                if ($calonSiswa) {
+                    $formulir = Formulir::where('id_calon_siswa', $calonSiswa->id)->first();
+                    if ($formulir) {
+                        // Hapus verifikasi formulir jika ada
+                        $verifikasiFormulir = VerifikasiFormulir::where('id_formulir', $formulir->id_formulir)->first();
+                        if ($verifikasiFormulir) {
+                            $verifikasiFormulir->delete();
+                        }
+                        // Hapus file upload formulir jika ada (opsional, sesuaikan dengan field yang ada)
+                        // if ($formulir->file_ktp) Storage::disk('private')->delete($formulir->file_ktp);
+                        $formulir->delete();
+                    }
+                    $calonSiswa->delete();
+                }
+
+            // 5. Hapus formulir dan calon siswa
+            $calonSiswa = CalonSiswa::where('user_id', $user->id)->first();
+            if ($calonSiswa) {
+                $formulir = Formulir::where('id_calon_siswa', $calonSiswa->id)->first();
+                if ($formulir) {
+                    // Hapus file upload formulir jika ada (misal scan KTP, dll) - sesuaikan field yang ada
+                    // Contoh: if ($formulir->file_ktp) Storage::disk('private')->delete($formulir->file_ktp);
+                    $formulir->delete();
+                }
+                $calonSiswa->delete();
+            }
+
+            // 6. Hapus user
+            $user->delete();
+
+            DB::commit();
+            return response()->json(['message' => 'Pendaftar beserta seluruh datanya berhasil dihapus.'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Gagal hapus pendaftar: ' . $e->getMessage());
+            return response()->json(['message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function show($id)
     {
         $user = User::where('role', 'pendaftar')
@@ -139,8 +255,17 @@ class PendaftarController extends Controller
 
     public function dokumenDaftarUlang($id)
     {
-        $user = User::where('role', 'pendaftar')->findOrFail($id);
-        $daftarUlang = DaftarUlang::where('user_id', $user->id)->first();
-        return response()->json($daftarUlang);
+        $user = User::find($id);
+        if (!$user) return response()->json(['message' => 'User not found'], 404);
+        
+        $du = DaftarUlang::where('user_id', $user->id)
+            ->with(['orangTua', 'wali'])
+            ->first();
+        
+        if (!$du) {
+            return response()->json(['message' => 'Belum daftar ulang'], 404);
+        }
+        
+        return response()->json($du);
     }
 }

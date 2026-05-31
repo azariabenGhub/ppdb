@@ -22,8 +22,8 @@ return new class extends Migration
             if (!Schema::hasColumn('daftar_ulang_orang_tua', 'jenis_kelamin')) {
                 $table->string('jenis_kelamin', 10)->nullable();
             }
-            if (!Schema::hasColumn('daftar_ulang_orang_tua', 'asal_sekolah')) {
-                $table->string('asal_sekolah')->nullable();
+            if (!Schema::hasColumn('daftar_ulang_orang_tua', 'asal_tk')) {
+                $table->string('asal_tk')->nullable();
             }
         });
 
@@ -41,7 +41,7 @@ return new class extends Migration
             if (!Schema::hasColumn('daftar_ulang_wali', 'jenis_kelamin')) {
                 $table->string('jenis_kelamin', 10)->nullable();
             }
-            if (!Schema::hasColumn('daftar_ulang_wali', 'asal_sekolah')) {
+            if (!Schema::hasColumn('daftar_ulang_wali', 'asal_tk')) {
                 $table->string('asal_tk')->nullable();
             }
         });
@@ -54,12 +54,12 @@ return new class extends Migration
     {
         Schema::table('daftar_ulang_orang_tua', function (Blueprint $table) {
             $table->dropColumn([
-                'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'asal_sekolah'
+                'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'asal_tk'
             ]);
         });
         Schema::table('daftar_ulang_wali', function (Blueprint $table) {
             $table->dropColumn([
-                'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'asal_sekolah'
+                'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'asal_tk'
             ]);
         });
     }

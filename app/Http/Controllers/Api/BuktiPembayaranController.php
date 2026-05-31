@@ -13,7 +13,7 @@ class BuktiPembayaranController extends Controller
     {
         $request->validate([
             'bukti_pembayaran' => 'required|image|mimes:jpg,png|max:2048',
-            'jenis_pembayaran' => 'required|in:formulir,masuk',
+            'jenis_pembayaran' => 'required|in:formulir,daftar_ulang',
         ]);
         
         $path = FileEncryptionHelper::encryptAndStore($request->file('bukti_pembayaran'), 'bukti_pembayaran');

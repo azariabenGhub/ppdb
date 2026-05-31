@@ -6,7 +6,6 @@ use App\Helpers\FileEncryptionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\CalonSiswa;
 use App\Models\DaftarUlang;
-use App\Models\DaftarUlangForm;
 use App\Models\DaftarUlangOrangTua;
 use App\Models\DaftarUlangWali;
 use App\Models\Formulir;
@@ -57,7 +56,6 @@ class DaftarUlangController extends Controller
                     'tempat_lahir' => $detail->tempat_lahir,
                     'tanggal_lahir' => $detail->tanggal_lahir,
                     'jenis_kelamin' => $detail->jenis_kelamin,
-                    'asal_tk' => $detail->asal_tk,
                     'alamat_domisili' => $detail->alamat_domisili,
                     'is_bukan_pindahan' => $detail->is_bukan_pindahan,
                     'tipe_wali' => $tipe,
@@ -247,7 +245,7 @@ class DaftarUlangController extends Controller
                         'tempat_lahir' => $request->tempat_lahir,
                         'tanggal_lahir' => $request->tanggal_lahir,
                         'jenis_kelamin' => $request->jenis_kelamin,
-                        'asal_sekolah' => $request->asal_sekolah,
+                        'asal_tk' => $request->asal_tk,
                         'alamat_domisili' => $request->alamat_domisili,
                         'is_bukan_pindahan' => $request->is_bukan_pindahan ?? false,
                         // Data ayah
@@ -274,7 +272,7 @@ class DaftarUlangController extends Controller
                         'tempat_lahir' => $request->tempat_lahir,
                         'tanggal_lahir' => $request->tanggal_lahir,
                         'jenis_kelamin' => $request->jenis_kelamin,
-                        'asal_sekolah' => $request->asal_sekolah,
+                        'asal_tk' => $request->asal_tk,
                         'alamat_domisili' => $request->alamat_domisili,
                         'is_bukan_pindahan' => $request->is_bukan_pindahan ?? false,
                         // Data wali
@@ -312,7 +310,7 @@ class DaftarUlangController extends Controller
                     'tempat_lahir' => $orangTua->tempat_lahir,
                     'tanggal_lahir' => $orangTua->tanggal_lahir,
                     'jenis_kelamin' => $orangTua->jenis_kelamin,
-                    'asal_sekolah' => $orangTua->asal_sekolah,
+                    'asal_tk' => $orangTua->asal_tk,
                     'alamat_domisili' => $orangTua->alamat_domisili,
                 ],
                 'orang_tua' => [
@@ -336,7 +334,7 @@ class DaftarUlangController extends Controller
                     'tempat_lahir' => $wali->tempat_lahir,
                     'tanggal_lahir' => $wali->tanggal_lahir,
                     'jenis_kelamin' => $wali->jenis_kelamin,
-                    'asal_sekolah' => $wali->asal_sekolah,
+                    'asal_tk' => $wali->asal_tk,
                     'alamat_domisili' => $wali->alamat_domisili,
                 ],
                 'wali' => [

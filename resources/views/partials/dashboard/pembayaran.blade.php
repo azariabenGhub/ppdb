@@ -14,7 +14,7 @@
                 <label style="font-size:0.85rem; font-weight:500; color:#444; margin-bottom:6px; display:block;">Jenis Pembayaran</label>
                 <select name="jenis_pembayaran" id="jenis_pembayaran">
                     <option value="formulir">Pembayaran Formulir</option>
-                    <option value="masuk" disabled>Pembayaran Masuk (menunggu formulir diterima)</option>
+                    <option value="daftar_ulang" disabled>Pembayaran Masuk (menunggu formulir diterima)</option>
                 </select>
 
                 <label style="font-size:0.85rem; font-weight:500; color:#444; margin-bottom:6px; display:block;">Bukti Pembayaran</label>

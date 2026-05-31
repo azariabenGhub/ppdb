@@ -115,10 +115,12 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
     Route::get('/pendaftar', [PendaftarController::class, 'index']);
     Route::get('/pendaftar/tahun-options', [PendaftarController::class, 'tahunOptions']);
     Route::get('/pendaftar/{id}', [PendaftarController::class, 'show']);
+    Route::delete('/pendaftar/{id}', [PendaftarController::class, 'destroy']);
     Route::get('/pendaftar/{id}/formulir', [PendaftarController::class, 'formulir']);
     Route::get('/pendaftar/{id}/daftar-ulang', [PendaftarController::class, 'dokumenDaftarUlang']);
 
-    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel']);
+    Route::get('/laporan/available-columns', [LaporanController::class, 'getAvailableColumns']);
+    Route::post('/laporan/export-excel', [LaporanController::class, 'exportExcel']);
     Route::get('/laporan/download-zip-du', [LaporanController::class, 'downloadArsipDaftarUlang']);
 });
 
@@ -132,6 +134,9 @@ Route::middleware(['auth:sanctum', 'role:Bendahara,kepala_sekolah'])->group(func
     // Verifikasi pembayaran
     Route::get('/bukti-pembayaran/semua', [BuktiPembayaranController::class, 'semua']);
     Route::post('/verifikasi-pembayaran', [VerifikasiPembayaranController::class, 'verifikasi']);
+    Route::get('/laporan/download-zip-pembayaran', [LaporanController::class, 'downloadArsipPembayaran']);
+    Route::get('/laporan/pembayaran/tahun-options', [LaporanController::class, 'tahunOptions']);
+    Route::get('/laporan/pembayaran/gelombang-options', [LaporanController::class, 'gelombangOptions']);
 });
 
 Route::middleware(['auth:sanctum', 'role:kepala_sekolah'])->group(function () {

@@ -474,6 +474,14 @@
                 </select>
             </div>
             <div>
+                <label>Status NISN: </label><br>
+                <select id="filter-nisn" style="padding: 6px 12px;">
+                    <option value="">Semua</option>
+                    <option value="ya">Sudah Punya NISN</option>
+                    <option value="tidak">Belum Punya NISN</option>
+                </select>
+            </div>
+            <div>
                 <label>Status Kelulusan: </label><br>
                 <select id="filter-kelulusan" style="padding: 6px 12px;">
                     <option value="">Semua</option>
@@ -627,17 +635,130 @@
     <div id="laporan" class="section" style="display:none;">
         <h2>Laporan</h2>
         <div style="display: flex; gap: 20px; margin-top: 20px;">
-            <button onclick="exportExcelLulus()"
-                style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                📊 Export Excel Pendaftar Lulus
+            <button onclick="openExportModal()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                📊 Export Excel Pendaftar Lulus (Pilih Kolom)
             </button>
-            <button onclick="downloadZipDaftarUlang()"
-                style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            <button onclick="downloadZipDaftarUlang()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 📦 Download Arsip Daftar Ulang (ZIP)
+            </button>
+            <button onclick="openModalFilterPembayaran()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                💳 Download Arsip Pembayaran (Bukti & Kwitansi)
             </button>
         </div>
         <div id="laporan-message" style="margin-top: 20px; color: #555;"></div>
     </div>
+
+    <!-- Modal Export Excel -->
+    <div id="modalExportExcel" style="display:none; position:fixed; top:5%; left:10%; width:80%; background:white; border:2px solid #1a4d2e; padding:20px; z-index:1002; max-height:85%; overflow:auto; border-radius:8px;">
+        <h3>Export Data Pendaftar Lulus</h3>
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <!-- Filter Tahun -->
+            <div>
+                <label>Tahun:</label><br>
+                <select id="export-filter-tahun" style="padding:6px;">
+                    <option value="">Semua Tahun</option>
+                </select>
+            </div>
+            <!-- Filter Gelombang -->
+            <div>
+                <label>Gelombang:</label><br>
+                <select id="export-filter-gelombang" style="padding:6px;">
+                    <option value="">Semua Gelombang</option>
+                </select>
+            </div>
+            <!-- Filter Status Formulir -->
+            <div>
+                <label>Status Formulir:</label><br>
+                <select id="export-filter-status-formulir" style="padding:6px;">
+                    <option value="">Semua</option>
+                    <option value="sudah">Sudah Mengisi</option>
+                    <option value="belum">Belum Mengisi</option>
+                </select>
+            </div>
+            <!-- Filter Kelulusan (karena export khusus lulus, bisa diabaikan tapi tetap disediakan) -->
+            <div>
+                <label>Kelulusan:</label><br>
+                <select id="export-filter-kelulusan" style="padding:6px;">
+                    <option value="lulus">Lulus (default)</option>
+                    <option value="tidak_lulus">Tidak Lulus</option>
+                    <option value="belum">Belum Dites</option>
+                </select>
+            </div>
+            <!-- Filter Status Daftar Ulang -->
+            <div>
+                <label>Status Daftar Ulang:</label><br>
+                <select id="export-filter-status-du" style="padding:6px;">
+                    <option value="">Semua</option>
+                    <option value="sudah">Sudah Daftar Ulang</option>
+                    <option value="belum">Belum Daftar Ulang</option>
+                    <option value="menunggu">Menunggu Verifikasi</option>
+                    <option value="diterima">Diterima</option>
+                    <option value="ditolak">Ditolak</option>
+                </select>
+            </div>
+            <!-- Filter NISN -->
+            <div>
+                <label>Status NISN:</label><br>
+                <select id="export-filter-nisn" style="padding:6px;">
+                    <option value="">Semua</option>
+                    <option value="ya">Sudah Punya NISN</option>
+                    <option value="tidak">Belum Punya NISN</option>
+                </select>
+            </div>
+            <!-- Search -->
+            <div>
+                <label>Cari (Nama/Email/No Induk):</label><br>
+                <input type="text" id="export-search" placeholder="Ketik keyword..." style="padding:6px; width:200px;">
+            </div>
+        </div>
+
+        <hr>
+        <h4>Pilih Kolom yang Akan Diekspor</h4>
+        <div id="export-column-checkboxes" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-height:300px; overflow-y:auto; border:1px solid #ccc; padding:10px;">
+            <!-- checkboxes akan diisi JS -->
+        </div>
+        <div style="margin-top:10px;">
+            <button onclick="selectAllColumns()">Pilih Semua</button>
+            <button onclick="deselectAllColumns()">Hapus Semua</button>
+        </div>
+        <div style="margin-top:20px; text-align:right;">
+            <button onclick="doExportExcel()" style="background:#1a4d2e; color:white; padding:8px 16px;">Export Excel</button>
+            <button onclick="closeExportModal()">Batal</button>
+        </div>
+    </div>
+    <div id="overlayExport" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001;"></div>
+
+    <!-- Modal Filter Arsip Pembayaran -->
+    <div id="modalFilterPembayaran" style="display:none; position:fixed; top:15%; left:25%; width:50%; background:white; border:2px solid #1a4d2e; padding:20px; z-index:1003; border-radius:8px;">
+        <h3>Filter Arsip Pembayaran</h3>
+        <div style="display:flex; flex-direction:column; gap:15px;">
+            <div>
+                <label>Jenis Pembayaran:</label><br>
+                <select id="filter-jenis-pembayaran" style="padding:6px; width:100%;">
+                    <option value="">Semua</option>
+                    <option value="formulir">Formulir</option>
+                    <option value="masuk">Daftar Ulang</option>
+                </select>
+            </div>
+            <div>
+                <label>Tahun:</label><br>
+                <select id="filter-tahun-pembayaran" style="padding:6px; width:100%;">
+                    <option value="">Semua Tahun</option>
+                </select>
+            </div>
+            <div>
+                <label>Gelombang:</label><br>
+                <select id="filter-gelombang-pembayaran" style="padding:6px; width:100%;">
+                    <option value="">Semua Gelombang</option>
+                </select>
+            </div>
+        </div>
+        <div style="margin-top:20px; text-align:right;">
+            <button onclick="downloadArsipPembayaranWithFilter()" style="background:#1a4d2e; color:white; padding:8px 16px;">Download</button>
+            <button onclick="tutupModalFilterPembayaran()">Batal</button>
+        </div>
+    </div>
+    <div id="overlayFilterPembayaran" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1002;"></div>
 
     <hr>
     <button id="logoutButton">Logout</button>
@@ -1726,11 +1847,13 @@
             const kelulusan = document.getElementById('filter-kelulusan').value;
             const statusDaftarUlang = document.getElementById('filter-status-du').value;
             const search = document.getElementById('search-input').value;
-
+            const filterNisn = document.getElementById('filter-nisn').value;
+            
             let url = `/api/pendaftar?page=${page}&sort_by=${sortBy}&sort_order=${sortOrder}`;
             if (tahun) url += `&tahun=${tahun}`;
             if (gelombang) url += `&gelombang=${gelombang}`;
             if (statusFormulir) url += `&status_formulir=${statusFormulir}`;
+            if (filterNisn) url += `&filter_nisn=${filterNisn}`;
             if (kelulusan) url += `&kelulusan=${kelulusan}`;
             if (statusDaftarUlang) url += `&status_daftar_ulang=${statusDaftarUlang}`;
             if (search) url += `&search=${encodeURIComponent(search)}`;
@@ -1763,6 +1886,10 @@
 
                 const kelulusan = p.kelulusan || '-';
                 const statusDu = p.status_daftar_ulang || '-';
+                
+                // Cek apakah role yang login adalah kepala_sekolah
+                const canDelete = (user.role === 'kepala_sekolah');
+                const deleteButton = canDelete ? `<button onclick="hapusPendaftar(${p.id})" style="color:red; margin-left:8px;">Hapus</button>` : '';
 
                 html += `<tr>
                     <td>${escapeHtml(noInduk)}</td>
@@ -1771,7 +1898,10 @@
                     <td>${statusForm}</td>
                     <td>${kelulusan}</td>
                     <td>${statusDu}</td>
-                    <td><button onclick="window.open('/staff/pendaftar/${p.id}', '_blank')">Detail</button></td>
+                    <td>
+                        <button onclick="window.open('/staff/pendaftar/${p.id}', '_blank')">Detail</button>
+                        ${deleteButton}
+                    </td>
                 </tr>`;
             });
             document.getElementById('tabel-pendaftar').innerHTML = html;
@@ -1917,6 +2047,27 @@
             }
         }
 
+        async function hapusPendaftar(id) {
+            if (!confirm('Anda yakin ingin menghapus pendaftar ini? Semua data termasuk formulir, pembayaran, jadwal tes, penilaian, dan dokumen daftar ulang akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.')) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/pendaftar/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert(result.message || 'Pendaftar berhasil dihapus.');
+                    loadPendaftar(); // reload tabel
+                } else {
+                    alert('Gagal: ' + (result.message || 'Terjadi kesalahan.'));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
         function tutupModalFormulir() {
             document.getElementById('modalFormulir').style.display = 'none';
         }
@@ -2039,12 +2190,176 @@
         }
 
         // laporan
-        async function exportExcelLulus() {
+        // Data kolom yang tersedia (sama seperti di export sebelumnya)
+        const allExportColumns = [
+            { value: 'no_pendaftaran', label: 'No. Induk Pendaftaran' },
+            { value: 'nama_pendaftar', label: 'Nama Pendaftar (User)' },
+            { value: 'email', label: 'Email' },
+            { value: 'nama_siswa', label: 'Nama Siswa' },
+            { value: 'tempat_lahir', label: 'Tempat Lahir' },
+            { value: 'tanggal_lahir', label: 'Tanggal Lahir' },
+            { value: 'jenis_kelamin', label: 'Jenis Kelamin' },
+            { value: 'nik', label: 'NIK' },
+            { value: 'agama', label: 'Agama' },
+            { value: 'warga_negara', label: 'Warga Negara' },
+            { value: 'anak_ke', label: 'Anak ke-' },
+            { value: 'jumlah_saudara', label: 'Jumlah Saudara' },
+            { value: 'alamat', label: 'Alamat Lengkap' },
+            { value: 'pernah_tk', label: 'Pernah TK' },
+            { value: 'asal_tk', label: 'Asal TK' },
+            { value: 'punya_nisn', label: 'Punya NISN' },
+            { value: 'nisn', label: 'NISN' },
+            { value: 'nama_ayah', label: 'Nama Ayah' },
+            { value: 'pekerjaan_ayah', label: 'Pekerjaan Ayah' },
+            { value: 'agama_ayah', label: 'Agama Ayah' },
+            { value: 'pendidikan_ayah', label: 'Pendidikan Ayah' },
+            { value: 'nik_ayah', label: 'NIK Ayah' },
+            { value: 'penghasilan_ayah', label: 'Penghasilan Ayah' },
+            { value: 'no_telp_ayah', label: 'No. Telp Ayah' },
+            { value: 'alamat_ayah', label: 'Alamat Ayah' },
+            { value: 'nama_ibu', label: 'Nama Ibu' },
+            { value: 'pekerjaan_ibu', label: 'Pekerjaan Ibu' },
+            { value: 'agama_ibu', label: 'Agama Ibu' },
+            { value: 'pendidikan_ibu', label: 'Pendidikan Ibu' },
+            { value: 'nik_ibu', label: 'NIK Ibu' },
+            { value: 'penghasilan_ibu', label: 'Penghasilan Ibu' },
+            { value: 'no_telp_ibu', label: 'No. Telp Ibu' },
+            { value: 'alamat_ibu', label: 'Alamat Ibu' },
+            { value: 'tipe_wali', label: 'Tipe Wali' },
+            { value: 'nama_wali', label: 'Nama Wali' },
+            { value: 'pekerjaan_wali', label: 'Pekerjaan Wali' },
+            { value: 'agama_wali', label: 'Agama Wali' },
+            { value: 'pendidikan_wali', label: 'Pendidikan Wali' },
+            { value: 'nik_wali', label: 'NIK Wali' },
+            { value: 'penghasilan_wali', label: 'Penghasilan Wali' },
+            { value: 'no_telp_wali', label: 'No. Telp Wali' },
+            { value: 'alamat_wali', label: 'Alamat Wali' },
+            { value: 'status_formulir', label: 'Status Formulir' },
+            { value: 'kelulusan', label: 'Kelulusan Tes' },
+            { value: 'jadwal_tes', label: 'Jadwal Tes' },
+            { value: 'kemampuan_membaca', label: 'Kemampuan Membaca' },
+            { value: 'kemampuan_menulis', label: 'Kemampuan Menulis' },
+            { value: 'kemampuan_berhitung', label: 'Kemampuan Berhitung' },
+            { value: 'baca_alquran', label: 'Baca Alquran' },
+            { value: 'narahubung', label: 'Narahubung (Daftar Ulang)' },
+            { value: 'alamat_domisili', label: 'Alamat Domisili (Daftar Ulang)' },
+        ];
+
+        // Mengisi dropdown tahun dan gelombang untuk modal export
+        async function loadExportFilters() {
+            // Tahun
+            const tahunRes = await fetch('/api/pendaftar/tahun-options', { headers: { 'Authorization': 'Bearer ' + token } });
+            if (tahunRes.ok) {
+                const tahunList = await tahunRes.json();
+                let tahunHtml = '<option value="">Semua Tahun</option>';
+                tahunList.forEach(t => tahunHtml += `<option value="${t}">${t}</option>`);
+                document.getElementById('export-filter-tahun').innerHTML = tahunHtml;
+            }
+            // Gelombang
+            const gelRes = await fetch('/api/gelombang', { headers: { 'Authorization': 'Bearer ' + token } });
+            const gelData = await gelRes.json();
+            let gelHtml = '<option value="">Semua Gelombang</option>';
+            gelData.forEach(g => gelHtml += `<option value="${g.id}">Gelombang ${g.nomor_gelombang} - ${g.tahun}</option>`);
+            document.getElementById('export-filter-gelombang').innerHTML = gelHtml;
+        }
+
+        function renderExportColumnCheckboxes() {
+            const container = document.getElementById('export-column-checkboxes');
+            container.innerHTML = '';
+            allExportColumns.forEach(col => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" value="${col.value}" class="export-column-checkbox" checked>
+                        ${col.label}
+                    </label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function selectAllColumns() {
+            document.querySelectorAll('.export-column-checkbox').forEach(cb => cb.checked = true);
+        }
+        function deselectAllColumns() {
+            document.querySelectorAll('.export-column-checkbox').forEach(cb => cb.checked = false);
+        }
+
+        function openExportModal() {
+            loadExportFilters();
+            renderExportColumnCheckboxes();
+            document.getElementById('modalExportExcel').style.display = 'block';
+            document.getElementById('overlayExport').style.display = 'block';
+        }
+
+        function closeExportModal() {
+            document.getElementById('modalExportExcel').style.display = 'none';
+            document.getElementById('overlayExport').style.display = 'none';
+        }
+
+        async function doExportExcel() {
+            // Ambil nilai filter dari modal
+            const filters = {
+                tahun: document.getElementById('export-filter-tahun').value,
+                gelombang: document.getElementById('export-filter-gelombang').value,
+                status_formulir: document.getElementById('export-filter-status-formulir').value,
+                kelulusan: document.getElementById('export-filter-kelulusan').value,
+                status_daftar_ulang: document.getElementById('export-filter-status-du').value,
+                nisn: document.getElementById('export-filter-nisn').value,
+                search: document.getElementById('export-search').value
+            };
+            // Ambil kolom yang dipilih
+            const selectedColumns = [];
+            document.querySelectorAll('.export-column-checkbox:checked').forEach(cb => {
+                selectedColumns.push(cb.value);
+            });
+            try {
+                const res = await fetch('/api/laporan/export-excel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ columns: selectedColumns, ...filters })
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'pendaftar_lulus.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    closeExportModal();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal export: ' + (err.message || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function exportExcelWithColumns() {
+            const selected = [];
+            const filterNisn = document.getElementById('export-filter-nisn').value;
+            document.querySelectorAll('#kolom-list .col-checkbox:checked').forEach(cb => {
+                selected.push(cb.value);
+            });
+            if (selected.length === 0) {
+                alert('Pilih minimal satu kolom.');
+                return;
+            }
+            closeExportModal();
             const msg = document.getElementById('laporan-message');
             msg.innerHTML = '⏳ Sedang memproses export Excel...';
             try {
                 const res = await fetch('/api/laporan/export-excel', {
-                    headers: { 'Authorization': 'Bearer ' + token }
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ columns: selected, filter_nisn: filterNisn})
                 });
                 if (res.ok) {
                     const blob = await res.blob();
@@ -2065,11 +2380,88 @@
             }
         }
 
+        // Buka modal filter pembayaran
+        async function openModalFilterPembayaran() {
+            loadTahunPembayaran();
+            loadGelombangPembayaran();
+            document.getElementById('modalFilterPembayaran').style.display = 'block';
+            document.getElementById('overlayFilterPembayaran').style.display = 'block';
+        }
+
+        function tutupModalFilterPembayaran() {
+            document.getElementById('modalFilterPembayaran').style.display = 'none';
+            document.getElementById('overlayFilterPembayaran').style.display = 'none';
+        }
+
+        // Load tahun dari endpoint
+        async function loadTahunPembayaran() {
+            try {
+                const res = await fetch('/api/laporan/pembayaran/tahun-options', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const tahunList = await res.json();
+                let html = '<option value="">Semua Tahun</option>';
+                tahunList.forEach(t => html += `<option value="${t}">${t}</option>`);
+                document.getElementById('filter-tahun-pembayaran').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+
+        // Load gelombang dari endpoint
+        async function loadGelombangPembayaran() {
+            try {
+                const res = await fetch('/api/laporan/pembayaran/gelombang-options', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const gelList = await res.json();
+                let html = '<option value="">Semua Gelombang</option>';
+                gelList.forEach(g => html += `<option value="${g.id}">Gelombang ${g.nomor_gelombang} - ${g.tahun}</option>`);
+                document.getElementById('filter-gelombang-pembayaran').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+
+        // Download dengan filter
+        async function downloadArsipPembayaranWithFilter() {
+            const jenis = document.getElementById('filter-jenis-pembayaran').value;
+            const tahun = document.getElementById('filter-tahun-pembayaran').value;
+            const gelombang = document.getElementById('filter-gelombang-pembayaran').value;
+            
+            let url = '/api/laporan/download-zip-pembayaran?';
+            const params = [];
+            if (jenis) params.push(`jenis=${encodeURIComponent(jenis)}`);
+            if (tahun) params.push(`tahun=${encodeURIComponent(tahun)}`);
+            if (gelombang) params.push(`gelombang=${encodeURIComponent(gelombang)}`);
+            url += params.join('&');
+            
+            const msg = document.getElementById('laporan-message');
+            msg.innerHTML = '⏳ Sedang mengompres arsip pembayaran... Proses ini mungkin memakan waktu.';
+            try {
+                const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = 'arsip_pembayaran.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(blobUrl);
+                    msg.innerHTML = '✅ Download arsip pembayaran berhasil.';
+                    tutupModalFilterPembayaran();
+                } else {
+                    const err = await res.json();
+                    msg.innerHTML = '❌ Gagal: ' + (err.message || 'Unknown error');
+                }
+            } catch (err) {
+                msg.innerHTML = '❌ Error: ' + err.message;
+            }
+        }
+
         async function downloadZipDaftarUlang() {
             const msg = document.getElementById('laporan-message');
-            msg.innerHTML = '⏳ Sedang mengompres dokumen daftar ulang... Proses ini mungkin memakan waktu.';
+            msg.innerHTML = '⏳ Sedang mengompres arsip pembayaran... Proses ini mungkin memakan waktu.';
             try {
-                const res = await fetch('/api/laporan/download-zip-du', {
+                const res = await fetch('/api/laporan/download-pembayaran', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
                 if (res.ok) {
@@ -2077,15 +2469,15 @@
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'arsip_daftar_ulang.zip';
+                    a.download = 'arsip_pembayaran.zip';
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
                     window.URL.revokeObjectURL(url);
-                    msg.innerHTML = '✅ Download ZIP berhasil.';
+                    msg.innerHTML = '✅ Download arsip pembayaran berhasil.';
                 } else {
-                    const errText = await res.text();
-                    msg.innerHTML = '❌ Gagal download ZIP: ' + errText;
+                    const err = await res.json();
+                    msg.innerHTML = '❌ Gagal download arsip: ' + (err.message || 'Unknown error');
                 }
             } catch (err) {
                 msg.innerHTML = '❌ Error: ' + err.message;
