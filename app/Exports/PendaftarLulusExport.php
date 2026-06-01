@@ -80,7 +80,6 @@ class PendaftarLulusExport implements FromQuery, WithHeadings, WithMapping, Shou
     public function query()
     {
         $query = User::where('role', 'pendaftar')
-            ->whereHas('seleksiTes', fn($q) => $q->where('kelulusan_tes', 'lulus'))
             ->with([
                 'formulir.calonSiswa',
                 'formulir.ayah',
@@ -90,6 +89,21 @@ class PendaftarLulusExport implements FromQuery, WithHeadings, WithMapping, Shou
                 'daftarUlang.orangTua',
                 'daftarUlang.wali'
             ]);
+
+        // ========== FILTER KELULUSAN ==========
+        $kelulusanFilter = $this->filters['kelulusan'] ?? '';
+        if ($kelulusanFilter && $kelulusanFilter !== '') {
+            if ($kelulusanFilter === 'belum') {
+                // Belum dites = tidak memiliki relasi seleksiTes
+                $query->whereDoesntHave('seleksiTes');
+            } else {
+                // Lulus atau tidak lulus
+                $query->whereHas('seleksiTes', fn($q) => $q->where('kelulusan_tes', $kelulusanFilter));
+            }
+        } else {
+            // Default: hanya pendaftar yang lulus (karena ini export pendaftar lulus)
+            $query->whereHas('seleksiTes', fn($q) => $q->where('kelulusan_tes', 'lulus'));
+        }
 
         // Filter tahun
         if (!empty($this->filters['tahun'])) {
@@ -106,10 +120,6 @@ class PendaftarLulusExport implements FromQuery, WithHeadings, WithMapping, Shou
             } elseif ($this->filters['status_formulir'] === 'belum') {
                 $query->whereDoesntHave('formulir');
             }
-        }
-        // Filter kelulusan (redundant karena sudah lulus, tapi untuk fleksibilitas)
-        if (!empty($this->filters['kelulusan']) && $this->filters['kelulusan'] !== 'lulus') {
-            // Jika filter memilih selain lulus, tidak akan ada hasil, biarkan saja
         }
         // Filter status daftar ulang
         if (!empty($this->filters['status_daftar_ulang'])) {
@@ -129,17 +139,17 @@ class PendaftarLulusExport implements FromQuery, WithHeadings, WithMapping, Shou
             } elseif ($this->filters['nisn'] === 'tidak') {
                 $query->where(function($q) {
                     $q->whereDoesntHave('formulir.calonSiswa')
-                      ->orWhereHas('formulir.calonSiswa', fn($sq) => $sq->where('punya_nisn', false));
+                    ->orWhereHas('formulir.calonSiswa', fn($sq) => $sq->where('punya_nisn', false));
                 });
             }
         }
-        // Filter search (nama, email, no_pendaftaran)
+        // Filter search
         if (!empty($this->filters['search'])) {
             $search = $this->filters['search'];
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('formulir', fn($q2) => $q2->where('no_pendaftaran', 'like', "%{$search}%"));
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhereHas('formulir', fn($q2) => $q2->where('no_pendaftaran', 'like', "%{$search}%"));
             });
         }
 

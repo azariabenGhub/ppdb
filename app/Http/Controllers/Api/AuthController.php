@@ -2,6 +2,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,14 +15,14 @@ class AuthController extends Controller
     /**
      * Register a new user and issue a Sanctum token.
      */
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
+        $validated = $request->validated();
+        
+        // Hapus token reCAPTCHA dan password_confirmation
+        unset($validated['g-recaptcha-response']);
+        unset($validated['password_confirmation']);
+        
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -40,12 +42,10 @@ class AuthController extends Controller
     /**
      * Authenticate user and issue a Sanctum token.
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        // Ambil hanya email dan password, jangan sertakan token reCAPTCHA
+        $credentials = $request->only('email', 'password');
 
         $user = User::where('email', $credentials['email'])->first();
 
@@ -53,7 +53,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Email atau password salah'], 401);
         }
 
-        // Cek jika user terdaftar via Google
         if ($user->google_id !== null) {
             return response()->json(['message' => 'Akun ini terdaftar dengan Google. Silakan login menggunakan Google.'], 401);
         }

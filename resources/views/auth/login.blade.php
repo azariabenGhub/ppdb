@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPDB MI Ziyadatul Ihsan - Login</title>
     @vite('resources/css/style.css')
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     <!-- <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'> -->
 </head>
 
@@ -22,6 +23,7 @@
         </section>
         <section class="auth-content">
             <div class="form-card">
+                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
                 <div class="form-header">
                     <h2>Login</h2>
                     <p>Silahkan isi form berikut untuk masuk ke akun anda.</p>
@@ -70,33 +72,51 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            const formData = {
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
-            };
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    const role = data.user.role;
-                    if (role === 'panitia' || role === 'kepala_sekolah' || role === 'bendahara') {
-                        window.location.href = '/staff-dashboard';
-                    } else {
-                        window.location.href = '/dashboard';
+
+            // Tampilkan loading atau disable button sementara
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Memproses...';
+
+            grecaptcha.ready(function () {
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', { action: 'login' }).then(async function (token) {
+                    document.getElementById('g-recaptcha-response').value = token;
+
+                    const formData = {
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value,
+                        'g-recaptcha-response': token
+                    };
+
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            localStorage.setItem('access_token', data.access_token);
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            const role = data.user.role;
+                            if (role === 'panitia' || role === 'kepala_sekolah' || role === 'bendahara') {
+                                window.location.href = '/staff-dashboard';
+                            } else {
+                                window.location.href = '/dashboard';
+                            }
+                        } else {
+                            document.getElementById('message').innerText = data.message || 'Login gagal';
+                            submitBtn.disabled = false;
+                            submitBtn.innerText = 'MASUK';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('message').innerText = 'Terjadi kesalahan jaringan.';
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'MASUK';
                     }
-                } else {
-                    document.getElementById('message').innerText = data.message || 'Login gagal';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('message').innerText = 'Terjadi kesalahan jaringan.';
-            }
+                });
+            });
         });
     </script>
 </body>

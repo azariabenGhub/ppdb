@@ -32,15 +32,46 @@ class LaporanController extends Controller
     }
 
     // Download ZIP semua dokumen daftar ulang dengan struktur folder
-    public function downloadArsipDaftarUlang()
+    public function downloadArsipDaftarUlang(Request $request)
     {
-        // Load relasi user, formulir, dan gelombang dari formulir
-        $daftarUlangList = DaftarUlang::with(['user.formulir.gelombang'])
-            ->where('status', 'diterima')
-            ->get();
+        $query = DaftarUlang::with([
+            'user.formulir.calonSiswa',
+            'user.formulir.ayah',
+            'user.formulir.ibu',
+            'user.formulir.wali',
+            'user.formulir.gelombang'
+        ]);
+
+        // Filter status daftar ulang
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            $query->where('status', 'diterima');
+        }
+
+        // Filter tahun (berdasarkan created_at daftar ulang)
+        if ($request->filled('tahun')) {
+            $query->whereYear('created_at', $request->tahun);
+        }
+
+        // Filter gelombang
+        if ($request->filled('gelombang')) {
+            $query->whereHas('user.formulir', fn($q) => $q->where('id_gelombang', $request->gelombang));
+        }
+
+        // Filter search (nama pendaftar atau no pendaftaran)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', fn($uq) => $uq->where('name', 'like', "%{$search}%"))
+                  ->orWhereHas('user.formulir', fn($fq) => $fq->where('no_pendaftaran', 'like', "%{$search}%"));
+            });
+        }
+
+        $daftarUlangList = $query->get();
 
         if ($daftarUlangList->isEmpty()) {
-            return response()->json(['message' => 'Tidak ada data daftar ulang yang diterima.'], 404);
+            return response()->json(['message' => 'Tidak ada data daftar ulang yang sesuai filter.'], 404);
         }
 
         $zip = new ZipArchive();
@@ -58,25 +89,34 @@ class LaporanController extends Controller
         foreach ($daftarUlangList as $du) {
             $user = $du->user;
             $formulir = $user->formulir;
-
             if (!$formulir || !$formulir->no_pendaftaran) {
                 continue;
             }
 
-            $noPendaftaran = $formulir->no_pendaftaran;
-            $tahun = $formulir->created_at ? $formulir->created_at->format('Y') : date('Y');
-            $gelombang = $formulir->gelombang ? $formulir->gelombang->nomor_gelombang : null;
+            $calon = $formulir->calonSiswa;
+            $ayah = $formulir->ayah;
+            $ibu = $formulir->ibu;
+            $wali = $formulir->wali;
+            $tipeWali = $formulir->tipe_wali;
 
-            // Fallback: jika gelombang masih null, coba ekstrak dari nomor pendaftaran (format: PPDB/2026/1/0001)
-            if (!$gelombang && preg_match('/\/(\d+)\/\d{4}$/', $noPendaftaran, $matches)) {
-                $gelombang = $matches[1];
+            // Buat nama folder sesuai permintaan
+            $namaFolder = $formulir->no_pendaftaran;
+            if ($tipeWali === 'orang_tua') {
+                $namaFolder .= '_' . ($ayah ? str_replace(' ', '_', $ayah->nama) : 'ayah');
+                $namaFolder .= '_' . ($ibu ? str_replace(' ', '_', $ibu->nama) : 'ibu');
+            } else {
+                $namaFolder .= '_' . ($wali ? str_replace(' ', '_', $wali->nama) : 'wali');
+                $namaFolder .= '_' . ($ibu ? str_replace(' ', '_', $ibu->nama) : 'ibu');
             }
+            $namaFolder .= '_' . ($calon ? str_replace(' ', '_', $calon->nama_lengkap) : 'siswa');
+            // Bersihkan karakter berbahaya
+            $namaFolder = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $namaFolder);
 
-            $gelombangLabel = $gelombang ? "Gelombang_{$gelombang}" : 'Gelombang_unknown';
-            $safeNoPendaftaran = str_replace('/', '-', $noPendaftaran);
-            $folderPath = "{$tahun}/{$gelombangLabel}/{$safeNoPendaftaran}";
+            $tahun = $du->created_at ? $du->created_at->format('Y') : date('Y');
+            $gelombang = $formulir->gelombang ? $formulir->gelombang->nomor_gelombang : 'unknown';
+            $basePath = "daftar_ulang/{$tahun}/Gelombang_{$gelombang}/{$namaFolder}";
 
-            // Daftar file yang akan ditambahkan (sesuai field di tabel daftar_ulang)
+            // Daftar file
             $files = [
                 'akte_kelahiran' => $du->akte_kelahiran,
                 'ijazah_tk' => $du->ijazah_tk,
@@ -88,24 +128,42 @@ class LaporanController extends Controller
             ];
 
             foreach ($files as $key => $path) {
-                if (!$path)
-                    continue;
-                if (!Storage::disk('private')->exists($path))
-                    continue;
+                if (!$path) continue;
+                if (!Storage::disk('private')->exists($path)) continue;
 
                 $content = FileEncryptionHelper::getDecryptedContent($path);
-                if ($content === false)
-                    continue;
+                if ($content === false) continue;
 
                 $extension = $this->detectExtension($path, $content);
                 $fileName = $key . $extension;
-                $zip->addFromString($folderPath . '/' . $fileName, $content);
+                $zip->addFromString($basePath . '/' . $fileName, $content);
             }
         }
 
         $zip->close();
-
         return response()->download($zipPath, $zipName)->deleteFileAfterSend(true);
+    }
+
+    public function tahunOptionsDU()
+    {
+        $tahun = DaftarUlang::selectRaw('YEAR(created_at) as tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
+        return response()->json($tahun);
+    }
+
+    // Opsi gelombang untuk dropdown
+    public function gelombangOptionsDU()
+    {
+        $gelombangIds = DaftarUlang::whereHas('user.formulir.gelombang')
+            ->with('user.formulir.gelombang')
+            ->get()
+            ->pluck('user.formulir.gelombang')
+            ->filter()
+            ->unique('id')
+            ->values();
+        return response()->json($gelombangIds);
     }
 
     public function downloadArsipPembayaran(Request $request)

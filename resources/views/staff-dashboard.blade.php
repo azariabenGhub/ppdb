@@ -638,7 +638,7 @@
             <button onclick="openExportModal()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 📊 Export Excel Pendaftar Lulus (Pilih Kolom)
             </button>
-            <button onclick="downloadZipDaftarUlang()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            <button onclick="openModalFilterDU()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
                 📦 Download Arsip Daftar Ulang (ZIP)
             </button>
             <button onclick="openModalFilterPembayaran()" style="padding: 10px 20px; background: #1a4d2e; color: white; border: none; border-radius: 5px; cursor: pointer;">
@@ -728,6 +728,43 @@
     </div>
     <div id="overlayExport" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001;"></div>
 
+    <!-- Modal Filter Arsip Daftar Ulang -->
+    <div id="modalFilterDU" style="display:none; position:fixed; top:15%; left:25%; width:50%; background:white; border:2px solid #1a4d2e; padding:20px; z-index:1003; border-radius:8px;">
+        <h3>Filter Arsip Daftar Ulang</h3>
+        <div style="display:flex; flex-direction:column; gap:15px;">
+            <div>
+                <label>Status Daftar Ulang:</label><br>
+                <select id="filter-status-du" style="padding:6px; width:100%;">
+                    <option value="">Semua (diterima)</option>
+                    <option value="diterima">Diterima</option>
+                    <option value="ditolak">Ditolak</option>
+                    <option value="menunggu">Menunggu</option>
+                </select>
+            </div>
+            <div>
+                <label>Tahun:</label><br>
+                <select id="filter-tahun-du" style="padding:6px; width:100%;">
+                    <option value="">Semua Tahun</option>
+                </select>
+            </div>
+            <div>
+                <label>Gelombang:</label><br>
+                <select id="filter-gelombang-du" style="padding:6px; width:100%;">
+                    <option value="">Semua Gelombang</option>
+                </select>
+            </div>
+            <div>
+                <label>Cari (Nama/No Induk):</label><br>
+                <input type="text" id="filter-search-du" placeholder="Ketik keyword..." style="padding:6px; width:100%;">
+            </div>
+        </div>
+        <div style="margin-top:20px; text-align:right;">
+            <button onclick="downloadArsipDUWithFilter()" style="background:#1a4d2e; color:white; padding:8px 16px;">Download</button>
+            <button onclick="tutupModalFilterDU()">Batal</button>
+        </div>
+    </div>
+    <div id="overlayFilterDU" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1002;"></div>
+    
     <!-- Modal Filter Arsip Pembayaran -->
     <div id="modalFilterPembayaran" style="display:none; position:fixed; top:15%; left:25%; width:50%; background:white; border:2px solid #1a4d2e; padding:20px; z-index:1003; border-radius:8px;">
         <h3>Filter Arsip Pembayaran</h3>
@@ -2457,27 +2494,76 @@
             }
         }
 
-        async function downloadZipDaftarUlang() {
-            const msg = document.getElementById('laporan-message');
-            msg.innerHTML = '⏳ Sedang mengompres arsip pembayaran... Proses ini mungkin memakan waktu.';
+        // Buka modal filter daftar ulang (langsung terbuka)
+        function openModalFilterDU() {
+            document.getElementById('modalFilterDU').style.display = 'block';
+            document.getElementById('overlayFilterDU').style.display = 'block';
+            loadTahunDU();
+            loadGelombangDU();
+        }
+
+        function tutupModalFilterDU() {
+            document.getElementById('modalFilterDU').style.display = 'none';
+            document.getElementById('overlayFilterDU').style.display = 'none';
+        }
+
+        async function loadTahunDU() {
             try {
-                const res = await fetch('/api/laporan/download-pembayaran', {
+                const res = await fetch('/api/laporan/daftar-ulang/tahun-options', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
+                const tahunList = await res.json();
+                let html = '<option value="">Semua Tahun</option>';
+                tahunList.forEach(t => html += `<option value="${t}">${t}</option>`);
+                document.getElementById('filter-tahun-du').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadGelombangDU() {
+            try {
+                const res = await fetch('/api/laporan/daftar-ulang/gelombang-options', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const gelList = await res.json();
+                let html = '<option value="">Semua Gelombang</option>';
+                gelList.forEach(g => html += `<option value="${g.id}">Gelombang ${g.nomor_gelombang} - ${g.tahun}</option>`);
+                document.getElementById('filter-gelombang-du').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+
+        async function downloadArsipDUWithFilter() {
+            const status = document.getElementById('filter-status-du').value;
+            const tahun = document.getElementById('filter-tahun-du').value;
+            const gelombang = document.getElementById('filter-gelombang-du').value;
+            const search = document.getElementById('filter-search-du').value;
+            
+            let url = '/api/laporan/download-zip-du?';
+            const params = [];
+            if (status) params.push(`status=${encodeURIComponent(status)}`);
+            if (tahun) params.push(`tahun=${encodeURIComponent(tahun)}`);
+            if (gelombang) params.push(`gelombang=${encodeURIComponent(gelombang)}`);
+            if (search) params.push(`search=${encodeURIComponent(search)}`);
+            url += params.join('&');
+            
+            const msg = document.getElementById('laporan-message');
+            msg.innerHTML = '⏳ Sedang mengompres arsip daftar ulang... Proses ini mungkin memakan waktu.';
+            try {
+                const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
                 if (res.ok) {
                     const blob = await res.blob();
-                    const url = window.URL.createObjectURL(blob);
+                    const blobUrl = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'arsip_pembayaran.zip';
+                    a.href = blobUrl;
+                    a.download = 'arsip_daftar_ulang.zip';
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
-                    window.URL.revokeObjectURL(url);
-                    msg.innerHTML = '✅ Download arsip pembayaran berhasil.';
+                    window.URL.revokeObjectURL(blobUrl);
+                    msg.innerHTML = '✅ Download arsip daftar ulang berhasil.';
+                    tutupModalFilterDU();
                 } else {
                     const err = await res.json();
-                    msg.innerHTML = '❌ Gagal download arsip: ' + (err.message || 'Unknown error');
+                    msg.innerHTML = '❌ Gagal: ' + (err.message || 'Unknown error');
                 }
             } catch (err) {
                 msg.innerHTML = '❌ Error: ' + err.message;

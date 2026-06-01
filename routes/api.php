@@ -121,6 +121,8 @@ Route::middleware(['auth:sanctum', 'role:panitia,kepala_sekolah'])->group(functi
 
     Route::get('/laporan/available-columns', [LaporanController::class, 'getAvailableColumns']);
     Route::post('/laporan/export-excel', [LaporanController::class, 'exportExcel']);
+    Route::get('/laporan/daftar-ulang/tahun-options', [LaporanController::class, 'tahunOptionsDU']);
+    Route::get('/laporan/daftar-ulang/gelombang-options', [LaporanController::class, 'gelombangOptionsDU']);
     Route::get('/laporan/download-zip-du', [LaporanController::class, 'downloadArsipDaftarUlang']);
 });
 

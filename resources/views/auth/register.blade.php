@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPDB MI Ziyadatul Ihsan - Buat Akun</title>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'>
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     @vite('resources/css/style.css')
 </head>
 
@@ -31,13 +32,16 @@
                 </div>
 
                 <form id="registerForm" action="" class="auth-form">
+                    <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
                     <div class="input-group">
                         <label for="nama">Nama</label>
-                        <input type="text" name="nama" id="name" placeholder="Nama Lengkap" value="{{ old('name', $name ?? '') }}">
+                        <input type="text" name="nama" id="name" placeholder="Nama Lengkap"
+                            value="{{ old('name', $name ?? '') }}">
                     </div>
                     <div class="input-group">
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" placeholder="Email Aktif" value="{{ old('email', $email ?? '') }}">
+                        <input type="email" name="email" id="email" placeholder="Email Aktif"
+                            value="{{ old('email', $email ?? '') }}">
                     </div>
                     <div class="input-group">
                         <label for="password">Kata Sandi</label>
@@ -79,40 +83,50 @@
         document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                password_confirmation: document.getElementById('password_confirmation').value
-            };
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Memproses...';
 
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+            grecaptcha.ready(function () {
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', { action: 'register' }).then(async function (token) {
+                    document.getElementById('g-recaptcha-response').value = token;
+
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value,
+                        password_confirmation: document.getElementById('password_confirmation').value,
+                        'g-recaptcha-response': token
+                    };
+
+                    try {
+                        const response = await fetch('/api/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            localStorage.setItem('access_token', data.access_token);
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            window.location.href = '/dashboard';
+                        } else {
+                            let errorMsg = data.message || 'Registrasi gagal';
+                            if (data.errors) {
+                                errorMsg = Object.values(data.errors).flat().join(', ');
+                            }
+                            document.getElementById('message').innerText = errorMsg;
+                            submitBtn.disabled = false;
+                            submitBtn.innerText = 'SIMPAN';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('message').innerText = 'Terjadi kesalahan jaringan.';
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'SIMPAN';
+                    }
                 });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Simpan token ke localStorage
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-
-                    // Redirect ke dashboard
-                    window.location.href = '/dashboard';
-                } else {
-                    // Tampilkan pesan error (misal validasi)
-                    document.getElementById('message').innerText = JSON.stringify(data);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('message').innerText = 'Terjadi kesalahan jaringan.';
-            }
+            });
         });
     </script>
 </body>

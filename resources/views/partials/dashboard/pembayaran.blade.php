@@ -108,7 +108,10 @@
         });
         const result = await res.json();
         if (result.data && result.data.status === 'diterima') {
-            document.querySelector('#jenis_pembayaran option[value="masuk"]').disabled = false;
+            const daftarUlangOption = document.querySelector('#jenis_pembayaran option[value="daftar_ulang"]');
+            if (daftarUlangOption) {
+                daftarUlangOption.disabled = false;
+            }
         }
     }
 </script>
