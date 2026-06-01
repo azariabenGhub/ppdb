@@ -68,7 +68,13 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
-        ]
+        ],
+        "vercel": [
+            "npm run build",
+            "mkdir -p /vercel/output/static",
+            "cp -r public/build /vercel/output",
+            "php artisan migrate --force"
+            ]
     },
     "extra": {
         "laravel": {
