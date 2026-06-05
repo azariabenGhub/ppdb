@@ -161,17 +161,17 @@
                         ${readonly} 
                         placeholder="${placeholder}">
                 </div>
-<div class="input-row">
-        <div class="input-group"><label>Nama Lengkap</label><input type="text" id="nama_lengkap" value="${v('nama_lengkap')}" placeholder="Penulisan nama harus sesuai dengan kartu keluarga"></div>
-        <div class="input-group">
-            <label>Jenis Kelamin</label>
-            <select id="jenis_kelamin">
-                <option value="">Pilih Jenis Kelamin</option>
-                <option value="Laki-laki" ${selectedL}>Laki-laki</option>
-                <option value="Perempuan" ${selectedP}>Perempuan</option>
-            </select>
-        </div>
-    </div>
+                <div style="display: grid; grid-template-columns: 10fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="input-group"><label>Nama Lengkap</label><input type="text" id="nama_lengkap" value="${v('nama_lengkap')}" placeholder="Penulisan nama harus sesuai dengan kartu keluarga"></div>
+                    <div class="input-group">
+                        <label>Jenis Kelamin</label>
+                        <select id="jenis_kelamin">
+                            <option value="">Pilih Jenis Kelamin</option>
+                            <option value="Laki-laki" ${selectedL}>Laki-laki</option>
+                            <option value="Perempuan" ${selectedP}>Perempuan</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="input-row">
                     <div class="input-group"><label>Tempat Lahir</label><input type="text" id="tempat_lahir" value="${v('tempat_lahir')}" placeholder="Contoh: Jakarta"></div>
                     <div class="input-group"><label>Tanggal Lahir</label><input type="date" id="tanggal_lahir" value="${v('tanggal_lahir')}"></div>
@@ -442,30 +442,7 @@
                 const data = result.data;
 
                 if (data && data.status === 'diterima') {
-                    const gel = await getGelombangAktif();
-                    konten.innerHTML = `
-                        ${gel ? infoBiayaGelombang(gel) : ''}
-                        <div class="form-header-card">
-                            <div class="school-brand">
-                                <img src="/storage/assets/logo-mizi.png" alt="Logo">
-                                <div class="brand-text">
-                                    <p>YAYASAN PENDIDIKAN ISLAM ZIYADATUL IHSAN</p>
-                                    <h2>MADRASAH IBTIDAIYAH</h2>
-                                </div>
-                            </div>
-                            ${stepperHtml(3)}
-                        </div>
-                        <div class="success-card">
-                            <div class="success-icon-wrapper">
-                                <i class="fa-regular fa-check-circle"></i>
-                            </div>
-                            <h2 class="success-title">Formulir Pendaftaran Diterima</h2>
-                            <div class="success-text">
-                                <p>Selamat! Formulir pendaftaran Anda telah diterima dan diverifikasi oleh panitia.</p>
-                                <p>Silakan melanjutkan ke tahap berikutnya.</p>
-                            </div>
-                        </div>
-                    `;
+                    konten.innerHTML = '<p>Formulir Anda sudah diterima.</p>';
                     return;
                 }
                 const gel = await getGelombangAktif();
@@ -489,52 +466,26 @@
             }
         }
 
-async function submitForm() {
-    const payload = getFormData();
-
-    // 1. VALIDASI REQUIRED MANUAL
-    // Cek apakah data-data krusial kosong
-    if (!payload.nama_lengkap || !payload.jenis_kelamin || !payload.tempat_lahir || !payload.tanggal_lahir || !payload.nik || !payload.agama) {
-        alert('Mohon lengkapi semua data wajib pada formulir!');
-        return; // Hentikan proses kalau ada yang kosong
-    }
-
-    // 2. MENCEGAH DOUBLE SUBMIT (Frontend Lock)
-    // Cari tombol kirim di step 3 dan matikan sementara
-    const btnSubmit = document.querySelector('#step-3 .btn-primary');
-    if (btnSubmit) {
-        btnSubmit.disabled = true;
-        btnSubmit.innerText = 'MENGIRIM...';
-    }
-
-    try {
-        const resp = await fetch('/api/formulir', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-            body: JSON.stringify(payload)
-        });
-        
-        if (resp.ok) {
-            alert('Pendaftaran berhasil!');
-            loadFormulirSection(); 
-        } else {
-            const err = await resp.json();
-            alert('Gagal: ' + (err.message || JSON.stringify(err.errors)));
-            
-            // Nyalakan tombol lagi kalau gagal biar bisa coba lagi
-            if (btnSubmit) {
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = 'KIRIM';
+        // submitForm tetap sama
+        async function submitForm() {
+            const payload = getFormData();
+            try {
+                const resp = await fetch('/api/formulir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+                    body: JSON.stringify(payload)
+                });
+                if (resp.ok) {
+                    alert('Pendaftaran berhasil!');
+                    loadFormulirSection(); // setelah submit, status jadi "menunggu", maka akan tampil sukses
+                } else {
+                    const err = await resp.json();
+                    alert('Gagal: ' + (err.message || JSON.stringify(err.errors)));
+                }
+            } catch (e) {
+                alert('Kesalahan jaringan.');
             }
         }
-    } catch (e) {
-        alert('Kesalahan jaringan. Silakan coba lagi.');
-        if (btnSubmit) {
-            btnSubmit.disabled = false;
-            btnSubmit.innerText = 'KIRIM';
-        }
-    }
-}
 
         // getFormData dengan tambahan punya_nisn dan nisn
         function getFormData() {

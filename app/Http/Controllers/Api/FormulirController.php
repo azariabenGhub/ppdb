@@ -305,7 +305,7 @@ class FormulirController extends Controller
 
     public function myForm(Request $request)
     {
-        $formulir = Formulir::with(['calonSiswa', 'ayah', 'ibu', 'wali', 'verifikasi'])
+        $formulir = Formulir::with(['calonSiswa', 'ayah', 'ibu', 'wali', 'verifikasi', 'gelombang'])
             ->whereHas('calonSiswa', function ($q) use ($request) {
                 $q->where('user_id', $request->user()->id);
             })->first();

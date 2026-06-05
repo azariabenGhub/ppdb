@@ -112,98 +112,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- MAIN PAYMENT CARD -->
-        <div class="form-card animate-slide-up mt-20">
-            <div class="form-title">
-                <h3 class="title-green">Pembayaran</h3>
-                <p>Bayar dan verifikasi biaya pendaftaran</p>
-            </div>
-
-            <div class="payment-grid">
-                <!-- LEFT PANEL: INSTRUCTIONS -->
-                <div class="payment-panel">
-                    <div class="panel-header">
-                        <div class="panel-icon"><i class="fa-solid fa-building-columns"></i></div>
-                        <div class="panel-title-text">
-                            <h4>Instruksi Pembayaran</h4>
-                            <span>Transfer ke rekening di bawah ini:</span>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic container for Bank Methods -->
-                    <div id="metode-pembayaran-list">
-                        <p style="color:#888; font-size:0.9rem;">Memuat rekening...</p>
-                    </div>
-
-                    <!-- Static Cost Breakdown -->
-                    <div class="cost-breakdown mt-30">
-                        <h6>Rincian Tahapan Biaya:</h6>
-                        <ul>
-                            <li>
-                                <div class="cost-item">
-                                    <span class="cost-label"><i class="fa-solid fa-circle"></i> Tahap 1: Biaya Formulir</span>
-                                    <span class="cost-value">Rp 50.000</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="cost-item">
-                                    <span class="cost-label"><i class="fa-solid fa-circle"></i> Tahap 2: Biaya Daftar Ulang</span>
-                                    <span class="cost-value">Rp 1.500.000</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- RIGHT PANEL: UPLOAD FORM -->
-                <div class="payment-panel">
-                    <div class="panel-header">
-                        <div class="panel-icon"><i class="fa-solid fa-file-invoice"></i></div>
-                        <div class="panel-title-text">
-                            <h4>Konfirmasi Pembayaran</h4>
-                            <span>Kirim Bukti Pembayaran</span>
-                        </div>
-                    </div>
-
-                    <form id="form-bukti" enctype="multipart/form-data" class="payment-form">
-                        <div class="input-group">
-                            <label>Jenis Pembayaran</label>
-                            <select name="jenis_pembayaran" id="jenis_pembayaran" class="form-select" required>
-                                <option value="" disabled selected>Pilih Jenis Pembayaran</option>
-                                <option value="formulir">Biaya Formulir</option>
-                                <option value="daftar_ulang" disabled>Biaya Daftar Ulang (Menunggu Kelulusan)</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group mt-15">
-                            <label>Tanggal Transfer</label>
-                            <input type="text" name="tanggal_transfer" class="form-input" placeholder="Format: dd/mm/yyyy (Contoh: 21/12/2021)">
-                        </div>
-
-                        <div class="input-group mt-15">
-                            <label>Bukti Transfer (JPG/PNG/PDF)</label>
-                            <div class="file-drop-area">
-                                <i class="fa-solid fa-inbox"></i>
-                                <span class="file-msg">Klik atau seret file ke sini untuk mengunggah</span>
-                                <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" accept="image/*,.pdf" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-solid btn-full mt-20">Kirim Konfirmasi</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- BOTTOM PANEL: PAYMENT HISTORY -->
-            <div class="payment-history-panel mt-30">
-                <h4>Riwayat Pembayaran</h4>
-                <div class="table-responsive" id="riwayat-bukti">
-                    <p style="color:#888; font-size:0.9rem;">Memuat riwayat...</p>
-                </div>
-            </div>
-            
-        </div>
     </div>
 </div>
 
@@ -214,28 +122,15 @@
 
     async function loadActiveGelombang() {
         try {
-            // Coba ambil gelombang dari formulir saya dulu (pendaftaran siswa)
-            const formRes = await fetch('/api/formulir-saya', {
+            const res = await fetch('/api/gelombang/aktif', {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
-            const formObj = await formRes.json();
-            if (formObj && formObj.data && formObj.data.gelombang) {
-                activeGelombang = formObj.data.gelombang;
-            } else {
-                // Fallback ke gelombang aktif jika belum mengisi formulir
-                const res = await fetch('/api/gelombang/aktif', {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                const gel = await res.json();
-                if (gel && gel.id) {
-                    activeGelombang = gel;
-                }
-            }
-
-            if (activeGelombang) {
+            const gel = await res.json();
+            if (gel && gel.id) {
+                activeGelombang = gel;
                 // Update tampilan rincian biaya
-                document.getElementById('fee-formulir-amount').innerText = formatRupiah(activeGelombang.biaya_formulir);
-                document.getElementById('fee-daftarulang-amount').innerText = formatRupiah(activeGelombang.biaya_daftar_ulang);
+                document.getElementById('fee-formulir-amount').innerText = formatRupiah(gel.biaya_formulir);
+                document.getElementById('fee-daftarulang-amount').innerText = formatRupiah(gel.biaya_daftar_ulang);
             }
         } catch (e) {
             console.error('Gagal ambil gelombang aktif', e);
@@ -312,10 +207,6 @@
     // Submit form bukti (override)
     document.getElementById('form-bukti').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.innerText = 'Mengirim...';
-        submitBtn.disabled = true;
-
         const formData = new FormData(e.target);
 
         const res = await fetch('/api/bukti-pembayaran', {
@@ -323,10 +214,6 @@
             headers: { 'Authorization': 'Bearer ' + token },
             body: formData
         });
-        
-        submitBtn.innerText = 'Kirim Konfirmasi';
-        submitBtn.disabled = false;
-
         if (res.ok) {
             alert('Bukti pembayaran berhasil dikirim');
             loadRiwayatBukti();
