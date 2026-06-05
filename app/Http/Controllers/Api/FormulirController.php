@@ -108,9 +108,7 @@ class FormulirController extends Controller
         }
 
         $user = $request->user();
-        $existing = Formulir::whereHas('calonSiswa', function ($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->first();
+        $existing = Formulir::where('user_id', $user->id)->first();
 
         // Cek gelombang aktif
         $gelombang = Gelombang::where('status', 'aktif')
@@ -212,7 +210,6 @@ class FormulirController extends Controller
             } else {
                 // Buat calon_siswa
                 $calon = CalonSiswa::create([
-                    'user_id' => $user->id,
                     'nama_lengkap' => $request->nama_lengkap,
                     'tempat_lahir' => $request->tempat_lahir,
                     'tanggal_lahir' => $request->tanggal_lahir,
@@ -275,6 +272,7 @@ class FormulirController extends Controller
                 $noPendaftaran = "PPDB/{$tahun}/{$gelombang->nomor_gelombang}/{$noUrutPadded}";
 
                 $pendaftaran = Formulir::create([
+                    'user_id' => $user->id,
                     'id_calon_siswa' => $calon->id,
                     'id_ayah' => $ayahId,
                     'id_ibu' => $ibuId,
@@ -306,9 +304,7 @@ class FormulirController extends Controller
     public function myForm(Request $request)
     {
         $formulir = Formulir::with(['calonSiswa', 'ayah', 'ibu', 'wali', 'verifikasi', 'gelombang'])
-            ->whereHas('calonSiswa', function ($q) use ($request) {
-                $q->where('user_id', $request->user()->id);
-            })->first();
+            ->where('user_id', $request->user()->id)->first();
 
         if (!$formulir) {
             return response()->json(['data' => null, 'message' => 'Belum mengisi formulir.']);

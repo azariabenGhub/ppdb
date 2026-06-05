@@ -92,8 +92,7 @@ class PendaftarController extends Controller
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
         if ($sortBy === 'no_pendaftaran') {
-            $query->leftJoin('calon_siswa', 'users.id', '=', 'calon_siswa.user_id')
-                  ->leftJoin('formulirs', 'calon_siswa.id', '=', 'formulirs.id_calon_siswa')
+            $query->leftJoin('formulirs', 'users.id', '=', 'formulirs.user_id')
                   ->select('users.*', 'formulirs.no_pendaftaran')
                   ->orderBy('formulirs.no_pendaftaran', $sortOrder);
         } elseif ($sortBy === 'name') {
@@ -174,33 +173,18 @@ class PendaftarController extends Controller
                 $bukti->delete();
             }
 
-            // 4. Hapus verifikasi formulir (jika ada)
-            $calonSiswa = CalonSiswa::where('user_id', $user->id)->first();
+            // 4. Hapus formulir dan calon siswa, beserta verifikasi formulir
+            $formulir = Formulir::where('user_id', $user->id)->first();
+            if ($formulir) {
+                $verifikasiFormulir = VerifikasiFormulir::where('id_formulir', $formulir->id_formulir)->first();
+                if ($verifikasiFormulir) {
+                    $verifikasiFormulir->delete();
+                }
+                $calonSiswa = CalonSiswa::find($formulir->id_calon_siswa);
+                $formulir->delete();
                 if ($calonSiswa) {
-                    $formulir = Formulir::where('id_calon_siswa', $calonSiswa->id)->first();
-                    if ($formulir) {
-                        // Hapus verifikasi formulir jika ada
-                        $verifikasiFormulir = VerifikasiFormulir::where('id_formulir', $formulir->id_formulir)->first();
-                        if ($verifikasiFormulir) {
-                            $verifikasiFormulir->delete();
-                        }
-                        // Hapus file upload formulir jika ada (opsional, sesuaikan dengan field yang ada)
-                        // if ($formulir->file_ktp) Storage::disk('private')->delete($formulir->file_ktp);
-                        $formulir->delete();
-                    }
                     $calonSiswa->delete();
                 }
-
-            // 5. Hapus formulir dan calon siswa
-            $calonSiswa = CalonSiswa::where('user_id', $user->id)->first();
-            if ($calonSiswa) {
-                $formulir = Formulir::where('id_calon_siswa', $calonSiswa->id)->first();
-                if ($formulir) {
-                    // Hapus file upload formulir jika ada (misal scan KTP, dll) - sesuaikan field yang ada
-                    // Contoh: if ($formulir->file_ktp) Storage::disk('private')->delete($formulir->file_ktp);
-                    $formulir->delete();
-                }
-                $calonSiswa->delete();
             }
 
             // 6. Hapus user
@@ -267,5 +251,32 @@ class PendaftarController extends Controller
         }
         
         return response()->json($du);
+    }
+
+    public function getStats(Request $request)
+    {
+        $now = now();
+        $gelombang = \App\Models\Gelombang::where('status', 'aktif')
+            ->where('periode_mulai', '<=', $now)
+            ->where('periode_selesai', '>=', $now)
+            ->first();
+
+        $stats = [
+            'total_pendaftar' => User::where('role', 'pendaftar')->count(),
+            'formulir_menunggu' => Formulir::where('status', 'menunggu')->count(),
+            'formulir_diterima' => Formulir::where('status', 'diterima')->count(),
+            'pembayaran_menunggu' => BuktiPembayaran::where('status', 'menunggu')->count(),
+            'pembayaran_diterima' => BuktiPembayaran::where('status', 'diterima')->count(),
+            'daftar_ulang_menunggu' => DaftarUlang::where('status', 'menunggu')->count(),
+            'daftar_ulang_diterima' => DaftarUlang::where('status', 'diterima')->count(),
+            'gelombang_aktif' => $gelombang ? [
+                'nomor' => $gelombang->nomor_gelombang,
+                'tahun' => $gelombang->tahun,
+                'kuota' => $gelombang->kuota,
+                'sisa_kuota' => $gelombang->sisa_kuota,
+            ] : null
+        ];
+
+        return response()->json($stats);
     }
 }

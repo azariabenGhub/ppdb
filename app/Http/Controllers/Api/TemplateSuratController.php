@@ -22,6 +22,15 @@ class TemplateSuratController extends Controller
             'file' => 'required|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
+        // Jika template dengan nama yang sama sudah ada, hapus file lama dan datanya agar tertimpa
+        $existing = TemplateSurat::where('nama', $request->nama)->first();
+        if ($existing) {
+            if ($existing->file_path && Storage::disk('private')->exists($existing->file_path)) {
+                Storage::disk('private')->delete($existing->file_path);
+            }
+            $existing->delete();
+        }
+
         $file = $request->file('file');
         $originalExtension = $file->getClientOriginalExtension();
         $mimeType = $file->getMimeType();

@@ -28,7 +28,7 @@
         <h2>Detail Pendaftar</h2>
         <div id="loading">Memuat data...</div>
         <div id="content" style="display:none;"></div>
-        <a href="javascript:history.back()" class="btn-back">← Kembali ke Dashboard</a>
+        <a href="/staff-dashboard" class="btn-back">← Kembali ke Dashboard</a>
 
         <div id="modalFullFormulir" style="display:none; position:fixed; top:5%; left:10%; width:80%; background:white; border:2px solid #1a4d2e; padding:20px; z-index:1000; max-height:85%; overflow:auto; border-radius:8px;">
             <h3>Formulir Pendaftaran Lengkap</h3>
