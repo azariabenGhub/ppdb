@@ -73,7 +73,7 @@
             <input type="text" id="search-input" placeholder="Ketik kata kunci..." style="padding: 6px 12px; width: 220px;">
         </div>
         <div>
-            <button onclick="loadPendaftar()" style="padding: 6px 18px;">Terapkan Filter</button>
+            <button onclick="loadPendaftar()" style="padding: 7px 18px; margin-bottom: 15px;">Terapkan Filter</button>
         </div>
     </div>
 
