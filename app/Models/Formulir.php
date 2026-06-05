@@ -18,6 +18,7 @@ class Formulir extends Model
     protected $table = 'formulirs';
 
     protected $fillable = [
+        'user_id',
         'id_calon_siswa',
         'id_ayah',
         'id_ibu',
@@ -78,6 +79,11 @@ class Formulir extends Model
     ];
 
     // Relasi
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function calonSiswa()
     {
         return $this->belongsTo(CalonSiswa::class, 'id_calon_siswa');

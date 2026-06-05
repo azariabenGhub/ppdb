@@ -44,29 +44,43 @@
          KUMPULAN MODAL GLOBAL (BAWAAN BEN YANG SUDAH CAKEP)
          ======================================================== --}}
 
-    <div id="modalVerifikasi" style="display:none;">
+    <style>
+        #modalContent {
+            width: 95% !important;
+            max-width: 1000px !important;
+            height: 95vh !important;
+            max-height: 95vh !important;
+            overflow-y: auto !important;
+        }
+        #modalGambar {
+            width: 100% !important;
+            height: 65vh !important;
+            max-height: 800px !important;
+            object-fit: contain !important;
+            background: #f0f0f0;
+        }
+    </style>
+    <div id="modalContent" style="display:none;">
         <h3>Verifikasi Bukti Pembayaran</h3>
-        <div id="modalContent">
-            <img id="modalGambar" src="" style="max-width:100%; max-height:300px; border-radius:8px; margin-bottom:15px;"><br>
-            <button onclick="bukaGambarFull()">Lihat Gambar Full</button><br><br>
-            <label>Hasil Verifikasi:</label><br>
-            <select id="modalHasil">
-                <option value="diterima">Terima</option>
-                <option value="ditolak">Tolak</option>
-            </select><br>
-            <div id="modalCatatanGroup" style="display:none;">
-                <label>Catatan Penolakan:</label><br>
-                <textarea id="modalCatatan" rows="2" cols="40"></textarea><br>
-            </div>
-            <div id="modalKwitansiGroup">
-                <label>Upload Kwitansi (wajib jika diterima):</label><br>
-                <input type="file" id="modalKwitansi" accept=".pdf,.jpg,.png"><br>
-            </div>
-            <br>
-            <div class="modal-actions">
-                <button onclick="submitVerifikasi()">Kirim Verifikasi</button>
-                <button onclick="tutupModal()">Tutup</button>
-            </div>
+        <img id="modalGambar" src="" alt="Bukti Pembayaran"><br>
+        <button onclick="bukaGambarFull()">Lihat Gambar Full</button><br><br>
+        <label>Hasil Verifikasi:</label><br>
+        <select id="modalHasil">
+            <option value="diterima">Terima</option>
+            <option value="ditolak">Tolak</option>
+        </select><br>
+        <div id="catatanGroup" style="display:none;">
+            <label>Catatan Penolakan:</label><br>
+            <textarea id="modalCatatan" rows="2" cols="40"></textarea><br>
+        </div>
+        <div id="kwitansiGroup">
+            <label>Upload Kwitansi (wajib jika diterima):</label><br>
+            <input type="file" id="modalKwitansi" accept=".pdf,.jpg,.png"><br>
+        </div>
+        <br>
+        <div class="modal-actions">
+            <button onclick="submitVerifikasi()">Kirim Verifikasi</button>
+            <button onclick="tutupModal()">Tutup</button>
         </div>
     </div>
     <div id="overlay" style="display:none;"></div>
@@ -241,7 +255,8 @@
             const activeBtn = document.querySelector(`button[data-section="${sectionId}"]`);
             if(activeBtn) activeBtn.classList.add('active');
 
-            if (sectionId === 'verifikasi' && (user.role === 'panitia' || user.role === 'kepala_sekolah') && typeof loadVerifikasi === 'function') loadVerifikasi();
+            if (sectionId === 'beranda-staff' && typeof loadStaffStats === 'function') loadStaffStats();
+            else if (sectionId === 'verifikasi' && (user.role === 'panitia' || user.role === 'kepala_sekolah') && typeof loadVerifikasi === 'function') loadVerifikasi();
             else if (sectionId === 'metode-pembayaran' && (user.role === 'bendahara' || user.role === 'kepala_sekolah') && typeof loadMetodePembayaran === 'function') loadMetodePembayaran();
             else if (sectionId === 'verifikasi-pembayaran' && (user.role === 'bendahara' || user.role === 'kepala_sekolah') && typeof switchJenisPembayaran === 'function') switchJenisPembayaran('formulir');
             else if (sectionId === 'kelola-jadwal' && (user.role === 'panitia' || user.role === 'kepala_sekolah')) {

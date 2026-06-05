@@ -156,19 +156,19 @@
         const imageUrl = `/api/file/bukti/${idBukti}?token=${encodeURIComponent(token)}`;
         document.getElementById('modalGambar').src = imageUrl;
         document.getElementById('modalHasil').value = 'diterima';
-        document.getElementById('modalCatatanGroup').style.display = 'none';
-        document.getElementById('modalKwitansiGroup').style.display = 'block';
+        document.getElementById('catatanGroup').style.display = 'none';
+        document.getElementById('kwitansiGroup').style.display = 'block';
         document.getElementById('modalCatatan').value = '';
         document.getElementById('modalKwitansi').value = '';
-        document.getElementById('modalVerifikasi').style.display = 'block';
+        document.getElementById('modalContent').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
     };
 
     // Event listener untuk change select hasil (dipasang setelah modal ada)
     document.getElementById('modalHasil')?.addEventListener('change', function () {
         const isTolak = this.value === 'ditolak';
-        document.getElementById('modalCatatanGroup').style.display = isTolak ? 'block' : 'none';
-        document.getElementById('modalKwitansiGroup').style.display = isTolak ? 'none' : 'block';
+        document.getElementById('catatanGroup').style.display = isTolak ? 'block' : 'none';
+        document.getElementById('kwitansiGroup').style.display = isTolak ? 'none' : 'block';
     });
 
     // Submit verifikasi
@@ -215,7 +215,7 @@
     };
 
     window.tutupModal = function() {
-        document.getElementById('modalVerifikasi').style.display = 'none';
+        document.getElementById('modalContent').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
         currentBukti = null;
     };

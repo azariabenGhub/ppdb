@@ -33,21 +33,20 @@ class User extends Authenticatable
         ];
     }
 
-    public function calonSiswa()
-    {
-        return $this->hasOne(CalonSiswa::class);
-    }
-
-    // Relasi ke Formulir melalui CalonSiswa
     public function formulir()
     {
+        return $this->hasOne(Formulir::class, 'user_id');
+    }
+
+    public function calonSiswa()
+    {
         return $this->hasOneThrough(
-            Formulir::class,
             CalonSiswa::class,
-            'user_id',        // foreign key di calon_siswa
-            'id_calon_siswa', // foreign key di formulirs
-            'id',             // local key di users
-            'id'              // local key di calon_siswa
+            Formulir::class,
+            'user_id',          // foreign key on formulirs table
+            'id',               // foreign key on calon_siswa table (CalonSiswa.id)
+            'id',               // local key on users table
+            'id_calon_siswa'    // local key on formulirs table
         );
     }
 

@@ -148,4 +148,5 @@ Route::middleware(['auth:sanctum', 'role:kepala_sekolah'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:panitia,Bendahara,kepala_sekolah'])->group(function () {
     Route::apiResource('gelombang', GelombangController::class);
     Route::patch('gelombang/{id}/toggle-status', [GelombangController::class, 'toggleStatus']);
+    Route::get('/staff/stats', [PendaftarController::class, 'getStats']);
 });

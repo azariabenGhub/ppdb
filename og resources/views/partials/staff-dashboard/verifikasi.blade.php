@@ -1,5 +1,5 @@
 <div id="verifikasi" class="section" style="display:none;">
-    <h2>Verifikasi Pendaftar</h2>
+    <h2>Verifikasi Formulir</h2>
     <h3>Menunggu Verifikasi</h3>
     <table border="1" cellpadding="5" cellspacing="0" width="100%">
         <thead><tr><th>No</th><th>Nama</th><th>Nama Siswa</th><th>Aksi</th></tr></thead>

@@ -12,7 +12,6 @@ class CalonSiswa extends Model
     protected $table = 'calon_siswa';
 
     protected $fillable = [
-        'user_id',
         'nama_lengkap',
         'tempat_lahir',
         'tanggal_lahir',
@@ -31,7 +30,14 @@ class CalonSiswa extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOneThrough(
+            User::class,
+            Formulir::class,
+            'id_calon_siswa',  // foreign key on formulirs table
+            'id',              // foreign key on users table (User.id)
+            'id',              // local key on calon_siswa table
+            'user_id'          // local key on formulirs table
+        );
     }
 
     public function formulir()
