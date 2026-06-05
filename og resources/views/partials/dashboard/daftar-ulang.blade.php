@@ -112,9 +112,9 @@
                 }
                 return templates.map(t =>
                     `<a href="/api/template-surat/download/${t.id}?token=${token}" target="_blank" class="btn-download" style="display:inline-flex; margin-right:10px;">
-                                                <i class="fa-solid fa-file-pdf"></i> Download ${t.nama}
-                                                <i class="fa-solid fa-download icon-small"></i>
-                                            </a>`
+                                                    <i class="fa-solid fa-file-pdf"></i> Download ${t.nama}
+                                                    <i class="fa-solid fa-download icon-small"></i>
+                                                </a>`
                 ).join('');
             } catch (e) {
                 return '<span style="color:#dc2626;">Gagal memuat template.</span>';
@@ -130,14 +130,14 @@
                 const result = await res.json();
                 if (result.eligible === false) {
                     document.getElementById('tabFormulir').innerHTML = `
-                                                <div class="empty-state-box">
-                                                    <div class="message-content">
-                                                        <i class="fa-solid fa-circle-info"></i>
-                                                        <strong>Informasi</strong>
-                                                        <hr class="message-divider">
-                                                        <p class="sub-message">${result.message}</p>
-                                                    </div>
-                                                </div>`;
+                                                    <div class="empty-state-box">
+                                                        <div class="message-content">
+                                                            <i class="fa-solid fa-circle-info"></i>
+                                                            <strong>Informasi</strong>
+                                                            <hr class="message-divider">
+                                                            <p class="sub-message">${result.message}</p>
+                                                        </div>
+                                                    </div>`;
                     return null;
                 }
                 rawDataAwal = result;
@@ -158,125 +158,135 @@
             if (tipe === 'orang_tua') {
                 // Baris 1: Nama Ayah dan Nama Ibu (bersebelahan)
                 html += `
-                                            <div class="input-row">
-                                                <div class="input-group">
-                                                    <label>Nama Ayah</label>
-                                                    <input type="text" name="nama_ayah" value="${v(detail, 'nama_ayah')}" placeholder="Nama lengkap sesuai KK" required>
+                                                <div class="input-row">
+                                                    <div class="input-group">
+                                                        <label>Nama Ayah</label>
+                                                        <input type="text" name="nama_ayah" value="${v(detail, 'nama_ayah')}" placeholder="Nama lengkap sesuai KK" required>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <label>Nama Ibu</label>
+                                                        <input type="text" name="nama_ibu" value="${v(detail, 'nama_ibu')}" placeholder="Nama lengkap sesuai KK" required>
+                                                    </div>
                                                 </div>
-                                                <div class="input-group">
-                                                    <label>Nama Ibu</label>
-                                                    <input type="text" name="nama_ibu" value="${v(detail, 'nama_ibu')}" placeholder="Nama lengkap sesuai KK" required>
-                                                </div>
-                                            </div>
-                                        `;
+                                            `;
                 // Baris 2: Pendidikan Ayah dan Pendidikan Ibu
                 html += `
-                                            <div class="input-row">
-                                                <div class="input-group">
-                                                    <label>Pendidikan Terakhir Ayah</label>
-                                                    <input type="text" name="pendidikan_ayah" value="${v(detail, 'pendidikan_ayah')}" placeholder="Pendidikan Terakhir Ayah">
+                                                <div class="input-row">
+                                                    <div class="input-group">
+                                                        <label>Pendidikan Terakhir Ayah</label>
+                                                        <input type="text" name="pendidikan_ayah" value="${v(detail, 'pendidikan_ayah')}" placeholder="Pendidikan Terakhir Ayah">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <label>Pendidikan Terakhir Ibu</label>
+                                                        <input type="text" name="pendidikan_ibu" value="${v(detail, 'pendidikan_ibu')}" placeholder="Pendidikan Terakhir Ibu">
+                                                    </div>
                                                 </div>
-                                                <div class="input-group">
-                                                    <label>Pendidikan Terakhir Ibu</label>
-                                                    <input type="text" name="pendidikan_ibu" value="${v(detail, 'pendidikan_ibu')}" placeholder="Pendidikan Terakhir Ibu">
-                                                </div>
-                                            </div>
-                                        `;
+                                            `;
                 // Baris 3: Pekerjaan Ayah dan Pekerjaan Ibu
                 html += `
-                                            <div class="input-row">
-                                                <div class="input-group">
-                                                    <label>Pekerjaan Ayah</label>
-                                                    <input type="text" name="pekerjaan_ayah" value="${v(detail, 'pekerjaan_ayah')}" placeholder="Pekerjaan Ayah">
+                                                <div class="input-row">
+                                                    <div class="input-group">
+                                                        <label>Pekerjaan Ayah</label>
+                                                        <input type="text" name="pekerjaan_ayah" value="${v(detail, 'pekerjaan_ayah')}" placeholder="Pekerjaan Ayah">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <label>Pekerjaan Ibu</label>
+                                                        <input type="text" name="pekerjaan_ibu" value="${v(detail, 'pekerjaan_ibu')}" placeholder="Pekerjaan Ibu">
+                                                    </div>
                                                 </div>
-                                                <div class="input-group">
-                                                    <label>Pekerjaan Ibu</label>
-                                                    <input type="text" name="pekerjaan_ibu" value="${v(detail, 'pekerjaan_ibu')}" placeholder="Pekerjaan Ibu">
-                                                </div>
-                                            </div>
-                                        `;
+                                            `;
                 // Alamat KTP (dari ayah) dan Alamat Domisili (input baru)
                 html += `
-                                            <div class="input-group">
-                                                <label>Alamat KTP (sesuai KTP)</label>
-                                                <input type="text" name="alamat_ktp" value="${v(detail, 'alamat_ktp')}" placeholder="Alamat sesuai KTP">
-                                            </div>
-                                            <div class="input-group">
-                                                <label>Alamat Domisili (tempat tinggal sekarang)</label>
-                                                <input type="text" name="alamat_domisili" placeholder="Alamat lengkap tempat tinggal sekarang">
-                                            </div>
-                                        `;
+                                                <div class="input-group">
+                                                    <label>Alamat KTP (sesuai KTP)</label>
+                                                    <input type="text" name="alamat_ktp" value="${v(detail, 'alamat_ktp')}" placeholder="Alamat sesuai KTP">
+                                                </div>
+                                                <div class="input-group">
+                                                    <label>Alamat Domisili (tempat tinggal sekarang)</label>
+                                                    <input type="text" name="alamat_domisili" placeholder="Alamat lengkap tempat tinggal sekarang">
+                                                </div>
+                                            `;
                 // Nomor HP (dari ayah) dan Narahubung (input baru) dalam satu baris
                 html += `
-                                            <div class="input-row">
-                                                <div class="input-group">
-                                                    <label>Nomor HP / Telp</label>
-                                                    <input type="text" name="no_hp" value="${v(detail, 'no_hp')}" placeholder="Kontak orang tua">
+                                                <div class="input-row">
+                                                    <div class="input-group">
+                                                        <label>Nomor HP / Telp</label>
+                                                        <input type="text" name="no_hp" value="${v(detail, 'no_hp')}" placeholder="Kontak orang tua">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <label>Narahubung (kontak darurat selain orang tua)</label>
+                                                        <input type="text" name="narahubung" placeholder="Kontak darurat">
+                                                    </div>
                                                 </div>
-                                                <div class="input-group">
-                                                    <label>Narahubung (kontak darurat selain orang tua)</label>
-                                                    <input type="text" name="narahubung" placeholder="Kontak darurat">
-                                                </div>
-                                            </div>
-                                        `;
+                                            `;
                 // Hidden fields untuk data ayah & ibu (lengkap)
                 document.getElementById('hiddenFieldsOrangTua').innerHTML = `
-                                            <input type="hidden" name="nik_ayah" value="${v(detail, 'nik_ayah')}">
-                                            <input type="hidden" name="agama_ayah" value="${v(detail, 'agama_ayah')}">
-                                            <input type="hidden" name="penghasilan_ayah" value="${v(detail, 'penghasilan_ayah')}">
-                                            <input type="hidden" name="alamat_ayah" value="${v(detail, 'alamat_ayah')}">
-                                            <input type="hidden" name="nik_ibu" value="${v(detail, 'nik_ibu')}">
-                                            <input type="hidden" name="agama_ibu" value="${v(detail, 'agama_ibu')}">
-                                            <input type="hidden" name="penghasilan_ibu" value="${v(detail, 'penghasilan_ibu')}">
-                                            <input type="hidden" name="no_telp_ibu" value="${v(detail, 'no_telp_ibu')}">
-                                            <input type="hidden" name="alamat_ibu" value="${v(detail, 'alamat_ibu')}">
-                                        `;
+                                                <input type="hidden" name="nik_ayah" value="${v(detail, 'nik_ayah')}">
+                                                <input type="hidden" name="agama_ayah" value="${v(detail, 'agama_ayah')}">
+                                                <input type="hidden" name="penghasilan_ayah" value="${v(detail, 'penghasilan_ayah')}">
+                                                <input type="hidden" name="alamat_ayah" value="${v(detail, 'alamat_ayah')}">
+                                                <input type="hidden" name="nik_ibu" value="${v(detail, 'nik_ibu')}">
+                                                <input type="hidden" name="agama_ibu" value="${v(detail, 'agama_ibu')}">
+                                                <input type="hidden" name="penghasilan_ibu" value="${v(detail, 'penghasilan_ibu')}">
+                                                <input type="hidden" name="no_telp_ibu" value="${v(detail, 'no_telp_ibu')}">
+                                                <input type="hidden" name="alamat_ibu" value="${v(detail, 'alamat_ibu')}">
+                                            `;
                 document.getElementById('hiddenFieldsWali').innerHTML = '';
             } else {
                 // Wali form (single column) sama seperti sebelumnya
                 html += `
-                                            <div class="input-group">
-                                                <label>Nama Wali</label>
-                                                <input type="text" name="nama_wali" value="${v(detail, 'nama_wali')}" placeholder="Nama Wali" required>
-                                            </div>
-                                            <div class="input-group">
-                                                <label>Pendidikan Terakhir Wali</label>
-                                                <input type="text" name="pendidikan_wali" value="${v(detail, 'pendidikan_wali')}" placeholder="Pendidikan Terakhir Wali">
-                                            </div>
-                                            <div class="input-group">
-                                                <label>Pekerjaan Wali</label>
-                                                <input type="text" name="pekerjaan_wali" value="${v(detail, 'pekerjaan_wali')}" placeholder="Pekerjaan Wali">
-                                            </div>
-                                            <div class="input-group">
-                                                <label>Alamat KTP (sesuai KTP)</label>
-                                                <input type="text" name="alamat_ktp" value="${v(detail, 'alamat_ktp')}" placeholder="Alamat sesuai KTP">
-                                            </div>
-                                            <div class="input-group">
-                                                <label>Alamat Domisili (tempat tinggal sekarang)</label>
-                                                <input type="text" name="alamat_domisili" placeholder="Alamat lengkap tempat tinggal sekarang">
-                                            </div>
-                                            <div class="input-row">
                                                 <div class="input-group">
-                                                    <label>Nomor HP / Telp</label>
-                                                    <input type="text" name="no_hp" value="${v(detail, 'no_hp')}" placeholder="Kontak wali">
+                                                    <label>Nama Wali</label>
+                                                    <input type="text" name="nama_wali" value="${v(detail, 'nama_wali')}" placeholder="Nama Wali" required>
                                                 </div>
                                                 <div class="input-group">
-                                                    <label>Narahubung (kontak darurat selain wali)</label>
-                                                    <input type="text" name="narahubung" placeholder="Kontak darurat">
+                                                    <label>Pendidikan Terakhir Wali</label>
+                                                    <input type="text" name="pendidikan_wali" value="${v(detail, 'pendidikan_wali')}" placeholder="Pendidikan Terakhir Wali">
                                                 </div>
-                                            </div>
-                                        `;
+                                                <div class="input-group">
+                                                    <label>Pekerjaan Wali</label>
+                                                    <input type="text" name="pekerjaan_wali" value="${v(detail, 'pekerjaan_wali')}" placeholder="Pekerjaan Wali">
+                                                </div>
+                                                <div class="input-group">
+                                                    <label>Alamat KTP (sesuai KTP)</label>
+                                                    <input type="text" name="alamat_ktp" value="${v(detail, 'alamat_ktp')}" placeholder="Alamat sesuai KTP">
+                                                </div>
+                                                <div class="input-group">
+                                                    <label>Alamat Domisili (tempat tinggal sekarang)</label>
+                                                    <input type="text" name="alamat_domisili" placeholder="Alamat lengkap tempat tinggal sekarang">
+                                                </div>
+                                                <div class="input-row">
+                                                    <div class="input-group">
+                                                        <label>Nomor HP / Telp</label>
+                                                        <input type="text" name="no_hp" value="${v(detail, 'no_hp')}" placeholder="Kontak wali">
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <label>Narahubung (kontak darurat selain wali)</label>
+                                                        <input type="text" name="narahubung" placeholder="Kontak darurat">
+                                                    </div>
+                                                </div>
+                                            `;
                 document.getElementById('hiddenFieldsWali').innerHTML = `
-                                            <input type="hidden" name="nik_wali" value="${v(detail, 'nik_wali')}">
-                                            <input type="hidden" name="agama_wali" value="${v(detail, 'agama_wali')}">
-                                            <input type="hidden" name="penghasilan_wali" value="${v(detail, 'penghasilan_wali')}">
-                                            <input type="hidden" name="no_telp_wali" value="${v(detail, 'no_telp_wali')}">
-                                            <input type="hidden" name="alamat_wali" value="${v(detail, 'alamat_wali')}">
-                                        `;
+                                                <input type="hidden" name="nik_wali" value="${v(detail, 'nik_wali')}">
+                                                <input type="hidden" name="agama_wali" value="${v(detail, 'agama_wali')}">
+                                                <input type="hidden" name="penghasilan_wali" value="${v(detail, 'penghasilan_wali')}">
+                                                <input type="hidden" name="no_telp_wali" value="${v(detail, 'no_telp_wali')}">
+                                                <input type="hidden" name="alamat_wali" value="${v(detail, 'alamat_wali')}">
+                                            `;
                 document.getElementById('hiddenFieldsOrangTua').innerHTML = '';
             }
             html += `</div>`;
             container.innerHTML = html;
+        }
+
+        function hideToggleIfAlreadySubmitted(status) {
+            const toggleContainer = document.querySelector('.toggle-container');
+            if (!toggleContainer) return;
+            if (status === 'menunggu' || status === 'diterima') {
+                toggleContainer.style.display = 'none';
+            } else {
+                toggleContainer.style.display = 'flex'; // sesuaikan dengan style asli (flex/block)
+            }
         }
 
         // ========== ISI FORMULIR DAFTAR ULANG DENGAN DATA AWAL ==========
@@ -328,19 +338,12 @@
                 }
                 if (cek.sudah_mengirim) {
                     if (cek.status === 'menunggu') {
-                        document.querySelector('.toggle-container').style.display = 'none';
-                        document.getElementById('tabFormulir').style.display = 'none';
-                        document.getElementById('tabPersyaratan').style.display = 'block';
                         container.innerHTML = `<div class="success-inner-box mt-30"><div class="success-icon-wrapper"><i class="fa-regular fa-clock"></i></div><h2 class="success-heading">Daftar Ulang Dalam Proses</h2><div class="success-description"><p>Berkas sedang diverifikasi.</p><p>Panitia akan memproses dalam 1-3 hari kerja.</p></div></div>`;
                         return;
                     } else if (cek.status === 'diterima') {
-                        document.querySelector('.toggle-container').style.display = 'none';
-                        document.getElementById('tabFormulir').style.display = 'none';
-                        document.getElementById('tabPersyaratan').style.display = 'block';
                         container.innerHTML = `<div class="success-inner-box mt-30"><div class="success-icon-wrapper"><i class="fa-regular fa-check-circle"></i></div><h2 class="success-heading">Daftar Ulang Diterima</h2><div class="success-description"><p>Selamat bergabung!</p></div></div>`;
                         return;
                     } else if (cek.status === 'ditolak') {
-                        document.querySelector('.toggle-container').style.display = 'flex';
                         const uploadHtml = await tampilkanFormDaftarUlang();
                         container.innerHTML = `<div class="mt-30">${uploadHtml}</div>`;
                         attachFormListener();
@@ -348,7 +351,6 @@
                         return;
                     }
                 }
-                document.querySelector('.toggle-container').style.display = 'flex';
                 const uploadHtml = await tampilkanFormDaftarUlang();
                 container.innerHTML = `<div class="mt-30">${uploadHtml}</div>`;
                 attachFormListener();
@@ -362,23 +364,24 @@
         async function tampilkanFormDaftarUlang() {
             const templateLinks = await getTemplateLinks();
             return `
-                                <div class="requirement-section">
-                                    <h4 class="sub-label">Unduh Surat Pernyataan</h4>
-                                    <div class="download-grid">${templateLinks}</div>
-                                </div>
-                                <div class="requirement-section mt-30">
-                                    <h4 class="sub-label">Upload surat pernyataan dan dokumen persyaratan</h4>
-                                    <form id="formDaftarUlang" enctype="multipart/form-data">
-                                        <div class="upload-list">${generateUploadItems()}</div>
-                                        <!-- Hidden fields untuk data isian dari tab formulir -->
-                                        <div id="hiddenDataForm"></div>
-                                        <div class="form-actions space-between mt-30">
-                                            <button type="button" class="btn-outline" onclick="loadDaftarUlangSection()">KEMBALI</button>
-                                            <button type="submit" class="btn-solid">KIRIM</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            `;
+                                    <div class="requirement-section">
+                                        <h4 class="sub-label">Unduh Surat Pernyataan</h4>
+                                        <div class="download-grid">${templateLinks}</div>
+                                    </div>
+                                    <div class="requirement-section mt-30">
+                                        <h4 class="sub-label">Upload surat pernyataan dan dokumen persyaratan</h4>
+                                        <form id="formDaftarUlang" enctype="multipart/form-data">
+                                            <div class="upload-list">${generateUploadItems()}</div>
+                                            <!-- Hidden fields untuk data isian dari tab formulir -->
+                                            <div id="hiddenDataForm"></div>
+                                            <div class="form-actions space-between mt-30">
+                                                <button type="button" class="btn-outline" onclick="loadDaftarUlangSection()">KEMBALI</button>
+                                                <button type="submit" class="btn-solid">KIRIM</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                `;
+            return html;
         }
 
         function initUploadBoxes() {
@@ -437,84 +440,84 @@
 
         function generateUploadItems() {
             return `
-                    <div class="upload-item">
-                        <div class="upload-info">
-                            <i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content">
-                                <strong>Surat Pernyataan Orang Tua/Wali</strong>
-                                <p>Scan surat pernyataan - PDF, JPG, PNG - Maks 2MB</p>
+                        <div class="upload-item">
+                            <div class="upload-info">
+                                <i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content">
+                                    <strong>Surat Pernyataan Orang Tua/Wali</strong>
+                                    <p>Scan surat pernyataan - PDF, JPG, PNG - Maks 2MB</p>
+                                </div>
+                                <span class="badge badge-required">Wajib</span>
                             </div>
-                            <span class="badge badge-required">Wajib</span>
+                            <div class="upload-box" onclick="document.getElementById('surat_pernyataan').click();">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Upload</span>
+                                <span class="file-name" style="margin-left: 5px; font-size: 11px; color: #2d6a4f;"></span>
+                                <input type="file" name="surat_pernyataan" id="surat_pernyataan" accept=".pdf,.jpg,.png" style="display:none;"
+                                    required>
+                            </div>
                         </div>
-                        <div class="upload-box" onclick="document.getElementById('surat_pernyataan').click();">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>Upload</span>
-                            <span class="file-name" style="margin-left: 5px; font-size: 11px; color: #2d6a4f;"></span>
-                            <input type="file" name="surat_pernyataan" id="surat_pernyataan" accept=".pdf,.jpg,.png" style="display:none;"
-                                required>
+                        <div class="upload-item">
+                            <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content"><strong>Surat Pernyataan Peserta Didik</strong>
+                                    <p>Scan surat pernyataan peserta didik - PDF, JPG, PNG - Maks 2MB</p>
+                                </div><span class="badge badge-required">Wajib</span>
+                            </div>
+                            <div class="upload-box" onclick="document.getElementById('surat_pakta_integritas').click();"><i
+                                    class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="surat_pakta_integritas"
+                                    id="surat_pakta_integritas" accept=".pdf,.jpg,.png" style="display:none;" required></div>
                         </div>
-                    </div>
-                    <div class="upload-item">
-                        <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content"><strong>Surat Pernyataan Peserta Didik</strong>
-                                <p>Scan surat pernyataan peserta didik - PDF, JPG, PNG - Maks 2MB</p>
-                            </div><span class="badge badge-required">Wajib</span>
+                        <div class="upload-item">
+                            <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content"><strong>KTP Orang Tua/Wali</strong>
+                                    <p>Scan KTP - PDF, JPG, PNG - Maks 2MB</p>
+                                </div><span class="badge badge-required">Wajib</span>
+                            </div>
+                            <div class="upload-box" onclick="document.getElementById('ktp_orang_tua').click();"><i
+                                    class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="ktp_orang_tua" id="ktp_orang_tua"
+                                    accept=".pdf,.jpg,.png" style="display:none;" required></div>
                         </div>
-                        <div class="upload-box" onclick="document.getElementById('surat_pakta_integritas').click();"><i
-                                class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="surat_pakta_integritas"
-                                id="surat_pakta_integritas" accept=".pdf,.jpg,.png" style="display:none;" required></div>
-                    </div>
-                    <div class="upload-item">
-                        <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content"><strong>KTP Orang Tua/Wali</strong>
-                                <p>Scan KTP - PDF, JPG, PNG - Maks 2MB</p>
-                            </div><span class="badge badge-required">Wajib</span>
+                        <div class="upload-item">
+                            <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content"><strong>Akta Kelahiran Peserta Didik</strong>
+                                    <p>Scan akta kelahiran - PDF, JPG, PNG - Maks 2MB</p>
+                                </div><span class="badge badge-required">Wajib</span>
+                            </div>
+                            <div class="upload-box" onclick="document.getElementById('akte_kelahiran').click();"><i
+                                    class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="akte_kelahiran" id="akte_kelahiran"
+                                    accept=".pdf,.jpg,.png" style="display:none;" required></div>
                         </div>
-                        <div class="upload-box" onclick="document.getElementById('ktp_orang_tua').click();"><i
-                                class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="ktp_orang_tua" id="ktp_orang_tua"
-                                accept=".pdf,.jpg,.png" style="display:none;" required></div>
-                    </div>
-                    <div class="upload-item">
-                        <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content"><strong>Akta Kelahiran Peserta Didik</strong>
-                                <p>Scan akta kelahiran - PDF, JPG, PNG - Maks 2MB</p>
-                            </div><span class="badge badge-required">Wajib</span>
+                        <div class="upload-item">
+                            <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content"><strong>Kartu Keluarga</strong>
+                                    <p>Scan Kartu Keluarga - PDF, JPG, PNG - Maks 2MB</p>
+                                </div><span class="badge badge-required">Wajib</span>
+                            </div>
+                            <div class="upload-box" onclick="document.getElementById('kartu_keluarga').click();"><i
+                                    class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="kartu_keluarga" id="kartu_keluarga"
+                                    accept=".pdf,.jpg,.png" style="display:none;" required></div>
                         </div>
-                        <div class="upload-box" onclick="document.getElementById('akte_kelahiran').click();"><i
-                                class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="akte_kelahiran" id="akte_kelahiran"
-                                accept=".pdf,.jpg,.png" style="display:none;" required></div>
-                    </div>
-                    <div class="upload-item">
-                        <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content"><strong>Kartu Keluarga</strong>
-                                <p>Scan Kartu Keluarga - PDF, JPG, PNG - Maks 2MB</p>
-                            </div><span class="badge badge-required">Wajib</span>
+                        <div class="upload-item">
+                            <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content"><strong>Ijazah RA/TK/PAUD</strong>
+                                    <p>Scan ijazah - PDF, JPG, PNG - Maks 2MB</p>
+                                </div><span class="badge badge-optional">Opsional</span>
+                            </div>
+                            <div class="upload-box" onclick="document.getElementById('ijazah_tk').click();"><i
+                                    class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="ijazah_tk" id="ijazah_tk"
+                                    accept=".pdf,.jpg,.png" style="display:none;"></div>
                         </div>
-                        <div class="upload-box" onclick="document.getElementById('kartu_keluarga').click();"><i
-                                class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="kartu_keluarga" id="kartu_keluarga"
-                                accept=".pdf,.jpg,.png" style="display:none;" required></div>
-                    </div>
-                    <div class="upload-item">
-                        <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content"><strong>Ijazah RA/TK/PAUD</strong>
-                                <p>Scan ijazah - PDF, JPG, PNG - Maks 2MB</p>
-                            </div><span class="badge badge-optional">Opsional</span>
+                        <div class="upload-item">
+                            <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
+                                <div class="text-content"><strong>Scan NISN (jika punya)</strong>
+                                    <p>Scan NISN - PDF, JPG, PNG - Maks 2MB</p>
+                                </div><span class="badge badge-optional">Opsional</span>
+                            </div>
+                            <div class="upload-box" onclick="document.getElementById('nisn_file').click();"><i
+                                    class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="nisn_file" id="nisn_file"
+                                    accept=".pdf,.jpg,.png" style="display:none;"></div>
                         </div>
-                        <div class="upload-box" onclick="document.getElementById('ijazah_tk').click();"><i
-                                class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="ijazah_tk" id="ijazah_tk"
-                                accept=".pdf,.jpg,.png" style="display:none;"></div>
-                    </div>
-                    <div class="upload-item">
-                        <div class="upload-info"><i class="fa-solid fa-file-lines doc-icon"></i>
-                            <div class="text-content"><strong>Scan NISN (jika punya)</strong>
-                                <p>Scan NISN - PDF, JPG, PNG - Maks 2MB</p>
-                            </div><span class="badge badge-optional">Opsional</span>
-                        </div>
-                        <div class="upload-box" onclick="document.getElementById('nisn_file').click();"><i
-                                class="fa-solid fa-plus"></i><span>Upload</span><input type="file" name="nisn_file" id="nisn_file"
-                                accept=".pdf,.jpg,.png" style="display:none;"></div>
-                    </div>
-                `;
+                    `;
         }
 
         function attachFormListener() {
@@ -569,6 +572,7 @@
                 });
                 if (missing) return;
 
+                // Kirim ke endpoint yang sama (store) yang akan menangani data isian + file
                 const res = await fetch('/api/daftar-ulang', {
                     method: 'POST',
                     headers: { 'Authorization': 'Bearer ' + token },
@@ -588,13 +592,7 @@
         document.addEventListener('DOMContentLoaded', async function () {
             await populateFormulirDaftarUlang();
 
-            const btnLanjut = document.getElementById('btnLanjutKeUpload');
-            if (btnLanjut) {
-                btnLanjut.addEventListener('click', function () {
-                    document.getElementById('tabPersyaratanBtn').click();
-                });
-            }
-
+            // ========== INISIALISASI TAB (dipindah ke awal) ==========
             const tabFormBtn = document.getElementById('tabFormBtn');
             const tabPersyaratanBtn = document.getElementById('tabPersyaratanBtn');
             const tabFormulir = document.getElementById('tabFormulir');
@@ -620,20 +618,23 @@
 
             tabFormBtn.addEventListener('click', () => setActiveTab('formulir'));
             tabPersyaratanBtn.addEventListener('click', () => setActiveTab('persyaratan'));
-            
-            // Check status sebelum menentukan tab aktif default
+
+            // ========== CEK STATUS DAN ATUR TAB ==========
             try {
                 const cekRes = await fetch('/api/daftar-ulang/cek', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
                 const cek = await cekRes.json();
-                if (cek.sudah_mengirim && (cek.status === 'menunggu' || cek.status === 'diterima')) {
-                    document.querySelector('.toggle-container').style.display = 'none';
-                    setActiveTab('persyaratan');
+
+                if (cek.eligible && cek.sudah_mengirim && (cek.status === 'menunggu' || cek.status === 'diterima')) {
+                    hideToggleIfAlreadySubmitted(cek.status);   // sembunyikan toggle
+                    setActiveTab('persyaratan');                // langsung tampilkan tab Persyaratan (berisi success box)
                 } else {
-                    setActiveTab('formulir');
+                    hideToggleIfAlreadySubmitted(null);         // tampilkan toggle
+                    setActiveTab('formulir');                   // tampilkan formulir
                 }
             } catch (e) {
+                console.error('Gagal cek status awal', e);
                 setActiveTab('formulir');
             }
         });

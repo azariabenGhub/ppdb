@@ -122,28 +122,15 @@
 
     async function loadActiveGelombang() {
         try {
-            // Coba ambil gelombang dari formulir saya dulu (pendaftaran siswa)
-            const formRes = await fetch('/api/formulir-saya', {
+            const res = await fetch('/api/gelombang/aktif', {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
-            const formObj = await formRes.json();
-            if (formObj && formObj.data && formObj.data.gelombang) {
-                activeGelombang = formObj.data.gelombang;
-            } else {
-                // Fallback ke gelombang aktif jika belum mengisi formulir
-                const res = await fetch('/api/gelombang/aktif', {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                const gel = await res.json();
-                if (gel && gel.id) {
-                    activeGelombang = gel;
-                }
-            }
-
-            if (activeGelombang) {
+            const gel = await res.json();
+            if (gel && gel.id) {
+                activeGelombang = gel;
                 // Update tampilan rincian biaya
-                document.getElementById('fee-formulir-amount').innerText = formatRupiah(activeGelombang.biaya_formulir);
-                document.getElementById('fee-daftarulang-amount').innerText = formatRupiah(activeGelombang.biaya_daftar_ulang);
+                document.getElementById('fee-formulir-amount').innerText = formatRupiah(gel.biaya_formulir);
+                document.getElementById('fee-daftarulang-amount').innerText = formatRupiah(gel.biaya_daftar_ulang);
             }
         } catch (e) {
             console.error('Gagal ambil gelombang aktif', e);

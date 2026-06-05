@@ -36,7 +36,7 @@
                 </div>
                 <div class="step-right">
                     <div class="step-content">
-                        <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div>
+                        <!-- <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div> -->
                         <h4>Pembayaran Formulir</h4>
                         <p>Melakukan pembayaran formulir ke:<br>DKI Syariah: norek<br>A.N Ziyadatul Ihsan</p>
                     </div>
@@ -45,7 +45,7 @@
                 <!-- Step 3 -->
                 <div class="step-left">
                     <div class="step-content">
-                        <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div>
+                        <!-- <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div> -->
                         <h4>Daftar Online</h4>
                         <p>Calon peserta didik mengisi biodata pada formulir pendaftaran dan tunggu verifikasi dari panitia.</p>
                     </div>
@@ -62,7 +62,7 @@
                 </div>
                 <div class="step-right">
                     <div class="step-content">
-                        <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div>
+                        <!-- <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div> -->
                         <h4>Cek Jadwal Tes</h4>
                         <p>Setelah formulir diverifikasi, periksa jadwal tes akademik dan quran. Tes dilakukan secara offline di sekolah.</p>
                     </div>
@@ -71,7 +71,7 @@
                 <!-- Step 5 -->
                 <div class="step-left">
                     <div class="step-content">
-                        <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div>
+                        <!-- <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div> -->
                         <h4>Pengumuman Tes</h4>
                         <p>Calon peserta didik memeriksa detail nilai dan hasil tes pada laman pengumuman.</p>
                     </div>
@@ -88,7 +88,7 @@
                 </div>
                 <div class="step-right">
                     <div class="step-content">
-                        <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div>
+                        <!-- <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div> -->
                         <h4>Daftar Ulang</h4>
                         <p>Setelah dinyatakan lulus, unggah berkas-berkas persyaratan pada laman daftar ulang.</p>
                     </div>
@@ -97,7 +97,7 @@
                 <!-- Step 7 -->
                 <div class="step-left" style="padding-bottom:0;">
                     <div class="step-content">
-                        <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div>
+                        <!-- <div class="step-date"><i class="fi fi-rr-calendar"></i> 5 Mei – 15 Mei</div> -->
                         <h4>Pembayaran Daftar Ulang</h4>
                         <p>Lihat detail biaya daftar ulang dan lakukan pembayaran pada nomor rekening yang tertera.</p>
                     </div>
@@ -122,7 +122,7 @@
             </div>
             <div class="footer-col">
                 <h5>Alamat Kami</h5>
-                <h3 style="color: #1a4d2e; font-weight: 700; margin-bottom: 8px;">MI Ziyadatul Ihsan</h3>
+                <h3>MI Ziyadatul Ihsan</h3>
                 <p>
                     Jl. Sadar No. 33 Rt.001/014 Jatinegara, Cipinang<br>
                     Muara, Kota Jakarta Timur, D.K.I. Jakarta

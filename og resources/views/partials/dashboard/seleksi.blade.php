@@ -27,16 +27,10 @@
             const res = await fetch('/api/seleksi-saya', {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
-            const result = await res.json();
-            
-            // [DEBUG] Intip data asli dari Backend di Inspect Element -> Console
-            console.log('Response API Jadwal Tes:', result);
-
-            // Amankan pembacaan data (antisipasi kalau dibungkus object "data" dari BE)
-            const dataSeleksi = result.data ? result.data : result;
+            const data = await res.json();
 
             // Jika tidak ada jadwal tes
-            if (!dataSeleksi || !dataSeleksi.jadwal_tes || dataSeleksi.jadwal_tes === 'Belum ada jadwal tes. Silakan cek secara berkala.') {
+            if (!data || !data.jadwal_tes || data.jadwal_tes === 'Belum ada jadwal tes. Silakan cek secara berkala.') {
                 container.innerHTML = `
                     <div class="form-card animate-slide-up">
                         <div class="form-title-centered">
@@ -59,8 +53,8 @@
                 return;
             }
 
-            // Jika ada jadwal, tampilkan card tes
-            let jadwalText = dataSeleksi.jadwal_tes;
+            // Jika ada jadwal, tampilkan card tes (seperti sebelumnya)
+            let jadwalText = data.jadwal_tes;
             let dateTime = jadwalText;
             let location = 'MI Ziyadatul Ihsan, Jl. Sadar No.33';
 
@@ -141,8 +135,5 @@
             container.innerHTML = '<div class="jadwal-card"><p style="color:#888;">Gagal memuat jadwal tes.</p></div>';
         }
     }
-
-    // EKSEKUSI FUNGSINYA DI SINI
-    loadSeleksiSaya();
 </script>
 @endpush

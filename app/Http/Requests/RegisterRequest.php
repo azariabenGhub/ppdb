@@ -28,7 +28,7 @@ class RegisterRequest extends FormRequest
         $validator->after(function ($validator) {
             $token = $this->input('g-recaptcha-response');
             $secret = config('services.recaptcha.secret_key');
-            $response = Http::asForm()->withoutVerifying()->post('https://www.google.com/recaptcha/api/siteverify', [
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret' => $secret,
                 'response' => $token,
                 'remoteip' => $this->ip(),
