@@ -27,18 +27,14 @@
             const data = await res.json();
             let html = '';
             data.forEach((du, i) => {
-                let aksi = '';
-                if (du.status === 'menunggu') {
-                    aksi = `<button onclick="bukaModalDaftarUlang(${du.id}, '${du.user?.name}')">Verifikasi & Lihat Berkas</button>`;
-                } else {
-                    aksi = `<span style="color:gray;">Sudah diverifikasi (${du.status})</span>`;
-                }
+                const btnLihatBerkas = `<button onclick="bukaModalDaftarUlang(${du.id}, '${du.user?.name}', '${du.status}')">Lihat Berkas</button>`;
+                const btnVerifikasi = `<button onclick="bukaModalDaftarUlang(${du.id}, '${du.user?.name}', 'menunggu')">Verifikasi & Lihat Berkas</button>`;
                 html += `<tr>
                     <td>${i + 1}</td>
                     <td>${du.user?.name || '-'}</td>
                     <td>${du.status}</td>
                     <td>
-                        ${du.status === 'menunggu' ? `<button onclick="bukaModalDaftarUlang(${du.id}, '${du.user?.name}')">Verifikasi & Lihat Berkas</button>` : ''}
+                        ${du.status === 'menunggu' ? btnVerifikasi : btnLihatBerkas}
                         <button onclick="lihatFormulirDaftarUlang(${du.id})">Lihat Formulir</button>
                     </td>
                 </tr>`;
@@ -129,12 +125,21 @@
         document.getElementById('overlayFormulirDU').style.display = 'none';
     }
 
-    async function bukaModalDaftarUlang(id, nama) {
+    async function bukaModalDaftarUlang(id, nama, status = 'menunggu') {
         document.getElementById('du-id').value = id;
         document.getElementById('du-nama').innerText = nama;
         document.getElementById('du-status').value = 'diterima';
         document.getElementById('du-catatan').value = '';
         document.getElementById('du-catatan-group').style.display = 'none';
+
+        // Tampilkan/sembunyikan form verifikasi & tombol simpan berdasarkan status
+        if (status === 'menunggu') {
+            document.getElementById('du-verifikasi-form').style.display = 'block';
+            document.getElementById('du-simpan-btn').style.display = 'inline-block';
+        } else {
+            document.getElementById('du-verifikasi-form').style.display = 'none';
+            document.getElementById('du-simpan-btn').style.display = 'none';
+        }
 
         // Tampilkan semua berkas
         const token = localStorage.getItem('access_token');

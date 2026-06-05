@@ -170,6 +170,34 @@
     </div>
     <div id="overlayFormulirDU" style="display:none;"></div>
 
+    <div id="modalDaftarUlang" style="display:none;">
+        <h3>Verifikasi Daftar Ulang</h3>
+        <input type="hidden" id="du-id">
+        <div class="info-box"><strong>Pendaftar: <span id="du-nama"></span></strong></div>
+        
+        <label>Berkas Dokumen:</label>
+        <div id="du-files" style="margin-bottom:15px; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #cbd5e1;"></div>
+
+        <div id="du-verifikasi-form">
+            <label>Status Verifikasi:</label><br>
+            <select id="du-status">
+                <option value="diterima">Terima</option>
+                <option value="ditolak">Tolak</option>
+            </select><br>
+
+            <div id="du-catatan-group" style="display:none;">
+                <label>Catatan Penolakan:</label><br>
+                <textarea id="du-catatan" rows="3" cols="40" placeholder="Masukkan alasan penolakan..."></textarea><br>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button id="du-simpan-btn" onclick="submitVerifikasiDaftarUlang()">Simpan Verifikasi</button>
+            <button onclick="tutupModalDaftarUlang()">Tutup</button>
+        </div>
+    </div>
+    <div id="overlayDaftarUlang" style="display:none;"></div>
+
     {{-- Kumpulan script dari setiap section partials --}}
     @stack('staff-scripts')
 
