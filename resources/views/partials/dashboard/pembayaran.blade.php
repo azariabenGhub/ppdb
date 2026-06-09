@@ -31,15 +31,19 @@
                         <p>Transfer ke rekening di bawah ini:</p>
                     </div>
                 </div>
+
+                <!-- Toggle Pilihan Metode Pembayaran jika > 1 -->
+                <div class="payment-method-toggle" id="payment-method-toggle" style="display: none;"></div>
+
                 <div class="bank-info" id="bank-info-container">
                     <!-- Data metode pembayaran akan diisi via JS -->
                     <div class="bank-detail">
-                        <strong id="bank-name">BANK DKI</strong>
+                        <strong id="bank-name">Memuat...</strong>
                         <div class="account-number">
-                            <span id="account-number">1234567891111</span>
-                            <button class="btn-copy" onclick="copyAccountNumber()"><i class="fa-regular fa-copy"></i></button>
+                            <span id="account-number">Memuat...</span>
+                            <button class="btn-copy" id="btn-copy-acc" style="display:none;" onclick="copyAccountNumber()"><i class="fa-regular fa-copy"></i></button>
                         </div>
-                        <small id="account-owner">Atas Nama: MI ZIYADATUL IHSAN</small>
+                        <small id="account-owner">Atas Nama: Memuat...</small>
                     </div>
                 </div>
                 <div class="fee-breakdown" id="fee-breakdown">
@@ -48,11 +52,11 @@
                     <p class="breakdown-title">Rincian Tahapan Biaya:</p>
                     <div class="fee-item">
                         <span class="fee-name" id="fee-formulir-name">Tahap 1: Biaya Formulir</span>
-                        <span class="fee-amount" id="fee-formulir-amount">Rp 50.000</span>
+                        <span class="fee-amount" id="fee-formulir-amount">Memuat...</span>
                     </div>
                     <div class="fee-item">
                         <span class="fee-name" id="fee-daftarulang-name">Tahap 2: Biaya Daftar Ulang</span>
-                        <span class="fee-amount" id="fee-daftarulang-amount">Rp 1.900.000</span>
+                        <span class="fee-amount" id="fee-daftarulang-amount">Memuat...</span>
                     </div>
                 </div>
             </div>
@@ -80,7 +84,7 @@
                     <div class="form-group">
                         <label for="bukti_pembayaran">Bukti Transfer (JPG/PNG/PDF)</label>
                         <div class="upload-area" id="upload-area">
-                            <i class="fa-regular fa-cloud-arrow-up"></i>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
                             <p>Klik atau seret file ke sini untuk mengunggah</p>
                             <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" accept=".jpg,.jpeg,.png,.pdf" hidden>
                             <span class="file-name-display"></span>
@@ -98,7 +102,7 @@
                 <table class="history-table" id="riwayat-bukti">
                     <thead>
                         <tr>
-                            <th>ID Transaksi</th>
+                            <th>No</th>
                             <th>Keterangan</th>
                             <th>Jumlah</th>
                             <th>Bukti</th>
@@ -111,98 +115,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- MAIN PAYMENT CARD -->
-        <div class="form-card animate-slide-up mt-20">
-            <div class="form-title">
-                <h3 class="title-green">Pembayaran</h3>
-                <p>Bayar dan verifikasi biaya pendaftaran</p>
-            </div>
-
-            <div class="payment-grid">
-                <!-- LEFT PANEL: INSTRUCTIONS -->
-                <div class="payment-panel">
-                    <div class="panel-header">
-                        <div class="panel-icon"><i class="fa-solid fa-building-columns"></i></div>
-                        <div class="panel-title-text">
-                            <h4>Instruksi Pembayaran</h4>
-                            <span>Transfer ke rekening di bawah ini:</span>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic container for Bank Methods -->
-                    <div id="metode-pembayaran-list">
-                        <p style="color:#888; font-size:0.9rem;">Memuat rekening...</p>
-                    </div>
-
-                    <!-- Static Cost Breakdown -->
-                    <div class="cost-breakdown mt-30">
-                        <h6>Rincian Tahapan Biaya:</h6>
-                        <ul>
-                            <li>
-                                <div class="cost-item">
-                                    <span class="cost-label"><i class="fa-solid fa-circle"></i> Tahap 1: Biaya Formulir</span>
-                                    <span class="cost-value">Rp 50.000</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="cost-item">
-                                    <span class="cost-label"><i class="fa-solid fa-circle"></i> Tahap 2: Biaya Daftar Ulang</span>
-                                    <span class="cost-value">Rp 1.500.000</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- RIGHT PANEL: UPLOAD FORM -->
-                <div class="payment-panel">
-                    <div class="panel-header">
-                        <div class="panel-icon"><i class="fa-solid fa-file-invoice"></i></div>
-                        <div class="panel-title-text">
-                            <h4>Konfirmasi Pembayaran</h4>
-                            <span>Kirim Bukti Pembayaran</span>
-                        </div>
-                    </div>
-
-                    <form id="form-bukti" enctype="multipart/form-data" class="payment-form">
-                        <div class="input-group">
-                            <label>Jenis Pembayaran</label>
-                            <select name="jenis_pembayaran" id="jenis_pembayaran" class="form-select" required>
-                                <option value="" disabled selected>Pilih Jenis Pembayaran</option>
-                                <option value="formulir">Biaya Formulir</option>
-                                <option value="daftar_ulang" disabled>Biaya Daftar Ulang (Menunggu Kelulusan)</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group mt-15">
-                            <label>Tanggal Transfer</label>
-                            <input type="text" name="tanggal_transfer" class="form-input" placeholder="Format: dd/mm/yyyy (Contoh: 21/12/2021)">
-                        </div>
-
-                        <div class="input-group mt-15">
-                            <label>Bukti Transfer (JPG/PNG/PDF)</label>
-                            <div class="file-drop-area">
-                                <i class="fa-solid fa-inbox"></i>
-                                <span class="file-msg">Klik atau seret file ke sini untuk mengunggah</span>
-                                <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" accept="image/*,.pdf" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-solid btn-full mt-20">Kirim Konfirmasi</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- BOTTOM PANEL: PAYMENT HISTORY -->
-            <div class="payment-history-panel mt-30">
-                <h4>Riwayat Pembayaran</h4>
-                <div class="table-responsive" id="riwayat-bukti">
-                    <p style="color:#888; font-size:0.9rem;">Memuat riwayat...</p>
-                </div>
-            </div>
-            
         </div>
     </div>
 </div>
@@ -249,27 +161,70 @@
     // ========== METODE PEMBAYARAN ==========
     async function loadMetodeUntukPendaftar() {
         const bankInfoContainer = document.getElementById('bank-info-container');
+        const toggleContainer = document.getElementById('payment-method-toggle');
+        
+        // Hapus QRIS lama jika ada agar tidak duplikat saat kembali ke tab ini
+        const oldQris = bankInfoContainer.querySelector('.qris-image');
+        if (oldQris) {
+            oldQris.remove();
+        }
+
         try {
             const res = await fetch('/api/metode-pembayaran', {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             const data = await res.json();
             if (data.length > 0) {
-                // Ambil metode pertama (atau bisa ditampilkan semua, sesuai desain cukup satu)
-                const metode = data[0];
-                document.getElementById('bank-name').innerText = metode.nama_bank || 'Bank Transfer';
-                document.getElementById('account-number').innerText = metode.nomor_rekening || '-';
-                document.getElementById('account-owner').innerHTML = `Atas Nama: ${metode.atas_nama || '-'}`;
-                // Jika ada QRIS bisa ditampilkan di bawah
-                if (metode.gambar_qris) {
-                    const qrisHtml = `<div class="qris-image"><img src="/api/file/metode/${metode.id}?token=${token}" alt="QRIS" style="max-width:150px; margin-top:10px;"></div>`;
-                    bankInfoContainer.insertAdjacentHTML('beforeend', qrisHtml);
+                // Tampilkan/sembunyikan toggle piringan jika metode > 1
+                if (data.length > 1) {
+                    toggleContainer.style.display = 'flex';
+                    toggleContainer.innerHTML = '';
+                    data.forEach((metode, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = `payment-method-btn ${idx === 0 ? 'active' : ''}`;
+                        btn.innerText = metode.nama_bank || `Metode ${idx + 1}`;
+                        btn.type = 'button';
+                        btn.onclick = () => {
+                            toggleContainer.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            displayMetode(metode);
+                        };
+                        toggleContainer.appendChild(btn);
+                    });
+                } else {
+                    toggleContainer.style.display = 'none';
                 }
+
+                // Tampilkan metode pertama secara default
+                displayMetode(data[0]);
             } else {
+                toggleContainer.style.display = 'none';
                 bankInfoContainer.innerHTML = '<p>Belum ada metode pembayaran.</p>';
             }
         } catch (e) {
             console.error(e);
+        }
+
+        function displayMetode(metode) {
+            // Bersihkan QRIS yang lama
+            const oldQris = bankInfoContainer.querySelector('.qris-image');
+            if (oldQris) {
+                oldQris.remove();
+            }
+
+            document.getElementById('bank-name').innerText = escapeHtml(metode.nama_bank) || 'Bank Transfer';
+            document.getElementById('account-number').innerText = escapeHtml(metode.nomor_rekening) || '-';
+            document.getElementById('account-owner').innerHTML = `Atas Nama: ${escapeHtml(metode.atas_nama || '-')}`;
+            
+            // Tampilkan tombol salin rekening
+            const copyBtn = document.getElementById('btn-copy-acc');
+            if (copyBtn) copyBtn.style.display = 'inline-block';
+
+            // Jika ada QRIS bisa ditampilkan di bawah
+            if (metode.gambar_qris) {
+                const qrisHtml = `<div class="qris-image"><img src="/api/file/metode/${escapeHtml(String(metode.id))}?token=${token}" alt="QRIS" style="max-width:150px; margin-top:10px;"></div>`;
+                bankInfoContainer.insertAdjacentHTML('beforeend', qrisHtml);
+            }
         }
     }
 
@@ -353,7 +308,7 @@
                 return;
             }
             let html = '';
-            data.forEach(b => {
+            data.forEach((b, i) => {
                 const statusClass = b.status === 'diterima' ? 'status-success' : (b.status === 'menunggu' ? 'status-pending' : 'status-rejected');
                 const statusText = b.status === 'diterima' ? 'Terverifikasi' : (b.status === 'menunggu' ? 'Menunggu Verifikasi' : 'Ditolak');
                 const kwitansiLink = b.verifikasi?.kwitansi ? `<a href="javascript:void(0)" onclick="lihatKwitansi(${b.verifikasi.kwitansi.id_kwitansi})" class="btn-download-kwitansi">Unduh</a>` : '-';
@@ -365,7 +320,7 @@
                 
                 html += `
                     <tr>
-                        <td>${b.id_transaksi || '-'}</td>
+                        <td>${i + 1}</td>
                         <td>${b.jenis_pembayaran === 'formulir' ? 'Biaya Formulir' : 'Biaya Daftar Ulang'}</td>
                         <td>${formatRupiah(jumlahBiaya)}</td>
                         <td>
@@ -576,6 +531,40 @@
 }
 
 /* Bank info */
+#pembayaran .payment-method-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    background: #EAEAEA;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #D1D1D1;
+}
+
+#pembayaran .payment-method-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#pembayaran .payment-method-btn:hover {
+    background: rgba(0, 104, 55, 0.08);
+}
+
+#pembayaran .payment-method-btn.active {
+    background: #006837;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 104, 55, 0.2);
+}
+
 #pembayaran .bank-info {
     background: rgba(0, 104, 55, 0.25);
     border-radius: 10px;

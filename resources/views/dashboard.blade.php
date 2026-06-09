@@ -7,7 +7,9 @@
     <title>Dashboard - PPDB MI Ziyadatul Ihsan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap">
+    <!-- <script src="https://www.google.com/recaptcha/api.js?render=6LfBaQUtAAAAADYldz6ahBjnFwpwHdndOL0eF9Uy" async defer></script> -->
     @vite('resources/css/style.css')
+    @include('partials.alert-helper')
 </head>
 
 <body>
@@ -108,9 +110,6 @@
         style="position:fixed;bottom:20px;right:20px;background:#1a4d2e;color:white;padding:10px 18px;border-radius:8px;font-size:0.85rem;display:none;z-index:999;">
     </div>
 
-    {{-- Semua script dari partial section dikumpulkan di sini (dieksekusi sebelum script utama) --}}
-    @stack('section-scripts')
-
     {{-- ===== SCRIPT UTAMA ===== --}}
     <script>
         // ========== GLOBAL VARIABLES & HELPERS ==========
@@ -119,13 +118,21 @@
 
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
-            str = String(str); // pastikan string
-            return str.replace(/[&<>]/g, function (m) {
+            str = String(str);
+            return str.replace(/[&<>'"]/g, function(m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
+                if (m === "'") return '&#39;';
+                if (m === '"') return '&quot;';
                 return m;
             });
+        }
+
+        // Fungsi tambahan untuk aman memasukkan teks ke innerHTML (jika terpaksa)
+        function safeInnerHTML(element, html) {
+            if (!element) return;
+            element.innerHTML = escapeHtml(html);
         }
 
         // Redirect jika belum login atau bukan pendaftar
@@ -208,6 +215,9 @@
             }
         });
     </script>
+
+    {{-- Semua script dari partial section dikumpulkan di sini (dieksekusi setelah script utama agar global variables sudah terdefinisi) --}}
+    @stack('section-scripts')
 </body>
 
 </html>

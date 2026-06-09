@@ -52,9 +52,10 @@
                     imgHtml = `<img src="/api/file/metode/${m.id}?token=${token}" width="100"><br>`;
                 }
                 html += `<div>
-                    <strong>${m.nama_bank || 'QRIS'}</strong><br>
-                    No: ${m.nomor_rekening || '-'}<br>
-                    Atas Nama: ${m.atas_nama || '-'}<br>
+                    <strong>${escapeHtml(m.nama_bank || 'QRIS')}</strong><br>
+                    No: ${escapeHtml(m.nomor_rekening || '-')}<br>
+                    Atas Nama: ${escapeHtml(m.atas_nama || '-')}<br>
+                    Keterangan: ${escapeHtml(m.keterangan || '')}<br>
                     ${imgHtml}
                     <button onclick="editMetode(${m.id}, '${escapeHtml(m.nama_bank || '')}', '${escapeHtml(m.nomor_rekening || '')}', '${escapeHtml(m.atas_nama || '')}', '${escapeHtml(m.keterangan || '')}')">Edit</button>
                     <button onclick="hapusMetode(${m.id})">Hapus</button>
@@ -94,21 +95,22 @@
     }
 
     async function hapusMetode(id) {
-        if (!confirm('Yakin ingin menghapus?')) return;
-        try {
-            const res = await fetch(`/api/metode-pembayaran/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            if (res.ok) {
-                alert('Metode dihapus.');
-                loadMetodePembayaran();
-            } else {
-                alert('Gagal menghapus.');
+        confirmAction('Yakin ingin menghapus?', async () => {
+            try {
+                const res = await fetch(`/api/metode-pembayaran/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    alert('Metode dihapus.');
+                    loadMetodePembayaran();
+                } else {
+                    alert('Gagal menghapus.');
+                }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
-        }
+        });
     }
 
     // Event listener untuk form tambah

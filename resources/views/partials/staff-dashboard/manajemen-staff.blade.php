@@ -54,13 +54,13 @@
                 let roleLabel = u.role === 'panitia' ? 'Panitia PPDB' : 'Bendahara';
                 html += `<tr>
                     <td>${i + 1}</td>
-                    <td>${u.name}</td>
-                    <td>${u.email}</td>
-                    <td>${roleLabel}</td>
+                    <td>${escapeHtml(u.name)}</td>
+                    <td>${escapeHtml(u.email)}</td>
+                    <td>${escapeHtml(roleLabel)}</td>
                     <td>
                         <button onclick="editStaff(${u.id})">Edit</button>
                         <button onclick="hapusStaff(${u.id})">Hapus</button>
-                      </td>
+                    </td>
                 </tr>`;
             });
             document.getElementById('tabel-staff').innerHTML = html || '<tr><td colspan="5">Tidak ada staff.</td></tr>';
@@ -131,22 +131,23 @@
     }
 
     async function hapusStaff(id) {
-        if (!confirm('Yakin hapus staff ini?')) return;
-        try {
-            const res = await fetch(`/api/admin/users/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            if (res.ok) {
-                alert('Staff dihapus.');
-                loadStaff();
-            } else {
-                const err = await res.json();
-                alert('Gagal: ' + err.message);
+        confirmAction('Yakin hapus staff ini?', async () => {
+            try {
+                const res = await fetch(`/api/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    alert('Staff dihapus.');
+                    loadStaff();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + err.message);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
-        } catch (err) {
-            alert('Error: ' + err.message);
-        }
+        });
     }
 </script>
 @endpush

@@ -67,11 +67,11 @@
                 const periode = `${new Date(g.periode_mulai).toLocaleString()} s/d ${new Date(g.periode_selesai).toLocaleString()}`;
                 html += `<tr>
                     <td>${i + 1}</td>
-                    <td>Gelombang ${g.nomor_gelombang}</td>
-                    <td>${g.tahun}</td>
-                    <td>${periode}</td>
-                    <td>${g.kuota}</td>
-                    <td>${g.sisa_kuota}</td>
+                    <td>Gelombang ${escapeHtml(String(g.nomor_gelombang))}</td>
+                    <td>${escapeHtml(String(g.tahun))}</td>
+                    <td>${escapeHtml(periode)}</td>
+                    <td>${escapeHtml(String(g.kuota))}</td>
+                    <td>${escapeHtml(String(g.sisa_kuota))}</td>
                     <td>Rp ${parseInt(g.biaya_formulir).toLocaleString()}</td>
                     <td>Rp ${parseInt(g.biaya_daftar_ulang).toLocaleString()}</td>
                     <td>${g.status === 'aktif' ? '✅ Aktif' : '❌ Nonaktif'}</td>
@@ -162,22 +162,23 @@
     }
 
     async function hapusGelombang(id) {
-        if (!confirm('Yakin hapus gelombang ini?')) return;
-        try {
-            const res = await fetch(`/api/gelombang/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            if (res.ok) {
-                alert('Gelombang dihapus.');
-                loadGelombang();
-            } else {
-                const err = await res.json();
-                alert('Gagal: ' + err.message);
+        confirmAction('Yakin hapus gelombang ini?', async () => {
+            try {
+                const res = await fetch(`/api/gelombang/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    alert('Gelombang dihapus.');
+                    loadGelombang();
+                } else {
+                    const err = await res.json();
+                    alert('Gagal: ' + err.message);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
-        } catch (err) {
-            alert('Error: ' + err.message);
-        }
+        });
     }
 
     async function toggleStatusGelombang(id) {

@@ -110,12 +110,14 @@
                 if (!templates.length) {
                     return '<span style="color:#dc2626;">Template surat belum tersedia. Hubungi panitia.</span>';
                 }
-                return templates.map(t =>
-                    `<a href="/api/template-surat/download/${t.id}?token=${token}" target="_blank" class="btn-download" style="display:inline-flex; margin-right:10px;">
-                                                <i class="fa-solid fa-file-pdf"></i> Download ${t.nama}
-                                                <i class="fa-solid fa-download icon-small"></i>
-                                            </a>`
-                ).join('');
+                return templates.map(t => {
+                    const namaAman = escapeHtml(t.nama);
+                    const idAman = escapeHtml(String(t.id));
+                    return `<a href="/api/template-surat/download/${idAman}?token=${token}" target="_blank" class="btn-download" style="display:inline-flex; margin-right:10px;">
+                        <i class="fa-solid fa-file-pdf"></i> Download ${namaAman}
+                        <i class="fa-solid fa-download icon-small"></i>
+                    </a>`;
+                }).join('');
             } catch (e) {
                 return '<span style="color:#dc2626;">Gagal memuat template.</span>';
             }

@@ -5,7 +5,7 @@
     <!-- Tombol switch / tab -->
     <div>
         <button id="tabFormulir" class="tab-active" onclick="switchJenisPembayaran('formulir')">Pembayaran Formulir</button>
-        <button id="tabMasuk" onclick="switchJenisPembayaran('masuk')">Pembayaran Masuk (Daftar Ulang)</button>
+        <button id="tabMasuk" onclick="switchJenisPembayaran('daftar_ulang')">Pembayaran Masuk (Daftar Ulang)</button>
     </div>
     <br>
 
@@ -52,7 +52,7 @@
 <script>
     // Variabel global untuk menyimpan data bukti yang sedang diverifikasi
     let currentBukti = null;
-    let currentJenis = 'formulir'; // formulir atau masuk
+    let currentJenis = 'formulir'; // formulir atau daftar_ulang
 
     // Switch tab
     window.switchJenisPembayaran = function(jenis) {
@@ -68,7 +68,7 @@
             document.getElementById('container-masuk').style.display = 'block';
             document.getElementById('tabMasuk').classList.add('tab-active');
             document.getElementById('tabFormulir').classList.remove('tab-active');
-            loadDataVerifikasiPembayaran('masuk');
+            loadDataVerifikasiPembayaran('daftar_ulang');
         }
     };
 
@@ -110,16 +110,15 @@
         data.forEach((b, i) => {
             html += `<tr>
                 <td>${i + 1}</td>
-                <td>${b.pendaftar?.name ?? '-'}</td>
+                <td>${escapeHtml(b.pendaftar?.name ?? '-')}</td>
                 <td>${b.jenis_pembayaran === 'formulir' ? 'Formulir' : 'Daftar Ulang'}</td>
                 <td><button onclick="bukaModalVerifikasi(${b.id_bukti_pembayaran})">Lihat Bukti</button></td>
-                <td>${b.status}</td>
+                <td>${escapeHtml(b.status)}</td>
             </tr>`;
         });
         tbody.innerHTML = html;
     }
 
-    // Render tabel untuk status sudah diverifikasi
     function renderTabelSudah(data, tableId) {
         const tbody = document.querySelector(`#${tableId} tbody`);
         if (!tbody) return;
@@ -133,17 +132,17 @@
             if (b.status === 'diterima') {
                 const kwitansiId = b.verifikasi?.kwitansi?.id_kwitansi;
                 if (kwitansiId) {
-                    info = `<a href="/api/file/kwitansi/${kwitansiId}?token=${token}" target="_blank">Lihat Kwitansi</a>`;
+                    info = `<button onclick="window.open('/api/file/kwitansi/${kwitansiId}?token=${token}', '_blank')">Lihat Kwitansi</button>`;
                 } else {
                     info = '-';
                 }
             }
             html += `<tr>
                 <td>${i + 1}</td>
-                <td>${b.pendaftar?.name ?? '-'}</td>
+                <td>${escapeHtml(b.pendaftar?.name ?? '-')}</td>
                 <td>${b.jenis_pembayaran === 'formulir' ? 'Formulir' : 'Daftar Ulang'}</td>
-                <td><a href="/api/file/bukti/${b.id_bukti_pembayaran}?token=${token}" target="_blank">Lihat Bukti</a></td>
-                <td>${b.status}</td>
+                <td><button onclick="window.open('/api/file/bukti/${b.id_bukti_pembayaran}?token=${token}', '_blank')">Lihat Bukti</button></td>
+                <td>${escapeHtml(b.status)}</td>
                 <td>${info}</td>
             </tr>`;
         });

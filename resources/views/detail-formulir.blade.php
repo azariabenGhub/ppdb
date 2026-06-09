@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Formulir #{{ $id }}</title>
+    @include('partials.alert-helper')
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -47,6 +48,20 @@
     </div>
 
     <script>
+        // Helper yang aman untuk escape HTML (mencegah XSS)
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            str = String(str);
+            return str.replace(/[&<>'"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === "'") return '&#39;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
         // Ambil token & user
         const token = localStorage.getItem('access_token');
         const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -87,201 +102,157 @@
                     statusLabel = 'Ditolak';
                 }
 
+                // Escape semua data yang akan ditampilkan
+                const namaLengkap = escapeHtml(d.nama_lengkap);
+                const tempatLahir = escapeHtml(d.tempat_lahir);
+                const tanggalLahir = escapeHtml(d.tanggal_lahir);
+                const nik = escapeHtml(d.nik);
+                const agama = escapeHtml(d.agama);
+                const wargaNegara = escapeHtml(d.warga_negara);
+                const anakKe = escapeHtml(String(d.anak_ke || '-'));
+                const jumlahSaudara = escapeHtml(String(d.jumlah_saudara || '-'));
+                const alamatLengkap = escapeHtml(d.alamat_lengkap);
+
+                // Data orang tua / wali
+                const namaAyah = escapeHtml(d.nama_ayah || '-');
+                const pekerjaanAyah = escapeHtml(d.pekerjaan_ayah || '-');
+                const agamaAyah = escapeHtml(d.agama_ayah || '-');
+                const pendidikanAyah = escapeHtml(d.pendidikan_ayah || '-');
+                const noKtpAyah = escapeHtml(d.no_ktp_ayah || '-');
+                const penghasilanAyah = escapeHtml(d.penghasilan_ayah || '-');
+                const noTelpAyah = escapeHtml(d.no_telp_ayah || '-');
+                const alamatAyah = escapeHtml(d.alamat_ayah || '-');
+
+                const namaIbu = escapeHtml(d.nama_ibu || '-');
+                const pekerjaanIbu = escapeHtml(d.pekerjaan_ibu || '-');
+                const agamaIbu = escapeHtml(d.agama_ibu || '-');
+                const pendidikanIbu = escapeHtml(d.pendidikan_ibu || '-');
+                const noKtpIbu = escapeHtml(d.no_ktp_ibu || '-');
+                const penghasilanIbu = escapeHtml(d.penghasilan_ibu || '-');
+                const noTelpIbu = escapeHtml(d.no_telp_ibu || '-');
+                const alamatIbu = escapeHtml(d.alamat_ibu || '-');
+
+                const namaWali = escapeHtml(d.nama_wali || '-');
+                const pekerjaanWali = escapeHtml(d.pekerjaan_wali || '-');
+                const agamaWali = escapeHtml(d.agama_wali || '-');
+                const pendidikanWali = escapeHtml(d.pendidikan_wali || '-');
+                const noKtpWali = escapeHtml(d.no_ktp_wali || '-');
+                const penghasilanWali = escapeHtml(d.penghasilan_wali || '-');
+                const noTelpWali = escapeHtml(d.no_telp_wali || '-');
+                const alamatWali = escapeHtml(d.alamat_wali || '-');
+
+                // Data akademik (jika pindahan)
+                const asalSekolah = escapeHtml(d.asal_sekolah || '-');
+                const noIjazah = escapeHtml(d.no_ijazah || '-');
+                const tahunIjazah = escapeHtml(d.tahun_ijazah || '-');
+                const diterimaKelas = escapeHtml(d.diterima_kelas || '-');
+                const pindahDari = escapeHtml(d.pindah_dari || '-');
+                const noPindah = escapeHtml(d.no_pindah || '-');
+                const tanggalPindah = escapeHtml(d.tanggal_pindah || '-');
+
+                // Catatan verifikasi
+                const catatanVerifikasi = escapeHtml(d.verifikasi?.catatan ?? '-');
+
                 let html = `
                     <!-- 1. BIODATA SISWA -->
                     <div class="section">
                         <h3>Biodata Siswa</h3>
                         <table>
-                            <tr>
-                                <th>Nama Lengkap</th>
-                                <td>${d.nama_lengkap}</td>
-                            </tr>
-                            <tr>
-                                <th>Tempat, Tanggal Lahir</th>
-                                <td>${d.tempat_lahir}, ${d.tanggal_lahir}</td>
-                            </tr>
-                            <tr>
-                                <th>NIK</th>
-                                <td>${d.nik}</td>
-                            </tr>
-                            <tr>
-                                <th>Agama</th>
-                                <td>${d.agama}</td>
-                            </tr>
-                            <tr>
-                                <th>Kewarganegaraan</th>
-                                <td>${d.warga_negara}</td>
-                            </tr>
-                            <tr>
-                                <th>Anak Ke / Jumlah Saudara</th>
-                                <td>Anak ke-${d.anak_ke || '-'} dari ${d.jumlah_saudara || '-'} bersaudara</td>
-                            </tr>
-                            <tr>
-                                <th>Alamat Lengkap</th>
-                                <td>${d.alamat_lengkap}</td>
-                            </tr>
+                            <tr><th>Nama Lengkap</th><td>${namaLengkap}</td></tr>
+                            <tr><th>Tempat, Tanggal Lahir</th><td>${tempatLahir}, ${tanggalLahir}</td></tr>
+                            <tr><th>NIK</th><td>${nik}</td></tr>
+                            <tr><th>Agama</th><td>${agama}</td></tr>
+                            <tr><th>Kewarganegaraan</th><td>${wargaNegara}</td></tr>
+                            <tr><th>Anak Ke / Jumlah Saudara</th><td>Anak ke-${anakKe} dari ${jumlahSaudara} bersaudara</td></tr>
+                            <tr><th>Alamat Lengkap</th><td>${alamatLengkap}</td></tr>
                         </table>
                     </div>
 
                     <!-- 2. DATA ORANG TUA / WALI -->
                     <div class="section">
                         <h3>Data ${d.tipe_wali === 'orang_tua' ? 'Orang Tua' : 'Wali'}</h3>
-                        ${d.tipe_wali === 'orang_tua' ? `
+                `;
+
+                if (d.tipe_wali === 'orang_tua') {
+                    html += `
                             <div class="sub-section-title">Data Ayah Kandung</div>
                             <table>
-                                <tr>
-                                    <th>Nama Ayah</th>
-                                    <td>${d.nama_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pekerjaan Ayah</th>
-                                    <td>${d.pekerjaan_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Agama Ayah</th>
-                                    <td>${d.agama_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pendidikan Ayah</th>
-                                    <td>${d.pendidikan_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. KTP / NIK Ayah</th>
-                                    <td>${d.no_ktp_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Penghasilan Ayah</th>
-                                    <td>${d.penghasilan_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. Telepon / WA</th>
-                                    <td>${d.no_telp_ayah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Alamat Ayah</th>
-                                    <td>${d.alamat_ayah || '-'}</td>
-                                </tr>
+                                <tr><th>Nama Ayah</th><td>${namaAyah}</td></tr>
+                                <tr><th>Pekerjaan Ayah</th><td>${pekerjaanAyah}</td></tr>
+                                <tr><th>Agama Ayah</th><td>${agamaAyah}</td></tr>
+                                <tr><th>Pendidikan Ayah</th><td>${pendidikanAyah}</td></tr>
+                                <tr><th>No. KTP / NIK Ayah</th><td>${noKtpAyah}</td></tr>
+                                <tr><th>Penghasilan Ayah</th><td>${penghasilanAyah}</td></tr>
+                                <tr><th>No. Telepon / WA</th><td>${noTelpAyah}</td></tr>
+                                <tr><th>Alamat Ayah</th><td>${alamatAyah}</td></tr>
                             </table>
 
                             <div class="sub-section-title" style="margin-top:20px;">Data Ibu Kandung</div>
                             <table>
-                                <tr>
-                                    <th>Nama Ibu</th>
-                                    <td>${d.nama_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pekerjaan Ibu</th>
-                                    <td>${d.pekerjaan_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Agama Ibu</th>
-                                    <td>${d.agama_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pendidikan Ibu</th>
-                                    <td>${d.pendidikan_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. KTP / NIK Ibu</th>
-                                    <td>${d.no_ktp_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Penghasilan Ibu</th>
-                                    <td>${d.penghasilan_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. Telepon / WA</th>
-                                    <td>${d.no_telp_ibu || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Alamat Ibu</th>
-                                    <td>${d.alamat_ibu || '-'}</td>
-                                </tr>
+                                <tr><th>Nama Ibu</th><td>${namaIbu}</td></tr>
+                                <tr><th>Pekerjaan Ibu</th><td>${pekerjaanIbu}</td></tr>
+                                <tr><th>Agama Ibu</th><td>${agamaIbu}</td></tr>
+                                <tr><th>Pendidikan Ibu</th><td>${pendidikanIbu}</td></tr>
+                                <tr><th>No. KTP / NIK Ibu</th><td>${noKtpIbu}</td></tr>
+                                <tr><th>Penghasilan Ibu</th><td>${penghasilanIbu}</td></tr>
+                                <tr><th>No. Telepon / WA</th><td>${noTelpIbu}</td></tr>
+                                <tr><th>Alamat Ibu</th><td>${alamatIbu}</td></tr>
                             </table>
-                        ` : `
+                    `;
+                } else {
+                    html += `
                             <div class="sub-section-title">Data Wali</div>
                             <table>
-                                <tr>
-                                    <th>Nama Wali</th>
-                                    <td>${d.nama_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pekerjaan Wali</th>
-                                    <td>${d.pekerjaan_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Agama Wali</th>
-                                    <td>${d.agama_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pendidikan Wali</th>
-                                    <td>${d.pendidikan_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. KTP / NIK Wali</th>
-                                    <td>${d.no_ktp_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Penghasilan Wali</th>
-                                    <td>${d.penghasilan_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. Telepon / WA</th>
-                                    <td>${d.no_telp_wali || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Alamat Wali</th>
-                                    <td>${d.alamat_wali || '-'}</td>
-                                </tr>
+                                <tr><th>Nama Wali</th><td>${namaWali}</td></tr>
+                                <tr><th>Pekerjaan Wali</th><td>${pekerjaanWali}</td></tr>
+                                <tr><th>Agama Wali</th><td>${agamaWali}</td></tr>
+                                <tr><th>Pendidikan Wali</th><td>${pendidikanWali}</td></tr>
+                                <tr><th>No. KTP / NIK Wali</th><td>${noKtpWali}</td></tr>
+                                <tr><th>Penghasilan Wali</th><td>${penghasilanWali}</td></tr>
+                                <tr><th>No. Telepon / WA</th><td>${noTelpWali}</td></tr>
+                                <tr><th>Alamat Wali</th><td>${alamatWali}</td></tr>
                             </table>
-                        `}
+                    `;
+                }
+
+                html += `
                     </div>
 
                     <!-- 3. AKADEMIS & STATUS -->
                     <div class="section">
                         <h3>Akademik & Status</h3>
                         <table>
-                            ${d.is_bukan_pindahan ? `
-                                <tr>
-                                    <th>Status Siswa</th>
-                                    <td>Siswa Baru (Bukan Pindahan)</td>
-                                </tr>
-                            ` : `
-                                <tr>
-                                    <th>Status Siswa</th>
-                                    <td>Siswa Pindahan</td>
-                                </tr>
-                                <tr>
-                                    <th>Asal Sekolah</th>
-                                    <td>${d.asal_sekolah || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>No. Ijazah & Tahun Ijazah</th>
-                                    <td>${d.no_ijazah || '-'} (${d.tahun_ijazah || '-'})</td>
-                                </tr>
-                                <tr>
-                                    <th>Diterima di Kelas</th>
-                                    <td>${d.diterima_kelas || '-'}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pindah dari / No & Tgl Surat</th>
-                                    <td>${d.pindah_dari || '-'} (No: ${d.no_pindah || '-'}, Tgl: ${d.tanggal_pindah || '-'})</td>
-                                </tr>
-                            `}
-                            <tr>
-                                <th>Status Verifikasi</th>
-                                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                            </tr>
-                        </table>
-
-                        ${d.status === 'ditolak' ? `
-                            <div class="rejection-note">
-                                <h4>Catatan Penolakan:</h4>
-                                <p>${d.verifikasi?.catatan ?? '-'}</p>
-                            </div>
-                        ` : ''}
-                    </div>
                 `;
+
+                if (d.is_bukan_pindahan) {
+                    html += `<tr><th>Status Siswa</th><td>Siswa Baru (Bukan Pindahan)</td></tr>`;
+                } else {
+                    html += `
+                            <tr><th>Status Siswa</th><td>Siswa Pindahan</td></tr>
+                            <tr><th>Asal Sekolah</th><td>${asalSekolah}</td></tr>
+                            <tr><th>No. Ijazah & Tahun Ijazah</th><td>${noIjazah} (${tahunIjazah})</td></tr>
+                            <tr><th>Diterima di Kelas</th><td>${diterimaKelas}</td></tr>
+                            <tr><th>Pindah dari / No & Tgl Surat</th><td>${pindahDari} (No: ${noPindah}, Tgl: ${tanggalPindah})</td></tr>
+                    `;
+                }
+
+                html += `
+                            <tr><th>Status Verifikasi</th>
+                                <td><span class="status-badge ${statusClass}">${statusLabel}</span>
+                            </td>
+                        </table>
+                `;
+
+                if (d.status === 'ditolak') {
+                    html += `
+                        <div class="rejection-note">
+                            <h4>Catatan Penolakan:</h4>
+                            <p>${catatanVerifikasi}</p>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
 
                 // Tombol verifikasi hanya jika status menunggu
                 if (d.status === 'menunggu') {
@@ -301,8 +272,28 @@
                 if (d.status === 'menunggu') {
                     document.getElementById('btn-terima').addEventListener('click', () => verifikasi('diterima'));
                     document.getElementById('btn-tolak').addEventListener('click', () => {
-                        const catatan = prompt('Masukkan catatan penolakan:');
-                        if (catatan !== null) verifikasi('ditolak', catatan);
+                        // Gunakan SweetAlert atau prompt biasa, pastikan catatan di-escape nanti
+                        Swal.fire({
+                            title: 'Tolak Formulir',
+                            input: 'textarea',
+                            inputLabel: 'Catatan Penolakan',
+                            inputPlaceholder: 'Masukkan alasan penolakan...',
+                            showCancelButton: true,
+                            confirmButtonText: 'Tolak',
+                            cancelButtonText: 'Batal',
+                            customClass: {
+                                popup: 'custom-swal-popup',
+                                confirmButton: 'custom-swal-confirm',
+                                cancelButton: 'custom-swal-cancel'
+                            },
+                            buttonsStyling: false
+                        }).then((result) => {
+                            if (result.isConfirmed && result.value) {
+                                verifikasi('ditolak', result.value);
+                            } else if (result.isConfirmed && !result.value) {
+                                Swal.fire('Catatan wajib diisi', '', 'error');
+                            }
+                        });
                     });
                 }
             } catch (error) {
@@ -312,8 +303,8 @@
         }
 
         async function verifikasi(hasil, catatan = '') {
-            if (!catatan && hasil === 'ditolak') {
-                alert('Catatan wajib diisi untuk penolakan.');
+            if (hasil === 'ditolak' && (!catatan || catatan.trim() === '')) {
+                Swal.fire('Catatan wajib diisi', 'Berikan alasan penolakan.', 'error');
                 return;
             }
             try {
@@ -331,14 +322,27 @@
                 });
                 const r = await res.json();
                 if (res.ok) {
-                    alert(r.message || 'Verifikasi berhasil.');
-                    location.reload();
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: r.message || 'Verifikasi berhasil.',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'custom-swal-popup',
+                            title: 'custom-swal-title',
+                            htmlContainer: 'custom-swal-html',
+                            confirmButton: 'custom-swal-confirm'
+                        },
+                        buttonsStyling: false
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
-                    alert('Gagal: ' + (r.message || 'Terjadi kesalahan.'));
+                    Swal.fire('Gagal', r.message || 'Terjadi kesalahan.', 'error');
                 }
             } catch (error) {
                 console.error(error);
-                alert('Terjadi kesalahan jaringan.');
+                Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
             }
         }
 

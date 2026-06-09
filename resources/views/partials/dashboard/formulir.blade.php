@@ -1,7 +1,7 @@
 {{-- ===== FORMULIR PENDAFTARAN ===== --}}
 <div id="formulir" class="section" style="display:none;">
     <div class="section-wrapper">
-        <h2>Formulir Pendaftaran</h2>
+        <!-- <h2>Formulir Pendaftaran</h2> -->
         <div id="konten-formulir">
             <p style="color:#888;">Memuat...</p>
         </div>
@@ -81,15 +81,6 @@
         }
 
         // ========== GENERATE HTML ==========
-        function infoBiayaGelombang(gel) {
-            return `<div style="background:#f0f7f2; border-radius:8px; padding:15px; margin-bottom:20px;">
-                                    <p style="margin:0;"><strong>Gelombang ${gel.nomor_gelombang} (${gel.tahun})</strong></p>
-                                    <p style="margin:4px 0;">Biaya Formulir: Rp ${parseInt(gel.biaya_formulir).toLocaleString()}</p>
-                                    <p style="margin:4px 0;">Biaya Daftar Ulang (jika lulus): Rp ${parseInt(gel.biaya_daftar_ulang).toLocaleString()}</p>
-                                    <p style="margin:4px 0;">Kuota tersisa: ${gel.sisa_kuota} dari ${gel.kuota}</p>
-                                    <p style="margin:4px 0;">Periode: ${new Date(gel.periode_mulai).toLocaleString()} s/d ${new Date(gel.periode_selesai).toLocaleString()}</p>
-                                </div>`;
-        }
 
         function stepperHtml(currentStep = 1) {
             const steps = [
@@ -317,7 +308,6 @@
 
         function formHtmlKosong(gel) {
             return `
-                                    ${infoBiayaGelombang(gel)}
                                     <div class="form-header-card">
                                         <div class="school-brand">
                                             <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
@@ -353,7 +343,6 @@
 
         function formHtmlEdit(data, gel) {
             return `
-                                    ${infoBiayaGelombang(gel)}
                                     <div class="form-header-card">
                                         <div class="school-brand">
                                             <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
@@ -390,7 +379,6 @@
         // TAMPILAN SUKSES setelah formulir terkirim (status menunggu)
         function formHtmlSukses(gel) {
             return `
-                                    ${infoBiayaGelombang(gel)}
                                     <div class="form-header-card">
                                         <div class="school-brand">
                                             <img src="{{ asset('storage/assets/logo-mizi.png') }}" alt="Logo">
@@ -442,9 +430,7 @@
                 const data = result.data;
 
                 if (data && data.status === 'diterima') {
-                    const gel = await getGelombangAktif();
                     konten.innerHTML = `
-                        ${gel ? infoBiayaGelombang(gel) : ''}
                         <div class="form-header-card">
                             <div class="school-brand">
                                 <img src="/storage/assets/logo-mizi.png" alt="Logo">

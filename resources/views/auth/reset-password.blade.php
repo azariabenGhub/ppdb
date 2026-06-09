@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPDB MI Ziyadatul Ihsan - Reset Password</title>
     @vite('resources/css/style.css')
+    @include('partials.alert-helper')
 </head>
 <body>
     <main class="auth-container">

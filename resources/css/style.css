@@ -2797,3 +2797,58 @@ div[id^="overlay"] {
 .footer-card .footer-col h3 {
     color: #1a4d2e ;
 }
+
+/* ==========================================
+   SWEETALERT2 CUSTOM STYLING (PPDB MIZI)
+   ========================================== */
+.custom-swal-popup {
+    border-radius: 16px !important;
+    font-family: 'Inter', sans-serif !important;
+    padding: 30px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.custom-swal-title {
+    color: #1a4d2e !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    margin-top: 15px !important;
+}
+
+.custom-swal-html {
+    font-size: 0.95rem !important;
+    color: #4b5563 !important;
+    line-height: 1.5 !important;
+}
+
+.custom-swal-confirm {
+    background-color: #1a4d2e !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 12px 30px !important;
+    font-size: 0.9rem !important;
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s !important;
+}
+
+.custom-swal-confirm:hover {
+    background-color: #0e3a22 !important;
+}
+
+.custom-swal-cancel {
+    background-color: #ef4444 !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 12px 30px !important;
+    font-size: 0.9rem !important;
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s !important;
+}
+
+.custom-swal-cancel:hover {
+    background-color: #dc2626 !important;
+}

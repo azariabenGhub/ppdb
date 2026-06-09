@@ -13,7 +13,7 @@ class DaftarUlangOrangTua extends Model
 
     protected $fillable = [
         'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'asal_tk',
-        'alamat_domisili', 'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'alamat_ktp', 'no_hp',
+        'alamat_domisili', 'is_bukan_pindahan', 'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'alamat_ktp', 'no_hp',
         'nama_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'narahubung'
     ];
 }

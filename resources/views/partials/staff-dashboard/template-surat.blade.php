@@ -92,17 +92,18 @@
     }
 
     async function hapusTemplate(id) {
-        if (!confirm('Yakin hapus template?')) return;
-        const res = await fetch(`/api/template-surat/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token }
+        confirmAction('Yakin hapus template?', async () => {
+            const res = await fetch(`/api/template-surat/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                alert('Dihapus');
+                loadTemplateSurat();
+            } else {
+                alert('Gagal menghapus');
+            }
         });
-        if (res.ok) {
-            alert('Dihapus');
-            loadTemplateSurat();
-        } else {
-            alert('Gagal menghapus');
-        }
     }
 </script>
 @endpush

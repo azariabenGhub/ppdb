@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Staff PPDB</title>
     @vite('resources/css/style.css')
+    @include('partials.alert-helper')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-dashboard-layout">
@@ -198,20 +199,20 @@
     </div>
     <div id="overlayDaftarUlang" style="display:none;"></div>
 
-    {{-- Kumpulan script dari setiap section partials --}}
-    @stack('staff-scripts')
-
     {{-- Script global javascript bawaan Ben (Navigasi, Logout, API fetcher) --}}
     <script>
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const token = localStorage.getItem('access_token');
 
         function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function (m) {
+            if (str === null || str === undefined) return '';
+            str = String(str);
+            return str.replace(/[&<>'"]/g, function(m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
+                if (m === "'") return '&#39;';
+                if (m === '"') return '&quot;';
                 return m;
             });
         }
@@ -327,5 +328,8 @@
             }
         });
     </script>
+
+    {{-- Kumpulan script dari setiap section partials --}}
+    @stack('staff-scripts')
 </body>
 </html>

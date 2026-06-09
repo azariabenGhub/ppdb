@@ -337,24 +337,23 @@
     }
 
     async function hapusPendaftar(id) {
-        if (!confirm('Anda yakin ingin menghapus pendaftar ini? Semua data termasuk formulir, pembayaran, jadwal tes, penilaian, dan dokumen daftar ulang akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.')) {
-            return;
-        }
-        try {
-            const res = await fetch(`/api/pendaftar/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const result = await res.json();
-            if (res.ok) {
-                alert(result.message || 'Pendaftar berhasil dihapus.');
-                loadPendaftar();
-            } else {
-                alert('Gagal: ' + (result.message || 'Terjadi kesalahan.'));
+        confirmAction('Anda yakin ingin menghapus pendaftar ini? Semua data termasuk formulir, pembayaran, jadwal tes, penilaian, dan dokumen daftar ulang akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.', async () => {
+            try {
+                const res = await fetch(`/api/pendaftar/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert(result.message || 'Pendaftar berhasil dihapus.');
+                    loadPendaftar();
+                } else {
+                    alert('Gagal: ' + (result.message || 'Terjadi kesalahan.'));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
-        } catch (err) {
-            alert('Error: ' + err.message);
-        }
+        });
     }
 
     function tutupModalFormulir() {

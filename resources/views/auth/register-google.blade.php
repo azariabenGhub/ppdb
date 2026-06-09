@@ -7,6 +7,7 @@
     <title>PPDB MI Ziyadatul Ihsan - Buat Akun</title>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'>
     @vite('resources/css/style.css')
+    @include('partials.alert-helper')
 </head>
 
 <body>

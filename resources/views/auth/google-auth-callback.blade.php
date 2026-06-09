@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memproses Login Google - PPDB MI Ziyadatul Ihsan</title>
     @vite('resources/css/style.css')
+    @include('partials.alert-helper')
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'>
     <style>
         /* untuk loading spinner dan layout */
@@ -84,6 +85,7 @@
                 // Simpan ke localStorage
                 localStorage.setItem('access_token', token);
                 localStorage.setItem('user', JSON.stringify(user));
+                window.history.replaceState({}, document.title, window.location.pathname);
 
                 // Redirect berdasarkan role
                 const role = user.role;
@@ -95,13 +97,39 @@
             } catch (err) {
                 console.error('Error parsing user data:', err);
                 // Fallback: redirect ke login dengan pesan error
-                alert('Terjadi kesalahan saat memproses data login. Silakan coba lagi.');
-                window.location.href = '/login';
+                Swal.fire({
+                    title: 'Gagal',
+                    text: 'Terjadi kesalahan saat memproses data login. Silakan coba lagi.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        title: 'custom-swal-title',
+                        htmlContainer: 'custom-swal-html',
+                        confirmButton: 'custom-swal-confirm'
+                    },
+                    buttonsStyling: false
+                }).then(() => {
+                    window.location.href = '/login';
+                });
             }
         } else {
             // Jika tidak ada token atau user, redirect ke login
-            alert('Data login tidak lengkap. Silakan login kembali.');
-            window.location.href = '/login';
+            Swal.fire({
+                title: 'Gagal',
+                text: 'Data login tidak lengkap. Silakan login kembali.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'custom-swal-popup',
+                    title: 'custom-swal-title',
+                    htmlContainer: 'custom-swal-html',
+                    confirmButton: 'custom-swal-confirm'
+                },
+                buttonsStyling: false
+            }).then(() => {
+                window.location.href = '/login';
+            });
         }
     </script>
 </body>

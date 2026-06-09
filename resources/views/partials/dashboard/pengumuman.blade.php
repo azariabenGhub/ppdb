@@ -74,23 +74,23 @@
                             <table class="score-table">
                                 <tr>
                                     <td class="label-cell">Kemampuan Membaca</td>
-                                    <td class="value-cell">${nilaiMembaca}</td>
+                                    <td class="value-cell">${escapeHtml(String(nilaiMembaca))}</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell">Kemampuan Menulis</td>
-                                    <td class="value-cell">${nilaiMenulis}</td>
+                                    <td class="value-cell">${escapeHtml(String(nilaiMenulis))}</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell">Kemampuan Berhitung</td>
-                                    <td class="value-cell">${nilaiBerhitung}</td>
+                                    <td class="value-cell">${escapeHtml(String(nilaiBerhitung))}</td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell">Baca Alquran</td>
-                                    <td class="value-cell">${nilaiBacaAlquran}</td>
+                                    <td class="value-cell">${escapeHtml(String(nilaiBacaAlquran))}</td>
                                 </tr>
                                 <tr class="total-row">
                                     <td class="label-cell">Total Nilai</td>
-                                    <td class="value-cell">${totalNilai}</td>
+                                    <td class="value-cell">${escapeHtml(String(totalNilai))}</td>
                                 </tr>
                             </table>
                         </div>

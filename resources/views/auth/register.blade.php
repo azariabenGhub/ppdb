@@ -8,6 +8,7 @@
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/fi-regular-rounded.css'>
     <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     @vite('resources/css/style.css')
+    @include('partials.alert-helper')
 </head>
 
 <body>

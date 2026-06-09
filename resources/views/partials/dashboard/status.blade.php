@@ -93,6 +93,24 @@
                 }
             } catch (e) {}
 
+            // Cek Status Daftar Ulang (Langkah 5)
+            try {
+                const duRes = await fetch('/api/daftar-ulang/cek', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const duData = await duRes.json();
+                if (duData && duData.sudah_mengirim) {
+                    if (duData.status === 'diterima') {
+                        steps[4].status = 'done';
+                        if (steps[5].status !== 'done') {
+                            steps[5].status = 'current';
+                        }
+                    } else if (duData.status === 'menunggu') {
+                        steps[4].status = 'done'; // Sudah mengisi & mengirim
+                    }
+                }
+            } catch (e) {}
+
             // RENDER HTML KE DALAM CONTAINER
             let html = '<div class="status-steps-container">';
             steps.forEach((step, index) => {
