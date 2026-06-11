@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('daftar_ulang_wali', function (Blueprint $table) {
             $table->id();
@@ -19,12 +19,20 @@ return new class extends Migration
             // Field tambahan
             $table->text('alamat_domisili')->nullable();
             $table->string('narahubung', 20)->nullable();
+            $table->boolean('is_bukan_pindahan')->default(false);
+
+            // Data Siswa
+            $table->string('nama_lengkap')->nullable();
+            $table->string('tempat_lahir')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('jenis_kelamin', 10)->nullable();
+            $table->string('asal_tk')->nullable();
 
             $table->timestamps();
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('daftar_ulang_wali');
     }

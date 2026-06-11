@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('bukti_pembayarans', function (Blueprint $table) {
             $table->id('id_bukti_pembayaran');
-            $table->foreignId('id_pendaftar')->constrained('users')->onDelete('cascade'); // user yang upload
-            $table->string('bukti_pembayaran'); // path file gambar
+            $table->foreignId('id_pendaftar')->constrained('users')->onDelete('cascade');
+            $table->string('bukti_pembayaran');
             $table->enum('jenis_pembayaran', ['formulir', 'daftar_ulang']);
             $table->enum('status', ['menunggu', 'diterima', 'ditolak'])->default('menunggu');
             $table->timestamps();

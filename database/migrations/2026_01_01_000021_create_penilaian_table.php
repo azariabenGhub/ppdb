@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kwitansis', function (Blueprint $table) {
-            $table->id('id_kwitansi');
-            $table->foreignId('id_verifikasi_pembayaran')->constrained('verifikasi_pembayarans', 'id_verifikasi_pembayaran')->onDelete('cascade');
+        Schema::create('penilaian', function (Blueprint $table) {
+            $table->id('id_nilai');
+            $table->foreignId('id_penilai')->constrained('users')->onDelete('cascade');
             $table->foreignId('id_pendaftar')->constrained('users')->onDelete('cascade');
-            $table->string('kwitansi'); // path file kwitansi (PDF/gambar)
+            $table->string('kemampuan_membaca');
+            $table->string('kemampuan_menulis');
+            $table->string('kemampuan_berhitung');
+            $table->string('baca_alquran');
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kwitansis');
+        Schema::dropIfExists('penilaian');
     }
 };

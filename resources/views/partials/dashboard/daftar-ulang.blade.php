@@ -123,6 +123,30 @@
             }
         }
 
+        function pendidikanOptions(selected) {
+            const list = [
+                'SD / Sederajat',
+                'SMP / Sederajat',
+                'SMA / Sederajat',
+                'DI / DII / DIII',
+                'S1 / D4',
+                'S2',
+                'S3',
+                'Tidak Sekolah / Lainnya'
+            ];
+            let optionsHtml = '<option value="">Pilih Pendidikan</option>';
+            let found = false;
+            list.forEach(p => {
+                const isSel = (selected && selected.toLowerCase() === p.toLowerCase()) ? 'selected' : '';
+                if (isSel) found = true;
+                optionsHtml += `<option value="${p}" ${isSel}>${p}</option>`;
+            });
+            if (selected && !found) {
+                optionsHtml += `<option value="${escapeHtml(selected)}" selected>${escapeHtml(selected)}</option>`;
+            }
+            return optionsHtml;
+        }
+
         // ========== AMBIL DATA FORMULIR PENDAFTARAN AWAL ==========
         async function loadDataAwal() {
             try {
@@ -176,11 +200,11 @@
                                             <div class="input-row">
                                                 <div class="input-group">
                                                     <label>Pendidikan Terakhir Ayah</label>
-                                                    <input type="text" name="pendidikan_ayah" value="${v(detail, 'pendidikan_ayah')}" placeholder="Pendidikan Terakhir Ayah">
+                                                    <select name="pendidikan_ayah">${pendidikanOptions(v(detail, 'pendidikan_ayah'))}</select>
                                                 </div>
                                                 <div class="input-group">
                                                     <label>Pendidikan Terakhir Ibu</label>
-                                                    <input type="text" name="pendidikan_ibu" value="${v(detail, 'pendidikan_ibu')}" placeholder="Pendidikan Terakhir Ibu">
+                                                    <select name="pendidikan_ibu">${pendidikanOptions(v(detail, 'pendidikan_ibu'))}</select>
                                                 </div>
                                             </div>
                                         `;
@@ -243,7 +267,7 @@
                                             </div>
                                             <div class="input-group">
                                                 <label>Pendidikan Terakhir Wali</label>
-                                                <input type="text" name="pendidikan_wali" value="${v(detail, 'pendidikan_wali')}" placeholder="Pendidikan Terakhir Wali">
+                                                <select name="pendidikan_wali">${pendidikanOptions(v(detail, 'pendidikan_wali'))}</select>
                                             </div>
                                             <div class="input-group">
                                                 <label>Pekerjaan Wali</label>

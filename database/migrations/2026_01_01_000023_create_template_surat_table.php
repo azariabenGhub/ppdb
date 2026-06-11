@@ -9,12 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('template_surat', function (Blueprint $table) {
             $table->id();
-            $table->string('nama'); // Surat Pernyataan, Pakta Integritas
-            $table->string('file_path'); // path file template (pdf/docx)
+            $table->string('nama');
+            $table->string('file_path');
+            $table->string('file_extension')->nullable();
+            $table->string('mime_type')->nullable();
             $table->timestamps();
         });
     }

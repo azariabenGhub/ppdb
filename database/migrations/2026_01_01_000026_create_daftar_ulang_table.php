@@ -8,14 +8,17 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('daftar_ulang', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('no_pendaftaran')->nullable();
+            $table->foreignId('id_orang_tua')->nullable()->constrained('daftar_ulang_orang_tua')->onDelete('set null');
+            $table->foreignId('id_wali')->nullable()->constrained('daftar_ulang_wali')->onDelete('set null');
             $table->string('akte_kelahiran');
             $table->string('ijazah_tk')->nullable();
-            $table->string('ktp_orang_tua'); // bisa untuk wali juga, isi dengan path file
+            $table->string('ktp_orang_tua');
             $table->string('kartu_keluarga');
             $table->string('nisn_file')->nullable();
             $table->string('surat_pernyataan');
@@ -31,6 +34,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('daftar_ulangs');
+        Schema::dropIfExists('daftar_ulang');
     }
 };

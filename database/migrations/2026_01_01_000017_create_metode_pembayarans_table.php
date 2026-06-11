@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('metode_pembayarans', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_bank')->nullable(); // Misal: BCA, Mandiri
+            $table->string('nama_bank')->nullable();
             $table->string('nomor_rekening')->nullable();
             $table->string('atas_nama')->nullable();
-            $table->string('gambar_qris')->nullable(); // path file QRIS
+            $table->string('gambar_qris')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

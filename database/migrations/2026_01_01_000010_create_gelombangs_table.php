@@ -18,7 +18,8 @@ return new class extends Migration
             $table->dateTime('periode_mulai');
             $table->dateTime('periode_selesai');
             $table->integer('kuota')->default(0);
-            $table->decimal('biaya_pendaftaran', 12, 2)->default(0);
+            $table->decimal('biaya_formulir', 12, 2)->default(0);
+            $table->decimal('biaya_daftar_ulang', 12, 2)->default(0);
             $table->enum('status', ['aktif', 'nonaktif'])->default('nonaktif');
             $table->timestamps();
         });

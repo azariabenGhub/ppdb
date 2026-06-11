@@ -181,8 +181,9 @@
                 <div class="input-row">
                     <div class="input-group"><label>Agama</label><select id="agama">${agamaOptions(data.agama)}</select></div>
                     <div class="input-group"><label>Warga Negara</label><select id="warga_negara">
-                        <option ${data.warga_negara === 'WNI' ? 'selected' : ''}>WNI</option>
-                        <option ${data.warga_negara === 'WNA' ? 'selected' : ''}>WNA</option>
+                        <option value="">Pilih Warga Negara</option>
+                        <option value="WNI" ${data.warga_negara === 'WNI' ? 'selected' : ''}>WNI</option>
+                        <option value="WNA" ${data.warga_negara === 'WNA' ? 'selected' : ''}>WNA</option>
                     </select></div>
                 </div>
                 <div class="input-row">
@@ -207,7 +208,33 @@
 
         function agamaOptions(selected) {
             const list = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
-            return list.map(a => `<option value="${a}" ${selected === a ? 'selected' : ''}>${a}</option>`).join('');
+            let optionsHtml = '<option value="">Pilih Agama</option>';
+            optionsHtml += list.map(a => `<option value="${a}" ${selected === a ? 'selected' : ''}>${a}</option>`).join('');
+            return optionsHtml;
+        }
+
+        function pendidikanOptions(selected) {
+            const list = [
+                'SD / Sederajat',
+                'SMP / Sederajat',
+                'SMA / Sederajat',
+                'DI / DII / DIII',
+                'S1 / D4',
+                'S2',
+                'S3',
+                'Tidak Sekolah / Lainnya'
+            ];
+            let optionsHtml = '<option value="">Pilih Pendidikan</option>';
+            let found = false;
+            list.forEach(p => {
+                const isSel = (selected && selected.toLowerCase() === p.toLowerCase()) ? 'selected' : '';
+                if (isSel) found = true;
+                optionsHtml += `<option value="${p}" ${isSel}>${p}</option>`;
+            });
+            if (selected && !found) {
+                optionsHtml += `<option value="${escapeHtml(selected)}" selected>${escapeHtml(selected)}</option>`;
+            }
+            return optionsHtml;
         }
 
         function step2Fields(data = {}) {
@@ -225,7 +252,7 @@
                                         <div class="input-group"><label>Agama</label><select id="agama_ayah">${agamaOptions(data.agama_ayah)}</select></div>
                                     </div>
                                     <div class="input-row">
-                                        <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_ayah" value="${v('pendidikan_ayah')}" placeholder="Pendidikan Terakhir Ayah"></div>
+                                        <div class="input-group"><label>Pendidikan Terakhir</label><select id="pendidikan_ayah">${pendidikanOptions(data.pendidikan_ayah)}</select></div>
                                         <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_ayah" value="${v('no_ktp_ayah')}" placeholder="Nomor KTP Ayah"></div>
                                     </div>
                                     <div class="input-row">
@@ -241,7 +268,7 @@
                                         <div class="input-group"><label>Agama</label><select id="agama_ibu">${agamaOptions(data.agama_ibu)}</select></div>
                                     </div>
                                     <div class="input-row">
-                                        <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_ibu" value="${v('pendidikan_ibu')}" placeholder="Pendidikan Terakhir Ibu"></div>
+                                        <div class="input-group"><label>Pendidikan Terakhir</label><select id="pendidikan_ibu">${pendidikanOptions(data.pendidikan_ibu)}</select></div>
                                         <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_ibu" value="${v('no_ktp_ibu')}" placeholder="Nomor KTP Ibu"></div>
                                     </div>
                                     <div class="input-row">
@@ -258,7 +285,7 @@
                                         <div class="input-group"><label>Agama</label><select id="agama_wali">${agamaOptions(data.agama_wali)}</select></div>
                                     </div>
                                     <div class="input-row">
-                                        <div class="input-group"><label>Pendidikan Terakhir</label><input type="text" id="pendidikan_wali" value="${v('pendidikan_wali')}" placeholder="Pendidikan Terakhir Wali"></div>
+                                        <div class="input-group"><label>Pendidikan Terakhir</label><select id="pendidikan_wali">${pendidikanOptions(data.pendidikan_wali)}</select></div>
                                         <div class="input-group"><label>No. KTP</label><input type="text" id="no_ktp_wali" value="${v('no_ktp_wali')}" placeholder="Nomor KTP Wali"></div>
                                     </div>
                                     <div class="input-row">
