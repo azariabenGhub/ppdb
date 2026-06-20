@@ -1,31 +1,27 @@
 <?php
 
-namespace Database\Seeders;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-
-class DatabaseSeeder extends Seeder
+return new class extends Migration
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Run the migrations.
      */
-    public function run(): void
+    public function up(): void
     {
-        // User::factory(10)->create();
+        Schema::create('settings', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->text('value')->nullable();
+            $table->timestamps();
+        });
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-        // Seed beranda settings
-        \App\Models\Setting::updateOrCreate(
-            ['key' => 'beranda_alur'],
+        // Insert default settings
+        DB::table('settings')->insert([
             [
+                'key' => 'beranda_alur',
                 'value' => json_encode([
                     [
                         'step' => 1,
@@ -69,22 +65,30 @@ class DatabaseSeeder extends Seeder
                         'description' => 'Lihat detail biaya daftar ulang dan lakukan pembayaran pada nomor rekening yang tertera.',
                         'date' => ''
                     ]
-                ])
-            ]
-        );
-
-        \App\Models\Setting::updateOrCreate(
-            ['key' => 'beranda_kontak'],
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
             [
-                'value' => "Ririn Asmarwati, S.Pd.I (0878 8751 8892)\nHayatun Nufus, S.Pd. I (0878 7707 0284)\nMamluatul Mukarromah (0822 1073 3866)"
-            ]
-        );
-
-        \App\Models\Setting::updateOrCreate(
-            ['key' => 'beranda_alamat'],
+                'key' => 'beranda_kontak',
+                'value' => "Ririn Asmarwati, S.Pd.I (0878 8751 8892)\nHayatun Nufus, S.Pd. I (0878 7707 0284)\nMamluatul Mukarromah (0822 1073 3866)",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
             [
-                'value' => "Jl. Sadar No. 33 Rt.001/014 Jatinegara, Cipinang\nMuara, Kota Jakarta Timur, D.K.I. Jakarta"
+                'key' => 'beranda_alamat',
+                'value' => "Jl. Sadar No. 33 Rt.001/014 Jatinegara, Cipinang\nMuara, Kota Jakarta Timur, D.K.I. Jakarta",
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
-        );
+        ]);
     }
-}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('settings');
+    }
+};

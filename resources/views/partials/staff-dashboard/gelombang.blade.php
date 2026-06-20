@@ -162,7 +162,7 @@
     }
 
     async function hapusGelombang(id) {
-        confirmAction('Yakin hapus gelombang ini?', async () => {
+        confirmAction('PENTING: Menghapus gelombang ini akan menghapus semua formulir pendaftar, bukti pembayaran, kwitansi, dan semua dokumen terkait secara permanen! Apakah Anda benar-benar yakin?', async () => {
             try {
                 const res = await fetch(`/api/gelombang/${id}`, {
                     method: 'DELETE',

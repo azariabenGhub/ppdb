@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
             'email' => 'kepsek@example.com',
             'password' => Hash::make('12345678'),
             'role' => 'kepala_sekolah',
+            'email_verified_at' => now(),
         ]);
 
         // Panitia 1
@@ -28,6 +29,7 @@ class UserSeeder extends Seeder
             'email' => 'panitia@example.com',
             'password' => Hash::make('12345678'),
             'role' => 'panitia',
+            'email_verified_at' => now(),
         ]);
     }
 }

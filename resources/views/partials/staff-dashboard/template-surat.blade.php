@@ -36,15 +36,19 @@
         const res = await fetch('/api/template-surat', { headers: { 'Authorization': 'Bearer ' + token } });
         const data = await res.json();
         let html = '';
-        data.forEach((t, i) => {
-            html += `<tr>
-                <td>${i + 1}</td>
-                <td>${t.nama}</td>
-                <td><a href="/api/template-surat/download/${t.id}?token=${token}" target="_blank">Download</a></td>
-                <td><button onclick="editTemplate(${t.id}, '${t.nama}')">Edit</button>
-                       <button onclick="hapusTemplate(${t.id})">Hapus</button></td>
-            </tr>`;
-        });
+        if (data.length === 0) {
+            html = '<tr><td colspan="4" align="center">Belum ada template surat</td></tr>';
+        } else {
+            data.forEach((t, i) => {
+                html += `<tr>
+                    <td>${i + 1}</td>
+                    <td>${t.nama}</td>
+                    <td><a href="/api/template-surat/download/${t.id}?token=${token}" target="_blank">Download</a></td>
+                    <td><button onclick="editTemplate(${t.id}, '${t.nama}')">Edit</button>
+                           <button onclick="hapusTemplate(${t.id})">Hapus</button></td>
+                </tr>`;
+            });
+        }
         document.getElementById('tabel-template').innerHTML = html;
     }
 

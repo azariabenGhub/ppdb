@@ -24,8 +24,10 @@
             <input type="text" name="nomor_rekening" id="edit_nomor_rekening" placeholder="Nomor Rekening"><br>
             <input type="text" name="atas_nama" id="edit_atas_nama" placeholder="Atas Nama"><br>
             <input type="file" name="gambar_qris" id="edit_gambar_qris" accept="image/*"><br>
-            <label>Gambar Saat Ini:</label><br>
-            <img id="edit_preview_gambar" width="100" style="display:none;"><br>
+            <div id="container_edit_preview_gambar" style="display:none;">
+                <label>Gambar Saat Ini:</label><br>
+                <img id="edit_preview_gambar" width="100"><br>
+            </div>
             <textarea name="keterangan" id="edit_keterangan" placeholder="Keterangan"></textarea><br>
             <button type="submit">Update</button>
             <button type="button" onclick="batalEdit()">Batal</button>
@@ -41,7 +43,7 @@
     // ========== METODE PEMBAYARAN ==========
     async function loadMetodePembayaran() {
         try {
-            const res = await fetch('/api/metode-pembayaran', {
+            const res = await fetch('/api/metode-pembayaran?_t=' + Date.now(), {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             const data = await res.json();
@@ -49,7 +51,7 @@
             data.forEach(m => {
                 let imgHtml = '';
                 if (m.gambar_qris) {
-                    imgHtml = `<img src="/api/file/metode/${m.id}?token=${token}" width="100"><br>`;
+                    imgHtml = `<img src="/api/file/metode/${m.id}?token=${token}&_t=${Date.now()}" width="100"><br>`;
                 }
                 html += `<div>
                     <strong>${escapeHtml(m.nama_bank || 'QRIS')}</strong><br>
@@ -57,7 +59,7 @@
                     Atas Nama: ${escapeHtml(m.atas_nama || '-')}<br>
                     Keterangan: ${escapeHtml(m.keterangan || '')}<br>
                     ${imgHtml}
-                    <button onclick="editMetode(${m.id}, '${escapeHtml(m.nama_bank || '')}', '${escapeHtml(m.nomor_rekening || '')}', '${escapeHtml(m.atas_nama || '')}', '${escapeHtml(m.keterangan || '')}')">Edit</button>
+                    <button onclick="editMetode(${m.id}, '${escapeHtml(m.nama_bank || '')}', '${escapeHtml(m.nomor_rekening || '')}', '${escapeHtml(m.atas_nama || '')}', '${escapeHtml(m.keterangan || '')}', ${m.gambar_qris ? 'true' : 'false'})">Edit</button>
                     <button onclick="hapusMetode(${m.id})">Hapus</button>
                     <hr></div>`;
             });
@@ -77,7 +79,7 @@
         document.getElementById('form-metode').style.display = 'none';
     }
 
-    function editMetode(id, nama_bank, nomor_rekening, atas_nama, keterangan) {
+    function editMetode(id, nama_bank, nomor_rekening, atas_nama, keterangan, has_gambar) {
         document.getElementById('form-metode').style.display = 'none';
         document.getElementById('form-edit-metode').style.display = 'block';
         document.getElementById('edit_id').value = id;
@@ -85,12 +87,13 @@
         document.getElementById('edit_nomor_rekening').value = nomor_rekening;
         document.getElementById('edit_atas_nama').value = atas_nama;
         document.getElementById('edit_keterangan').value = keterangan;
-        const preview = document.getElementById('edit_preview_gambar');
-        if (typeof gambar_qris !== 'undefined' && gambar_qris) {
-            preview.src = `/api/file/metode/${id}?token=${token}`;
-            preview.style.display = 'block';
+        const previewContainer = document.getElementById('container_edit_preview_gambar');
+        const previewImg = document.getElementById('edit_preview_gambar');
+        if (has_gambar) {
+            previewImg.src = `/api/file/metode/${id}?token=${token}&_t=${Date.now()}`;
+            previewContainer.style.display = 'block';
         } else {
-            preview.style.display = 'none';
+            previewContainer.style.display = 'none';
         }
     }
 
@@ -142,6 +145,7 @@
         e.preventDefault();
         const id = document.getElementById('edit_id').value;
         const formData = new FormData(this);
+        formData.append('_method', 'PUT');
         try {
             const res = await fetch(`/api/metode-pembayaran/${id}`, {
                 method: 'POST', // karena PUT tidak support multipart secara native di form, gunakan POST dengan _method

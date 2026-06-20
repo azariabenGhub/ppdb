@@ -27,6 +27,7 @@
         <div class="content-wrapper">
             {{-- Semua section halaman --}}
             @include('partials.staff-dashboard.beranda')
+            @include('partials.staff-dashboard.kelola-beranda')
             @include('partials.staff-dashboard.verifikasi')
             @include('partials.staff-dashboard.metode-pembayaran')
             @include('partials.staff-dashboard.verifikasi-pembayaran')
@@ -233,6 +234,7 @@
         const menuByRole = {
             panitia: [
                 { id: 'beranda-staff', label: '<i class="fa-solid fa-house"></i> Beranda' },
+                { id: 'kelola-beranda', label: '<i class="fa-solid fa-sliders"></i> Kelola Beranda' },
                 { id: 'verifikasi', label: '<i class="fa-solid fa-user-check"></i> Verifikasi Pendaftar' },
                 { id: 'kelola-jadwal', label: '<i class="fa-solid fa-calendar-days"></i> Kelola Jadwal' },
                 { id: 'penilaian', label: '<i class="fa-solid fa-star"></i> Penilaian' },
@@ -251,6 +253,7 @@
             ],
             kepala_sekolah: [
                 { id: 'beranda-staff', label: '<i class="fa-solid fa-house"></i> Beranda' },
+                { id: 'kelola-beranda', label: '<i class="fa-solid fa-sliders"></i> Kelola Beranda' },
                 { id: 'verifikasi', label: '<i class="fa-solid fa-user-check"></i> Verifikasi Pendaftar' },
                 { id: 'metode-pembayaran', label: '<i class="fa-solid fa-building-columns"></i> Metode Pembayaran' },
                 { id: 'verifikasi-pembayaran', label: '<i class="fa-solid fa-money-bill-transfer"></i> Verifikasi Bayar' },
@@ -285,6 +288,7 @@
             if(activeBtn) activeBtn.classList.add('active');
 
             if (sectionId === 'beranda-staff' && typeof loadStaffStats === 'function') loadStaffStats();
+            else if (sectionId === 'kelola-beranda' && typeof loadEditorSettings === 'function') loadEditorSettings();
             else if (sectionId === 'verifikasi' && (user.role === 'panitia' || user.role === 'kepala_sekolah') && typeof loadVerifikasi === 'function') loadVerifikasi();
             else if (sectionId === 'metode-pembayaran' && (user.role === 'bendahara' || user.role === 'kepala_sekolah') && typeof loadMetodePembayaran === 'function') loadMetodePembayaran();
             else if (sectionId === 'verifikasi-pembayaran' && (user.role === 'bendahara' || user.role === 'kepala_sekolah') && typeof switchJenisPembayaran === 'function') switchJenisPembayaran('formulir');

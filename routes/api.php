@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\TemplateSuratController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\VerifikasiController;
 use App\Http\Controllers\Api\VerifikasiPembayaranController;
+use App\Http\Controllers\Api\SettingController;
 use App\Models\SeleksiTes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/email/resend', [\App\Http\Controllers\Api\EmailVerificationController::class, 'resend']);
 Route::post('/forgot-password', function (Request $request) {
     $request->validate(['email' => 'required|email']);
 
@@ -88,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('/daftar-ulang/form', [DaftarUlangController::class, 'storeForm']);
     Route::get('/daftar-ulang/cek', [DaftarUlangController::class, 'cekStatus']);
     Route::post('/daftar-ulang', [DaftarUlangController::class, 'store']);
-
+    Route::get('/settings/beranda', [SettingController::class, 'getBerandaSettings']);
 });
 
 // Rute untuk PANITIA PPDB
@@ -149,4 +151,5 @@ Route::middleware(['auth:sanctum', 'role:panitia,Bendahara,kepala_sekolah'])->gr
     Route::apiResource('gelombang', GelombangController::class);
     Route::patch('gelombang/{id}/toggle-status', [GelombangController::class, 'toggleStatus']);
     Route::get('/staff/stats', [PendaftarController::class, 'getStats']);
+    Route::post('/settings/beranda', [SettingController::class, 'updateBerandaSettings']);
 });

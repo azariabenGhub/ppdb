@@ -61,3 +61,7 @@ Route::get('/formulir/{id}', function ($id) {
 Route::get('/staff/pendaftar/{id}', function ($id) {
         return view('staff-pendaftar-detail', ['id' => $id]);
     })->name('staff.pendaftar.detail');
+
+Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Api\EmailVerificationController::class, 'verify'])
+    ->middleware(['signed'])
+    ->name('verification.verify');

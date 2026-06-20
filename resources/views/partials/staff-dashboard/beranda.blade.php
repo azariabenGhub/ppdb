@@ -57,6 +57,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 
 <style>
@@ -132,6 +134,30 @@
     font-size: 14px;
     margin: 8px 0;
     color: #334155;
+}
+
+/* Custom form inputs style matching general theme */
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #334155;
+}
+.form-input {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: white;
+}
+.form-input:focus {
+    outline: none;
+    border-color: #1a4d2e;
+    box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.15);
+}
+.btn-primary:hover {
+    background: #123520 !important;
 }
 </style>
 

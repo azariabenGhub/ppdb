@@ -68,6 +68,8 @@
 
                 </form>
 
+                <div id="message" style="margin-top: 15px; text-align: center; font-weight: 500; font-size: 14px;"></div>
+
                 <div class="login-option">
                     <a href="/login">Sudah punya akun?</a>
                 </div>
@@ -108,15 +110,14 @@
                         });
                         const data = await response.json();
                         if (response.ok) {
-                            localStorage.setItem('access_token', data.access_token);
-                            localStorage.setItem('user', JSON.stringify(data.user));
-                            window.location.href = '/dashboard';
+                            document.getElementById('message').innerHTML = '<div style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px; line-height: 1.5;">' + data.message + '</div>';
+                            submitBtn.innerText = 'Silakan Cek Email Anda';
                         } else {
                             let errorMsg = data.message || 'Registrasi gagal';
                             if (data.errors) {
                                 errorMsg = Object.values(data.errors).flat().join(', ');
                             }
-                            document.getElementById('message').innerText = errorMsg;
+                            document.getElementById('message').innerHTML = '<div style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">' + errorMsg + '</div>';
                             submitBtn.disabled = false;
                             submitBtn.innerText = 'SIMPAN';
                         }

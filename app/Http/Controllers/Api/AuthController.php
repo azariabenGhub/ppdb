@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+use Illuminate\Auth\Events\Registered;
+
 class AuthController extends Controller
 {
     /**
@@ -30,11 +32,11 @@ class AuthController extends Controller
             'role' => 'pendaftar',
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Kirim email verifikasi
+        event(new Registered($user));
 
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
+            'message' => 'Registrasi berhasil. Silakan cek email Anda untuk memverifikasi akun sebelum masuk.',
             'user' => $user,
         ], 201);
     }
@@ -59,6 +61,10 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'Email atau password salah'], 401);
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email Anda belum terverifikasi. Silakan periksa kotak masuk email Anda.'], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

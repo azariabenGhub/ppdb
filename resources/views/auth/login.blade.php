@@ -106,18 +106,63 @@
                                 window.location.href = '/dashboard';
                             }
                         } else {
-                            document.getElementById('message').innerText = data.message || 'Login gagal';
+                            let msg = data.message || 'Login gagal';
+                            if (response.status === 403) {
+                                msg += ' <a href="#" id="resend-verification-link" style="color: #856404; text-decoration: underline; font-weight: bold; margin-left: 5px;">Kirim ulang email verifikasi</a>';
+                            }
+                            document.getElementById('message').innerHTML = '<div style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">' + msg + '</div>';
+                            
+                            const resendLink = document.getElementById('resend-verification-link');
+                            if (resendLink) {
+                                resendLink.addEventListener('click', async (event) => {
+                                    event.preventDefault();
+                                    resendLink.innerText = 'Mengirim...';
+                                    try {
+                                        const resendRes = await fetch('/api/email/resend', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                                            body: JSON.stringify({ email: document.getElementById('email').value })
+                                        });
+                                        const resendData = await resendRes.json();
+                                        if (resendRes.ok) {
+                                            document.getElementById('message').innerHTML = '<div style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">' + resendData.message + '</div>';
+                                        } else {
+                                            document.getElementById('message').innerHTML = '<div style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">' + resendData.message + '</div>';
+                                        }
+                                    } catch (err) {
+                                        console.error(err);
+                                        document.getElementById('message').innerHTML = '<div style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">Gagal mengirim ulang email verifikasi.</div>';
+                                    }
+                                });
+                            }
+                            
                             submitBtn.disabled = false;
                             submitBtn.innerText = 'MASUK';
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        document.getElementById('message').innerText = 'Terjadi kesalahan jaringan.';
+                        document.getElementById('message').innerHTML = '<div style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">Terjadi kesalahan jaringan.</div>';
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'MASUK';
                     }
                 });
             });
+        });
+
+        // Tampilkan pesan jika diarahkan dari verifikasi email
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const verified = urlParams.get('verified');
+            const error = urlParams.get('error');
+            const messageDiv = document.getElementById('message');
+
+            if (verified === 'success') {
+                messageDiv.innerHTML = '<div style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">Email Anda berhasil diverifikasi! Silakan masuk.</div>';
+            } else if (verified === 'already') {
+                messageDiv.innerHTML = '<div style="color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">Email Anda sudah terverifikasi sebelumnya. Silakan masuk.</div>';
+            } else if (error === 'invalid') {
+                messageDiv.innerHTML = '<div style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px;">Link verifikasi tidak valid atau kedaluwarsa.</div>';
+            }
         });
     </script>
 </body>

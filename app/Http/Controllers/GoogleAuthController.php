@@ -54,6 +54,8 @@ class GoogleAuthController extends Controller
                     'role' => 'pendaftar',
                     'google_id' => $googleUser->getId(),
                 ]);
+                $user->email_verified_at = now();
+                $user->save();
                 Log::info('New user created via Google:', ['id' => $user->id, 'email' => $email]);
             }
 

@@ -57,4 +57,71 @@
             }
         });
     };
+
+    // Global loader state
+    let activeWriteRequests = 0;
+    
+    function showLoadingSpinner() {
+        Swal.fire({
+            title: 'Mohon Tunggu',
+            text: 'Sedang memproses...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
+
+    function hideLoadingSpinner() {
+        if (Swal.isVisible() && Swal.isLoading()) {
+            Swal.close();
+        }
+    }
+
+    // Intercept fetch requests (POST, PUT, PATCH, DELETE)
+    const originalFetch = window.fetch;
+    window.fetch = async function(...args) {
+        let url = args[0];
+        let options = args[1] || {};
+        let method = (options.method || 'GET').toUpperCase();
+        
+        let isWriteRequest = method !== 'GET';
+        
+        if (isWriteRequest) {
+            activeWriteRequests++;
+            if (activeWriteRequests === 1) {
+                showLoadingSpinner();
+            }
+        }
+        
+        try {
+            const response = await originalFetch(...args);
+            if (isWriteRequest) {
+                activeWriteRequests--;
+                if (activeWriteRequests <= 0) {
+                    activeWriteRequests = 0;
+                    hideLoadingSpinner();
+                }
+            }
+            return response;
+        } catch (error) {
+            if (isWriteRequest) {
+                activeWriteRequests--;
+                if (activeWriteRequests <= 0) {
+                    activeWriteRequests = 0;
+                    hideLoadingSpinner();
+                }
+            }
+            throw error;
+        }
+    };
+
+    // Global listener for traditional form submits (non-AJAX)
+    document.addEventListener('submit', function(event) {
+        setTimeout(() => {
+            if (!event.defaultPrevented) {
+                showLoadingSpinner();
+            }
+        }, 50);
+    });
 </script>
